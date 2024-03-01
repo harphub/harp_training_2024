@@ -1,0 +1,840 @@
+---
+title: Reading forecast data
+---
+
+```{r tooltip, echo=FALSE}
+tt <- function(x, y) {
+  paste0('<a href="#" data-toggle="tooltip" title="',y,'">',x,'</a>')
+}
+```
+
+In this section you will learn how to use `read_grid()`, `read_forecast()` and `read_analysis()` to read gridded data from files of various formats.
+
+Before we begin, make sure that you are in your project directory for the training course and attach the packages that we are going to need.
+
+```{r attach-packages, message=FALSE}
+library(harp)
+library(here)
+```
+
+You should have copied the data for the course into your data directory. If not, follow the instructions <a href=get-started.html#data>here</a>.
+
+::: {.callout-important collapse="true"}
+## **Important**: Helper packages
+
+In order to read some file formats, specific packages are required. These can be installed as follows:
+
+*Rgrib2* `remotes::install_github("harphub/Rgrib2")`
+
+*ncdf4* `install.packages("ncdf4")`
+
+*Rfa* `remotes::install_github("harphub/Rfa")`
+:::
+
+## `read_grid()`
+
+### Basic Usage
+
+`read_grid()` is used to read data from a single file. You give it the file name and the parameter you want to read as well as other options to describe the data you want to read and the output.
+
+Let's begin by reading 2m temperature from a grib file.
+
+```{r grib-t2m, message=FALSE}
+read_grid(here("data/grib/exp1/mbr001/fc2022071012+000grib2_fp"), "t2m")
+```
+
+The output of `read_grid()` is an object with a class of `geofield`. A `geofield` is a 2d array with information about the grid dimensions and its co-ordinate reference system. More about this later. When printing a `geofield` to the screen, some information about the domain is shown as well as a summary of the data. The values are the minimum, the first quartile, the median, the mean, the third quartile and the maximum of the data in the `geofield`.
+
+### Parameter names
+
+The second argument to `read_grid()` is the name of the parameter to read. Here we use `"t2m"`, which is the parameter name that **harp** uses for 2m temperature. You can see all of the parameter names used by harp with `show_param_defs()`
+
+```{r show-param-defs}
+show_param_defs()
+```
+
+You can see how **harp** translates the parameter name for a particular file format with `get_param_def()`
+
+```{r get-param-def}
+get_param_def("t2m", "grib")
+```
+
+You can see that with `parameter = "t2m"` **harp** will get the grib message with a shortName of `t` or `2t` with a levelType of `heightAboveGround` or `surface`.
+
+### Other file formats
+
+*harp* has built in functionality to read *Grib*, *NetCDF*, *FA* and *vfld*, *vobs* and *obsoul* files. Note that although the latter three do not contain gridded data, they can still be read by `read_grid()`.
+
+```{r read-netcdf, message=FALSE}
+read_grid(
+  here("data/netcdf/meps_lagged/2024/02/15/07/mbr03/meps_sfc_24_20240215T07Z.nc"),
+  "pcp"
+)
+```
+
+::: {.callout-tip collapse="true"}
+## **Tip**: *vfld* files need a `lead_time` argument
+
+*vfld* files do not include enough metadata to get the lead time from the contents of the files. Therefore you need to give `read_grid()` the lead time in order to fully populate the output. You wouldn't normally read *vfld* files directly with `read_grid()`, but would use <a href=read-forecast.html#read_forecast>`read_forecast()`</a> instead.
+:::
+
+```{r read-vfld, message=FALSE}
+read_grid(
+  here("data/vfld/MEPS_preop/vfldMEPS_preopmbr000202402190003"), 
+  "T2m", 
+  lead_time = 3
+) 
+```
+
+Since *vfld* files contain point data, the output is a data frame with columns for other metadata. The data are in the `station_data` column.
+
+### Multiple `geofield`s for one parameter
+
+Files can contain multiple entries for a single parameter. For example a file could contain multiple lead times, multiple ensemble members, multiple vertical levels, or any combination of these. When many entries for a single parameter exist, a `geolist` is returned.
+
+```{r read-geolist-no-eval, eval=FALSE}
+read_grid(
+  here("data/netcdf/arome_arctic/2024/02/19/arome_arctic_2_5km_20240219T12Z.nc"),
+  "t2m"
+)
+```
+
+```{r read-geolist, echo=FALSE, message=FALSE}
+read_grid(
+  here("data/netcdf/arome_arctic/2024/02/19/arome_arctic_2_5km_20240219T12Z.nc"),
+  "t2m",
+  show_progress = FALSE
+)
+```
+
+A `geolist` is simply a list of `geofield`s that are on the same domain. To get more metadata about each `geofield` you can set `data_frame = TRUE` to get the output in the form of a data frame.
+
+```{r read-geolist-df-no-eval, eval=FALSE}
+read_grid(
+  here("data/netcdf/arome_arctic/2024/02/19/arome_arctic_2_5km_20240219T12Z.nc"),
+  "t2m",
+  data_frame = TRUE
+) 
+```
+
+```{r read-geolist-df, echo=FALSE, message=FALSE}
+read_grid(
+  here("data/netcdf/arome_arctic/2024/02/19/arome_arctic_2_5km_20240219T12Z.nc"),
+  "t2m",
+  data_frame = TRUE, 
+  show_progress = FALSE
+) |> dplyr::select(fcst_dttm, valid_dttm, lead_time, gridded_data, units, dplyr::everything())
+```
+
+Other arguments to `read_grid()` allow you to specify which `geofield`s for a parameter to get from the file. For example, to get lead times of 6 and 12 hours you would do this:
+
+```{r read-geolist-df-lt-no-eval, eval=FALSE}
+read_grid(
+  here("data/netcdf/arome_arctic/2024/02/19/arome_arctic_2_5km_20240219T12Z.nc"),
+  "t2m",
+  lead_time  = c(6, 12),
+  data_frame = TRUE
+) 
+```
+
+```{r read-geolist-df-lt, echo=FALSE, message=FALSE}
+read_grid(
+  here("data/netcdf/arome_arctic/2024/02/19/arome_arctic_2_5km_20240219T12Z.nc"),
+  "t2m",
+  data_frame    = TRUE, 
+  lead_time     = c(6, 12),
+  show_progress = FALSE
+) |> dplyr::select(fcst_dttm, valid_dttm, lead_time, gridded_data, units, dplyr::everything())
+```
+
+### File format options
+
+#### Grib
+
+Sometimes there isn't sufficient information in the file, or the defaults are incorrect. Take, for example, a grib2 file that uses non standard parameter numbers for total precipitation.
+
+```{r read-grib-no-pcp, error=TRUE, message=FALSE}
+read_grid(
+  here("data/grib/exp1/mbr001/fc2022071012+006grib2_fp"), 
+  "pcp"
+)
+```
+
+We see that it is looking for a parameter with shortName `"tp"`, but cannot find it. Yet we know the file contains total precipitation. If you have access to the grib tables used to encode this grib file you can look up the correct information to get the data. In this case total precipitation uses the grib2 parameterNumber 8.
+
+Options for the file format are passed through the `file_format_opts` argument, and those options can be generated with helper functions for the file format. For grib files those options can be generated by `grib_opts()`.
+
+```{r grib-opts}
+grib_opts()
+```
+
+Here, one of the arguments is `param_find` and we use that in conjunction with the `use_grib_*()` function `use_grib_parameterNumber()`. The `param_find` argument takes a named list, with the name the same as the parameter so that it knows which parameter to which to apply those options.
+
+```{r read-grib-with-opts, message=FALSE}
+read_grid(
+  here("data/grib/exp1/mbr001/fc2022071012+006grib2_fp"), 
+  "pcp",
+  file_format_opts = grib_opts(
+    param_find = list(pcp = use_grib_parameterNumber(8))
+  )
+)
+```
+
+#### NetCDF
+
+Reading NetCDF files with **harp** used to require the user to always specify the names of the dimensions and the projection variable in the file. This has improved in recent versions, and as shown above you can often read from NetCDF files without providing extra options. However, in some cases you still have to pass some information about the content of the file. This happens when the x and y dimensions are not named "x" and "y", and/or the projection is not a lambert projection. Additionally if the data are stored in reverse order this must be specified. An example of this is would be forecasts from a global model like ECMWF's IFS.
+
+In the below example, we tell the function that the x and y dimensions are "longitude" and "latitude", the projection variable is "projection_regular_ll" and that the data are stored in reverse order in the y dimension (north - south as opposed to south - north).
+
+```{r read-ifs, message=FALSE}
+read_grid(
+  here("data/netcdf/ifsens/ifsens_20240219T000000Z.nc"), 
+  "t2m",
+  lead_time        = 6,
+  members          = 0,
+  file_format_opts = netcdf_opts(
+    x_dim     = "longitude",
+    y_dim     = "latitude",
+    y_rev     = TRUE,
+    proj4_var = "projection_regular_ll"
+  )
+)
+```
+
+## `read_forecast()`
+
+`read_grid()` is used to read data from a single file. In many cases, you will need to read data from multiple files. This is where `read_forecast()` comes in.
+
+`read_forecast()` takes at a minimum the date-times you want to read, the name of the forecast model to give to the data, the parameter you want to read, the path of the files and a file template. Taking the first file we read in this tutorial, `here("data/grib/exp1/mbr001/fc2022071012+000grib2_fp")`, we can read the same data using `read_forecast()` with the following expression:
+
+```{r read-forecast-basic-no-eval, eval=FALSE}
+read_forecast(
+  dttm          = 2022071012,
+  fcst_model    = "exp1",
+  parameter     = "t2m",
+  lead_time     = 0,
+  members       = 1,
+  file_path     = here("data/grib"),
+  file_template = "{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp",
+  return_data   = TRUE 
+)
+```
+
+```{r read-forecast-basic, message=FALSE, echo=FALSE}
+read_forecast(
+  dttm          = 2022071012,
+  fcst_model    = "exp1",
+  parameter     = "t2m",
+  lead_time     = 0,
+  members       = 1,
+  file_path     = here("data/grib"),
+  file_template = "{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp",
+  return_data   = TRUE,
+  show_progress = FALSE
+) |> 
+  dplyr::select(fcst_dttm, valid_dttm, lead_time, parameter, exp1_mbr001, dplyr::everything())
+```
+
+::: {.callout-tip collapse="true"}
+## **Tip**: You need to tell `read_forecast()` to return data
+
+One of the primary functions of `read_forecast()` is to process large volumes of data to interpolate to points and write these interpolated data to new files. Such an operation would often lead to running out of memory if the data were returned to the global environment so the default behaviour is to not return any data. Therefore, if you want the data returned to your global environment, you must set `return_data = TRUE`. Note that this default behaviour is under review and may be changed in future versions.
+:::
+
+### File Name Templates
+
+In the above example, the file names are generated by replacing everything that is inside braces with *dynamic* data. That is to say, values that can change depending on the date-time, the lead time, the ensemble member and the name of the forecast model. We refer to the embraced values as substitutions, and the available substitutions are listed below:
+
+| Substitution | Description                       |
+|--------------|-----------------------------------|
+| `{YYYY}`     | 4 digit year                      |
+| `{MM}`       | 2 digit month with leading zeros  |
+| `{M}`        | Single digit month                |
+| `{DD}`       | 2 digit day with leading zeros    |
+| `{D}`        | Single digit day                  |
+| `{HH}`       | 2 digit hour with leading zeros   |
+| `{H}`        | Single digit hour                 |
+| `{mm}`       | 2 digit minute with leading zeros |
+| `{m}`        | Single digit minute               |
+| `{LDTx}`     | Lead time                         |
+| `{MBRx}`     | Ensemble member                   |
+
+In the above table, the substitutions `{LDTx}` and `{MBRx}` have an optional number of digits to use, where smaller values use leading zeros. The `x` should be replaced by the number of digits that the file name uses. Leaving off a value for `x` means that no leading zeros are used.
+
+Getting the file template correct can often be quite a trying process, so **harp** includes some built in templates that can be seen with `show_file_templates()`.
+
+```{r show-file-templates}
+show_file_templates()
+```
+
+Often the templates are a bit long to be seen on screen so a single template can be shown by selecting the number for that template.
+
+```{r show-file-template-one-only}
+show_file_templates(29)
+```
+
+This means we can, for example, read an ensemble *vfld* file with the `"vfld_eps"` template. Here we are setting `parameter = NULL`to read all parameters from the *vfld* file (this is only an option for *vfld* files).
+
+```{r read-forecast-vfld-no-eval, eval=FALSE}
+read_forecast(
+  dttm          = 2024021900,
+  fcst_model    = "MEPS_preop",
+  parameter     = NULL,
+  lead_time     = 3,
+  members       = 0,
+  file_path     = here("data/vfld"),
+  file_template = "vfld_eps",
+  return_data   = TRUE 
+)
+```
+
+```{r read-forecast-vfld, message=FALSE, echo=FALSE}
+read_forecast(
+  dttm          = 2024021900,
+  fcst_model    = "MEPS_preop",
+  parameter     = NULL,
+  lead_time     = 3,
+  members       = 0,
+  file_path     = here("data/vfld"),
+  file_template = "vfld_eps",
+  return_data   = TRUE 
+) |> 
+  dplyr::select(fcst_dttm, lead_time, parameter, SID, MEPS_preop_mbr000, units, dplyr::everything())
+```
+
+### Data classes
+
+Unlike `read_grid()`, `read_forecast()` always returns a data frame. These data frames have a `harp_df` class and then an attempt is made to assign a subclass depending on the data. In the above examples you will see one output shown as
+
+[::ensemble gridded forecast::]{.harp-class}
+
+and the other as
+
+[::ensemble point forecast::]{.harp-class}
+
+This means that the function has recognised that these are ensemble gridded forecasts and ensemble point forecasts and assigned the appropriate sub classes. Since in both of these cases only one ensemble member has been read in, they can be converted to deterministic forecasts using `as_det()`
+
+```{r read-forecast-vfld-as-det-no-eval, eval=FALSE}
+read_forecast(
+  dttm          = 2024021900,
+  fcst_model    = "MEPS_preop",
+  parameter     = NULL,
+  lead_time     = 3,
+  members       = 0,
+  file_path     = here("data/vfld"),
+  file_template = "vfld_eps",
+  return_data   = TRUE 
+) |> 
+  as_det()
+```
+
+```{r read-forecast-vfld-as-det, message=FALSE, echo=FALSE}
+read_forecast(
+  dttm          = 2024021900,
+  fcst_model    = "MEPS_preop",
+  parameter     = NULL,
+  lead_time     = 3,
+  members       = 0,
+  file_path     = here("data/vfld"),
+  file_template = "vfld_eps",
+  return_data   = TRUE 
+) |> 
+  as_det() |> 
+  dplyr::select(fcst_dttm, lead_time, parameter, SID, fcst, units, dplyr::everything())
+```
+
+The output is now labelled as [::deterministic point forecast::]{.harp-class} and the data column is now simply `fcst`.
+
+::: callout-tip
+## **Tip**: `|>` The pipe operator
+
+In the above we also use R's pipe operator `|>`. The pipe operator takes the result of the function that comes before it and passes it to the function that comes after it as the first argument. It can be thought of as "and then" or "and send to".
+:::
+
+While the `harp_df` classes may not be something you need to know much about, many functions in **harp** rely on these classes in order to know what to do with the data.
+
+Any data frame can be converted to a `harp_df` data frame as long as it has a `valid_dttm` column. That is to say a column that contains the valid date time for each row of data. Deterministic data frames are initially recognised by having a column name that ends with "\_det" and ensemble columns are recognised by column names that end with "\_mbrXXX", where XXX is a 3 digit member number with leading zeros.
+
+To demonstrate we can use some columns from **harp**'s built in test data to construct a data frame and give it a harp class using `as_harp_df()`.
+
+```{r point-df}
+point_df <- data.frame(
+  fcst_dttm  = det_point_df$fcst_dttm[1:5],
+  valid_dttm = det_point_df$valid_dttm[1:5],
+  lead_time  = det_point_df$lead_time[1:5],
+  SID        = det_point_df$SID[1:5],
+  point_det  = det_point_df$fcst[1:5]
+)
+
+class(point_df)
+
+point_df <- as_harp_df(point_df)
+
+class(point_df)
+```
+
+The `harp_df` class and subclasses can be removed with `deharp()`. This can be important as a small number functions that take simple data frames will not work with `harp_df` data frames.
+
+```{r deharp}
+class(deharp(point_df))
+```
+
+### Geographic transformations
+
+`read_forecast()` and `read_grid()` have the ability to perform geographic transformations on the data at read time. These transformations include interpolating to point locations, regridding to another grid, taking a subset of a grid or pulling out a line section through a grid to create cross sections. Here we will concentrate on the interpolation to point locations, `transformation = "interpolate"`
+
+#### Interpolation to geographic point locations
+
+When selecting a transformation, there is an accompanying `transformation_opts` argument to pass the options for that transformation. Each transformation has a function that generates those options - in the case of the "interpolate" transformation, that is `interpolate_opts()`, which has a number of default options.
+
+```{r interp-opts}
+interpolate_opts()
+```
+
+The most important information for the "interpolate" transformation is the locations to which to interpolate the data. This is provided in the `stations` argument, and by default **harp**'s built in list of meteorological stations, `station_list` is used. If not using the default, `stations` needs to be a data frame with the following columns:
+
+| Column name | Description                                      |
+|-------------|--------------------------------------------------|
+| SID         | A unique identifier for the location             |
+| lat         | The latitude of the location in decimal degrees  |
+| lon         | The longitude of the location in decimal degrees |
+| elev\*      | The elevation of the location in meters          |
+| name\*      | A name for the location                          |
+
+Column names marked with \* are optional.
+
+For a first example we will read in exp1 10m wind speed ("S10m") for lead times 0 - 3 hours, and members 1 -3, and interpolate to the the default stations (in this case we do not need to set anything for `transformation_opts` as we will use the defaults).
+
+```{r read-forecast-interpolate-basic-no-eval, eval=FALSE}
+read_forecast(
+  dttm           = 2022071012,
+  fcst_model     = "exp1",
+  parameter      = "s10m",
+  lead_time      = seq(0, 3),
+  members        = seq(1, 3),
+  file_path      = here("data/grib"),
+  file_template  = "{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp",
+  transformation = "interpolate",
+  return_data    = TRUE 
+)
+```
+
+```{r read-forecast-interpolate-basic, message=FALSE, echo=FALSE}
+read_forecast(
+  dttm           = 2022071012,
+  fcst_model     = "exp1",
+  parameter      = "s10m",
+  lead_time      = seq(0, 3),
+  members        = seq(1, 3),
+  file_path      = here("data/grib"),
+  file_template  = "{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp",
+  transformation = "interpolate",
+  return_data    = TRUE,
+  show_progress  = FALSE
+) |> 
+  dplyr::select(fcst_dttm, valid_dttm, lead_time, SID, dplyr::contains("exp1_mbr"), units, dplyr::everything())
+```
+
+::: {.callout-note collapse="true"}
+## **Note**: Warnings and errors
+
+Interpolation weights need to be computed from one of the fields in the file. By default it tries to get these from the surface geopotential. If surface geopotential is not found in the file a warning and error are thrown, but it simply continues to compute the interpolation weights from the first parameter to be read. It's nothing to worry about!
+:::
+
+It is also possible to interpolate to any point location (as long as it exists inside the domain - in this case over Denmark) with a data frame to be sent to the `stations` argument. In this case, we will also use bilinear interpolation (the default is nearest neighbour).
+
+```{r my-stns}
+my_stations <- data.frame(
+  SID = c("CPH", "AAR"),
+  lon = c(12.64, 10.62),
+  lat = c(55.61, 56.31)
+)
+```
+
+::: callout-tip
+## Tip: Station IDs (SID) do not have to be numbers
+:::
+
+```{r read-forecast-interpolate-my-stations-no-eval, eval=FALSE}
+read_forecast(
+  dttm                = 2022071012,
+  fcst_model          = "exp1",
+  parameter           = "s10m",
+  lead_time           = seq(0, 3),
+  members             = seq(1, 3),
+  file_path           = here("data/grib"),
+  file_template       = "{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp",
+  transformation      = "interpolate",
+  transformation_opts = interpolate_opts(
+    stations = my_stations,
+    method   = "bilinear"
+  ),
+  return_data         = TRUE 
+)
+```
+
+```{r read-forecast-interpolate-my-stations, message=FALSE, echo=FALSE}
+read_forecast(
+  dttm                = 2022071012,
+  fcst_model          = "exp1",
+  parameter           = "s10m",
+  lead_time           = seq(0, 3),
+  members             = seq(1, 3),
+  file_path           = here("data/grib"),
+  file_template       = "{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp",
+  transformation      = "interpolate",
+  transformation_opts = interpolate_opts(
+    stations = my_stations,
+    method   = "bilinear"
+  ),
+  return_data    = TRUE,
+  show_progress  = FALSE
+) |> 
+  dplyr::select(fcst_dttm, valid_dttm, lead_time, SID, dplyr::contains("exp1_mbr"), units, dplyr::everything())
+```
+
+Once the data are interpolated they can be output to files in SQLite format. SQLite files allow the data to be filtered and read much more quickly for further use, for example in verification. This is done with the argument `output_file_opts` and the options can be set with `fctable_opts()`, with the most important of those options being the path to which to write the files.
+
+```{r read-forecast-interpolate-write-no-eval, eval=FALSE}
+read_forecast(
+  dttm                = 2022071012,
+  fcst_model          = "exp1",
+  parameter           = "s10m",
+  lead_time           = seq(0, 3),
+  members             = seq(1, 3),
+  file_path           = here("data/grib"),
+  file_template       = "{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp",
+  transformation      = "interpolate",
+  transformation_opts = interpolate_opts(
+    stations = my_stations,
+    method   = "bilinear"
+  ),
+  output_file_opts = fctable_opts(path = here("data/FCTABLE"))
+)
+```
+
+```{r read-forecast-interpolate-write, message=FALSE, echo=FALSE}
+read_forecast(
+  dttm                = 2022071012,
+  fcst_model          = "exp1",
+  parameter           = "s10m",
+  lead_time           = seq(0, 3),
+  members             = seq(1, 3),
+  file_path           = here("data/grib"),
+  file_template       = "{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp",
+  transformation      = "interpolate",
+  transformation_opts = interpolate_opts(
+    stations = my_stations,
+    method   = "bilinear"
+  ),
+  output_file_opts = fctable_opts(path = here("data/FCTABLE")),
+  show_progress    = FALSE
+)
+```
+
+When interpolating 2m temperature to geographic point locations an attempt is made to correct the temperature at the topographic height in the model to the actual topographic heights of the geographic point locations. This is done using a simple lapse rate conversion of 0.0065 K.m^-1^, although this can be set in `interpolate_opts()`. In order for this correction to happen, the `stations` data frame needs to have an "elev" column that has the contains the elevation of the station in meters. Furthermore, there needs to be information about the model elevation. By default the model elevation is inferred from the surface geopotential ("sfc_geo"), but it can be set to topographic elevation by setting the `clim_param` argument to `interpolate_opts()` to "topo". This information about model elevation can be in the same file as the forecast, or in a separate file, the path to which can be set in the `clim_file` argument to `interpolate_opts()`. 
+
+In the following example, the surface geopotential is in the same file as the forecast, but it requires different options to read the NetCDF variable (there is no time dimension), which we can use `modify_opts()` to modify the existing options. Since we need to set `clim_file_opts`, as things stand this means we also have to populate the `clim_file` argument. Since we are going to use the file format options repeatedly, it makes sense to write them to a variable.
+```{r set-netcdf-opts}
+ifsens_fmt_opts <- netcdf_opts(
+  x_dim     = "longitude", 
+  y_dim     = "latitude",
+  y_rev     = TRUE,
+  proj4_var = "projection_regular_ll"
+)
+```
+
+First we will read the height corrected 2m temperature
+```{r read-forecast-interpolate-correct-t2m-no-eval, eval=FALSE}
+t2m <- read_forecast(
+  dttm                = 2024021900,
+  fcst_model          = "ifsens",
+  parameter           = "t2m",
+  lead_time           = 0,
+  members             = 0,
+  file_path           = here("data/netcdf"),
+  file_template       = "{fcst_model}/{fcst_model}_{YYYY}{MM}{DD}T{HH}{mm}00Z.nc",
+  file_format_opts    = ifsens_fmt_opts,
+  transformation      = "interpolate",
+  transformation_opts = interpolate_opts(
+    clim_file      = here("data/netcdf/ifsens/ifsens_20240219T000000Z.nc"),
+    clim_file_opts = modify_opts(ifsens_fmt_opts, time_var = NA)
+  ),
+  return_data         = TRUE
+)
+```
+
+```{r read-forecast-interpolate-correct-t2m, echo=FALSE, message=FALSE}
+t2m <- read_forecast(
+  dttm                = 2024021900,
+  fcst_model          = "ifsens",
+  parameter           = "t2m",
+  lead_time           = 0,
+  members             = 0,
+  file_path           = here("data/netcdf"),
+  file_template       = "{fcst_model}/{fcst_model}_{YYYY}{MM}{DD}T{HH}{mm}00Z.nc",
+  file_format_opts    = ifsens_fmt_opts,
+  transformation      = "interpolate",
+  transformation_opts = interpolate_opts(
+    clim_file      = here("data/netcdf/ifsens/ifsens_20240219T000000Z.nc"),
+    clim_file_opts = modify_opts(ifsens_fmt_opts, time_var = NA)
+  ),
+  return_data         = TRUE,
+  show_progress       = FALSE 
+)
+```
+
+And now the uncorrected, by setting `correct_t2m = FALSE` in `interpolate_opts()`
+
+```{r read-forecast-interpolate-no-correct-t2m-no-eval, eval=FALSE}
+t2m_uncorrected <- read_forecast(
+  dttm                = 2024021900,
+  fcst_model          = "ifsens",
+  parameter           = "t2m",
+  lead_time           = 0,
+  members             = 0,
+  file_path           = here("data/netcdf"),
+  file_template       = "{fcst_model}/{fcst_model}_{YYYY}{MM}{DD}T{HH}{mm}00Z.nc",
+  file_format_opts    = ifsens_fmt_opts,
+  transformation      = "interpolate",
+  transformation_opts = interpolate_opts(correct_t2m = FALSE),
+  return_data         = TRUE
+)
+```
+
+```{r read-forecast-interpolate-no-correct-t2m, echo=FALSE, message=FALSE}
+t2m_uncorrected <- read_forecast(
+  dttm                = 2024021900,
+  fcst_model          = "ifsens",
+  parameter           = "t2m",
+  lead_time           = 0,
+  members             = 0,
+  file_path           = here("data/netcdf"),
+  file_template       = "{fcst_model}/{fcst_model}_{YYYY}{MM}{DD}T{HH}{mm}00Z.nc",
+  file_format_opts    = ifsens_fmt_opts,
+  transformation      = "interpolate",
+  transformation_opts = interpolate_opts(correct_t2m = FALSE),
+  return_data         = TRUE,
+  show_progress       = FALSE 
+)
+```
+
+And we can then compare the impact of the temperature correction. 
+```{r compare-corrected-uncorrected-twm}
+t2m$ifsens_mbr000 - t2m_uncorrected$ifsens_mbr000
+```
+
+#### Reading SQLite files
+
+Once SQLite files have been written by `read_forecast()`, they can then be read using `read_point_forecast()`, which works in much the same way as `read_forecast()`. The main difference is that you have to specify whether you are reading ensemble ("eps") or deterministic ("det") forecasts via the `fcst_type` argument. 
+
+```{r read-point-forecast-no-eval, eval=FALSE}
+read_point_forecast(
+  dttm       = 2022071012,
+  fcst_model = "exp1", 
+  fcst_type  = "eps",
+  parameter  = "s10m",
+  file_path  = here("data/FCTABLE") 
+)
+```
+
+```{r read-point-forecast, echo=FALSE, message=FALSE}
+read_point_forecast(
+  dttm       = 2022071012,
+  fcst_model = "exp1", 
+  fcst_type  = "eps",
+  parameter  = "s10m",
+  file_path  = here("data/FCTABLE") 
+) |> 
+  dplyr::select(fcst_dttm, valid_dttm, lead_time, SID, dplyr::contains("mbr"), units, dplyr::everything())
+```
+
+`read_point-forecast()` will be explained further in the [Point Verification Workflow tutorial](point-verif-workflow.qmd)
+
+### Lagged ensembles
+
+Many ensembles are generated with time lags with the goal of maximising the number of ensemble members while making most efficient use of computing resources. This means that output files for different members are produced for different forecast times. This creates a challenge in reading in the data using `read_forecast()`'s templating system. However, the `lags` argument allows you to specify which members have output files for which forecast times. This is done by having a vector that is the same length as the vector for `members` with the corresponding lag for each member.
+
+MEPS, the ensemble run by MetCoOp (a collaboration between MET Norway, SMHI and FMI) is one such example. It produces 5 ensemble members every hour, resulting in 15 independent members every 3 hours. If we take the 12:00 UTC 15 member ensemble as an example, the members are allocated as follows:
+
+| Time (UTC) | Members         |
+|------------|-----------------|
+| 12:00      | 0, 1, 2, 9, 12  |
+| 11:00      | 5, 6, 8, 11, 14 |
+| 10:00      | 3, 4, 7, 10, 13 |
+
+This means that the members at 11:00 UTC have a lag of 1 hour and those at 10:00 UTC have a lag of 2 hours.
+
+Rather than have to write the members and lags out as a vector, we can make a nested list of the lagging information and a function to generate those vectors.
+
+```{r meps-members}
+meps_mbrs <- list(
+  list(lag = 0, members = c(0, 1, 2, 9, 12)),
+  list(lag = 1, members = c(5, 6, 8, 11, 14)),
+  list(lag = 2, members = c(3, 4, 7, 10, 13))
+)
+
+get_mbrs <- function(x, mbr = "members") {
+  unlist(lapply(x, \(d) d[[mbr]]))
+}
+
+get_lags <- function(x, lag = "lag", mbr = "members") {
+  unlist(lapply(x, \(d) rep(d[[lag]], length(d[[mbr]]))))
+}
+
+get_mbrs(meps_mbrs)
+
+get_lags(meps_mbrs)
+```
+
+And now we can run `read_forecast()` for those lags and members
+
+```{r read-forecast-meps-lagged-no-eval, eval=FALSE}
+read_forecast(
+  dttm             = 2024021512, 
+  fcst_model       = "meps",
+  parameter        = "pcp",
+  lead_time        = 0, 
+  members          = get_mbrs(meps_mbrs),
+  lags             = get_lags(meps_mbrs),
+  file_path        = here("data/netcdf"), 
+  file_template    = "{fcst_model}_lagged/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR2}/{fcst_model}_sfc_{LDT2}_{YYYY}{MM}{DD}T{HH}Z.nc",
+  file_format_opts = netcdf_opts(ref_time_var = "forecast_reference_time"), 
+  return_data      = TRUE 
+)
+```
+
+```{r read-forecast-meps-lagged, echo=FALSE, message=FALSE, warning=FALSE}
+read_forecast(
+  dttm             = 2024021512, 
+  fcst_model       = "meps",
+  parameter        = "pcp",
+  lead_time        = 0, 
+  members          = get_mbrs(meps_mbrs),
+  lags             = get_lags(meps_mbrs),
+  file_path        = here("data/netcdf"), 
+  file_template    = "{fcst_model}_lagged/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR2}/{fcst_model}_sfc_{LDT2}_{YYYY}{MM}{DD}T{HH}Z.nc",
+  file_format_opts = netcdf_opts(ref_time_var = "forecast_reference_time"), 
+  return_data      = TRUE, 
+  show_progress    = FALSE 
+) |> 
+  dplyr::select(fcst_dttm, valid_dttm, lead_time, parameter, dplyr::contains("mbr"), units, dplyr::everything())
+```
+
+::: {.callout-note collapse="true"}
+## Errors and Warnings
+
+You may see warnings along the likes of `Ensemble members were requested for  'pcp' but there is no member information`. This occurs because the NetCDF files do not have an `ensemble_member` dimension since each file only contains one ensemble member.
+:::
+
+Since these 15 members are produced by MEPS every three hours, then to read more than one ensemble the value for `dttm` should have a 3 hour time step, This can be achieved by using `seq_dttm()` to generate a sequence of date-times as will be seen in the next example.
+
+::: callout-tip
+## **Tip**: Writing interpolated lagged forecasts to SQLite
+
+When writing lagged forecasts to SQLite files the members are not all collected together to form the full ensemble as was returned in the above example. Rather the members for each lag for the full ensemble are collected together in SQLite files for each date-time that contributes to the ensemble. This allows for more flexibility in constructing lagged ensembles from SQLite files and has implications for how you specify lags for `read_point_forecast()` as will be seen below.
+:::
+
+Here we will get the lagged ensemble for 2 forecasts 3 hours apart, interpolate the data to points and write the results to SQLite files.
+
+```{r read-write-forecast-meps-lagged-no-eval, eval=FALSE}
+read_forecast(
+  dttm             = seq_dttm(2024021509, 2024021512, "3h"), 
+  fcst_model       = "meps",
+  parameter        = "pcp",
+  lead_time        = seq(0, 6), 
+  members          = get_mbrs(meps_mbrs),
+  lags             = get_lags(meps_mbrs),
+  file_path        = here("data/netcdf"), 
+  file_template    = "{fcst_model}_lagged/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR2}/{fcst_model}_sfc_{LDT2}_{YYYY}{MM}{DD}T{HH}Z.nc",
+  file_format_opts = netcdf_opts(ref_time_var = "forecast_reference_time"), 
+  transformation   = "interpolate",
+  output_file_opts = fctable_opts(path = here("data/FCTABLE"))
+)
+```
+
+```{r read-write-forecast-meps-lagged, echo=FALSE, message=FALSE, warning=FALSE}
+read_forecast(
+  dttm             = seq_dttm(2024021509, 2024021512, "3h"), 
+  fcst_model       = "meps",
+  parameter        = "pcp",
+  lead_time        = seq(0, 6), 
+  members          = get_mbrs(meps_mbrs),
+  lags             = get_lags(meps_mbrs),
+  file_path        = here("data/netcdf"), 
+  file_template    = "{fcst_model}_lagged/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR2}/{fcst_model}_sfc_{LDT2}_{YYYY}{MM}{DD}T{HH}Z.nc",
+  file_format_opts = netcdf_opts(ref_time_var = "forecast_reference_time"), 
+  transformation   = "interpolate",
+  output_file_opts = fctable_opts(path = here("data/FCTABLE")),
+  show_progress    = FALSE 
+) 
+```
+
+When reading the data back with `read_point_forecast()`, we only need to provide the lags (here we have to specify that they are in hours), since all of the members are collected together for each lag.
+
+```{r read-point-lagged-no-eval, eval=FALSE}
+read_point_forecast(
+  dttm       = seq_dttm(2024021509, 2024021512, "3h"), 
+  fcst_model = "meps",
+  fcst_type  = "eps",
+  parameter  = "pcp",
+  lags       = paste0(seq(0, 2), "h"),
+  file_path  = here("data/FCTABLE") 
+)
+```
+
+```{r read-point-lagged, message=FALSE, echo=FALSE}
+read_point_forecast(
+  dttm       = seq_dttm(2024021509, 2024021512, "3h"), 
+  fcst_model = "meps",
+  fcst_type  = "eps",
+  parameter  = "pcp",
+  lags       = paste0(seq(0, 2), "h"),
+  file_path  = here("data/FCTABLE") 
+) |> 
+  dplyr::select(fcst_dttm, valid_dttm, lead_time, SID, dplyr::contains("mbr"), units, dplyr::everything())
+```
+
+Here the member column names do not include how much that member is lagged.
+
+Since the data are precipitation, we can return the accumulated precipitation for given accumulation periods. This is done by prefixing the parameter name with "Acc" and following it with the accumulation period. So, 3 hour accumulated precipitation would be "Accpcp3h". We can read any selection of stations by specifying their IDs (SID) in the `stations` argument.
+
+```{r read-point-lagged-acc3h-no-eval, eval=FALSE}
+read_point_forecast(
+  dttm       = seq_dttm(2024021509, 2024021512, "3h"), 
+  fcst_model = "meps",
+  fcst_type  = "eps",
+  parameter  = "Accpcp3h",
+  lags       = paste0(seq(0, 2), "h"),
+  stations   = c(1425, 1439), 
+  file_path  = here("data/FCTABLE") 
+)
+```
+
+```{r read-point-lagged-acc3h, message=FALSE, echo=FALSE, warning=FALSE}
+read_point_forecast(
+  dttm       = seq_dttm(2024021509, 2024021512, "3h"), 
+  fcst_model = "meps",
+  fcst_type  = "eps",
+  parameter  = "Accpcp3h",
+  lags       = paste0(seq(0, 2), "h"),
+  stations   = c(1425, 1439), 
+  file_path  = here("data/FCTABLE") 
+) |> 
+  dplyr::select(fcst_dttm, valid_dttm, lead_time, SID, dplyr::contains("mbr"), units, dplyr::everything())
+```
+
+In the next tutorial we will going through the workflow for doing point verification.
+
+::: grid
+::: g-col-1
+<a href=get-started.html><i class="bi bi-arrow-left-circle-fill"></i></a>
+:::
+
+::: g-col-10
+:::
+
+::: g-col-1
+<a href=point-verif-workflow.html><i class="bi bi-arrow-right-circle-fill"></i></a>
+:::
+:::

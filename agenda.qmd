@@ -1,0 +1,41 @@
+---
+title: Agenda
+---
+Each day will be split into a morning and afternoon session, with a tea / coffee 
+break in the middle of each session. 
+
+For the most part, instruction will be "code-along" sessions with the instructor
+with an opportunity to go through some of your own work and / or problems in the 
+second half of the week. 
+
+## Day 1: 4 March 2024
+### 13:30 - 17:00 
+#### [_Introduction and Getting started_](get-started.qmd)
+
+We will give a brief introduction to harp and R and
+
+#### [_Basic reading of data_](read-forecast.qmd)
+
+Andrew will introduce the `read_forecast()` function and go through reading data 
+in _Grib_, _NetCDF_ and _vfld_ formats. We will look at how to deal with complex 
+lagged forecasting systems and how to transform gridded data to geographic 
+point locations
+
+## Day 2: 5 March 2024
+### 09:00 - 12:30
+#### _Point Verifcation Workflow_
+
+Andrew will go through the workflow for verifying point forecasts. From basic 
+preparation of the observations, through to reading the forecasts and computing
+and plotting the verification scores. The complexity will be increased by 
+grouping the data with the `groupings` argument and adding conditions to the 
+verification
+
+### 13:30 - 17:00
+#### _Building a Verification Script_
+
+Andrew will build on the morning's work by converting our verification workflow 
+into a script that could be run in a production environment. We will cover how 
+to loop over different forecast parameters, how to deal with harp's non-standard 
+evaluation by embracing variables with `{{ }}` and then discuss some real uses 
+of harp point verification in an operational environment. 

@@ -1,0 +1,584 @@
+---
+title: Point Verifcation Workflow
+---
+
+## Workflow Steps
+
+When doing a point verification there are a number of steps to the workflow. Some of these steps you have to do every time, and others might depend on the forecast parameter being verified, the scores you want to compute, or any conditions that you want to apply to the verification. The compulsory steps can be described as:
+
+-   Read forecast
+-   Read observations
+-   Join
+-   Verify
+-   (Save / Plot)
+
+In this tutorial we will go through each of these steps in turn and then introduce some optional steps, increasing the complexity as we go. It is assumed that SQLite files for both forecasts and observations have been prepared.
+
+## Basic deterministic verification
+
+Here we will demonstrate the workflow for a simple deterministic verification of 2m temperature. The forecasts come from the AROME-Arctic model that is run operationally by MET Norway, and we will do the verification for August 2023.
+
+### Read forecast
+
+As always, the first thing we need to do is to attach the packages that we are going to need. There may be some unfamiliar packages here, but they will be explained as we begin to use functions from them.
+
+```{r attach-pkgs, message=FALSE}
+library(harp)
+library(here)
+library(dplyr)
+library(forcats)
+```
+
+All of our forecasts and observations use the same root directories so we'll set them here
+
+```{r fcst-obs-dirs}
+fcst_dir <- here("data", "FCTABLE")
+obs_dir  <- here("data", "OBSTABLE")
+```
+
+Forecasts are read in with `read_point_forecast()`. We will read in the 00:00 UTC forecasts for lead times 0 - 24 hours every 3 hours.
+
+```{r simple-read-pnt-fcst, message=FALSE}
+fcst <- read_point_forecast(
+  dttm       = seq_dttm(2023080100, 2023083100, "24h"),
+  fcst_model = "arome_arctic",
+  fcst_type  = "det",
+  parameter  = "T2m",
+  file_path  = fcst_dir
+)
+```
+
+### Read observations
+
+Observations are read in with `read_point_obs()`. Observations files often contain more times and locations than we have for the forecasts. Therefore, we can tell the the function which times and locations to read with the help of `unique_valid_dttm()` and `unique_station()`.
+
+```{r simple-read-pnt-obs, message=FALSE}
+obs <- read_point_obs(
+  dttm      = unique_valid_dttm(fcst),
+  parameter = "T2m",
+  stations  = unique_stations(fcst),
+  obs_path  = obs_dir 
+)
+```
+
+### Join
+
+Now that we have the forecasts and observations, we need to match the forecasts and observations to the same date-times and locations. We do this by joining the forecast and observations to each other using `join_to_fcst()`. Basically this is doing an inner join between the forecast and observations data frames with an extra check to make sure the forecast and observations data have the same units.
+
+```{r simple-join, message=FALSE}
+fcst <- join_to_fcst(fcst, obs)
+```
+
+### Verify
+
+We are now ready to verify. For deterministic forecasts this is done with `det_verify()`. By default the verification is stratified by lead time. All we need to tell the function is which column contains the observations. In this case, that would be "T2m".
+
+```{r simple-verif, message=FALSE}
+det_verify(fcst, T2m)
+```
+
+We can also compute categorical scores by adding some thresholds. This will compute scores for \>= threshold categories.
+
+```{r simple-verif-thresh, message=FALSE}
+det_verify(fcst, T2m, thresholds = seq(280, 290, 2.5))
+```
+
+### Save / Plot
+
+Once the verification is done we can save the data using `save_point_verif()` and plot the data using `plot_point_verif()`. For plotting we give the function the verification data and the score we want to plot. The scores are basically column names in any of the verification data's data frames.
+
+First we need to write the verification to a variable, and then save.
+
+```{r simple-verif-thresh-var, message=FALSE}
+verif <- det_verify(fcst, T2m, thresholds = seq(280, 290, 2.5))
+
+save_point_verif(verif, verif_path = here("data", "verification", "det"))
+```
+
+We can now plot some scores
+
+```{r simple-verif-plt, message=FALSE, warning=FALSE, fig.align='center'}
+plot_point_verif(verif, bias)
+
+plot_point_verif(verif, rmse)
+
+plot_point_verif(verif, frequency_bias)
+```
+
+The last plot looks strange. That's because the scores exist for each threshold and they are not being separated. We can separate them by mapping the colour to each threshold, by faceting by threshold (faceting means to separate into panels), or by filtering to a single threshold.
+
+```{r simple-verif-plt-col-fct, message=FALSE, warning=FALSE, fig.align='center'}
+plot_point_verif(verif, frequency_bias, colour_by = threshold)
+
+plot_point_verif(verif, frequency_bias, facet_by = vars(threshold))
+
+plot_point_verif(verif, frequency_bias, filter_by = vars(threshold == 285))
+```
+
+::: {.callout-note collapse="true"}
+## **Note**: `facet_by` and `filter_by` values must be wrapped in `vars()`
+
+This is because faceting and filtering can be done by more than one variable and the `vars()` function facilitates that.
+:::
+
+For hexbin plots, the plots are automatically faceted by the grouping variable of the verification - in this case lead time.
+
+```{r simple-verif-plt-hex-no-eval, warning=FALSE, eval=FALSE}
+plot_point_verif(verif, hexbin)
+```
+
+```{r simple-verif-plt-hex, warning=FALSE, fig.align='center', echo=FALSE}
+plot_point_verif(verif, hexbin, hex_colour = "transparent")
+```
+
+## Basic ensemble verification
+
+The workflow for verifying ensemble forecasts is much the same as that for deterministic verification. The only real difference is using the `ens_verify()` function to compute the score. In this example we will use data from the MEPS model for the same time period as before.
+
+```{r simple-ens-verif-read-fcst, message=FALSE}
+fcst <- read_point_forecast(
+  dttm       = seq_dttm(2023080100, 2023083100, "1d"),
+  fcst_model = "meps",
+  fcst_type  = "eps",
+  parameter  = "T2m", 
+  file_path  = fcst_dir 
+)
+
+obs <- read_point_obs(
+  dttm      = unique_valid_dttm(fcst),
+  parameter = "T2m",
+  stations  = unique_stations(fcst),
+  obs_path  = obs_dir 
+)
+
+fcst <- join_to_fcst(fcst, obs)
+```
+
+```{r simple-ens-verif-verify, message=FALSE}
+verif <- ens_verify(fcst, T2m, thresholds = seq(280, 290, 2.5))
+
+verif
+
+save_point_verif(verif, here("data", "verification", "ens"))
+```
+
+Since this is ensemble data, ensemble specific scores have been computed as well as deterministic summary scores for each member. There are a couple of scores that `plot_point_verif()` can derive that are not columns in the data frames - these are `spread_skill` and `brier_score_decomposition`.
+
+```{r ens-verif-plt, message=FALSE, warning=FALSE, fig.align='center'}
+plot_point_verif(verif, spread_skill)
+
+plot_point_verif(verif, crps)
+
+plot_point_verif(verif, brier_score, facet_by = vars(threshold))
+
+plot_point_verif(verif, brier_score_decomposition, facet_by = vars(threshold))
+
+plot_point_verif(verif, reliability, facet_by = vars(threshold))
+```
+
+Again the last one has issues with overplotting. This is because there should be one plot for each threshold and each grouping variable (in this case `lead_time`), so we need to filter.
+
+```{r ens-verif-plt-rel, message=FALSE, warning=FALSE, fig.align='center'}
+plot_point_verif(
+  verif, 
+  reliability, 
+  facet_by = vars(threshold),
+  filter_by = vars(lead_time == 12)
+)
+```
+
+## Comparing forecast models
+
+Verification scores are often useful for comparing the performance of different models, or model developments. With harp it is straightforward to compare different models - it is simply case of reading multiple forecasts in in one go. Here we are going to do a deterministic comparison of the AROME-Arctic model and member 0 of the MEPS and IFSENS ensembles. We need to read the ensemble and deterministic forecasts in separately due to the different `fcst_type` argument. When there are multiple forecast models, we get a `harp_list`, which works in the same way as a standard list in R. This means that when we read for the second time we can put the output in a named element of the `harp_list`
+
+```{r read-many-fcst, message=FALSE, warning=FALSE}
+fcst <- read_point_forecast(
+  dttm       = seq_dttm(2023080100, 2023083100, "1d"),
+  fcst_model = c("meps", "ifsens"),
+  fcst_type  = "eps",
+  parameter  = "T2m", 
+  members    = 0, 
+  file_path  = fcst_dir 
+) |> 
+  as_det()
+
+fcst$arome_arctic <- read_point_forecast(
+  dttm       = seq_dttm(2023080100, 2023083100, "1d"),
+  fcst_model = "arome_arctic",
+  fcst_type  = "det",
+  parameter  = "T2m", 
+  file_path  = fcst_dir 
+)
+
+fcst
+```
+
+When we have multiple forecast models we should ensure that we are comparing like with like. We therefore only want to verify the cases that are common to all of the forecast models. We can select these cases using `common_cases()`. Note the number of rows in each of the data frames before selecting the common cases above and after selecting the common cases below.
+
+```{r common-cases}
+fcst <- common_cases(fcst)
+
+fcst
+```
+
+The rest of the verification workflow is exactly the same.
+
+```{r common-cases-read-obs-and-join, message=FALSE}
+obs <- read_point_obs(
+  dttm      = unique_valid_dttm(fcst),
+  parameter = "T2m",
+  stations  = unique_stations(fcst),
+  obs_path  = obs_dir 
+)
+
+fcst <- join_to_fcst(fcst, obs)
+```
+
+```{r common-cases-verify, message=FALSE}
+verif <- det_verify(fcst, T2m , thresholds = seq(280, 290, 2.5))
+
+save_point_verif(verif, here("data", "verification", "det"))
+```
+
+When plotting the scores, each of the forecast models is automatically assigned a different colour.
+
+```{r common-cases-plt, fig.align='center'}
+plot_point_verif(verif, stde)
+```
+
+We could however plot each forecast model in a separate panel and assign, for example, threshold to control the colour.
+
+```{r common-cases-fct-model, warning=FALSE, fig.align='center'}
+plot_point_verif(
+  verif, 
+  frequency_bias, 
+  colour_by = threshold,
+  facet_by  = vars(fcst_model)
+)
+```
+
+## Grouped Verification and Scaling
+### Basic Grouping
+
+So far we have just done verification stratified by `lead_time`. We can use the `groupings` argument to tell the verification function how to group the data together to compute scores. The most common grouping after lead time would be to group by the forecast cycle. Rather than read in only the forecasts initialized at 00:00 UTC, we will read in the 12:00 UTC forecasts as well.
+
+```{r simple-grp-read-fcst, message=FALSE, warning=FALSE}
+fcst <- read_point_forecast(
+  dttm       = seq_dttm(2023080100, 2023083112, "12h"),
+  fcst_model = c("meps", "ifsens"),
+  fcst_type  = "eps",
+  parameter  = "T2m", 
+  members    = 0, 
+  file_path  = fcst_dir 
+) |> 
+  as_det()
+
+fcst$arome_arctic <- read_point_forecast(
+  dttm       = seq_dttm(2023080100, 2023083112, "12h"),
+  fcst_model = "arome_arctic",
+  fcst_type  = "det",
+  parameter  = "T2m", 
+  file_path  = fcst_dir 
+)
+
+fcst <- common_cases(fcst)
+```
+
+The forecasts are in Kelvin, but it may be more useful to have them in &deg;C. We can scale the data using `scale_param()`. At a minimum we need to give the function the scaling to apply and a new name for the units. By default the scaling is additive, but it can be made multiplicative by setting `mult = TRUE`. 
+
+```{r scale-fcst}
+fcst <- scale_param(fcst, -273.15, new_units = "degC")
+```
+
+Now we can read the observations and join to the forecast.
+
+```{r simple-grp-read-obs, message=FALSE}
+obs <- read_point_obs(
+  dttm      = unique_valid_dttm(fcst),
+  parameter = "T2m",
+  stations  = unique_stations(fcst),
+  obs_path  = obs_dir 
+)
+```
+
+```{r simple-grp-join-fail, error=TRUE}
+fcst <- join_to_fcst(fcst, obs)
+```
+
+Here the join fails because the forecasts and observations do not have the same units. We therefore also need to scale the observations with `scale_param()`. When scaling observations, the name of the observations column also needs to be provided. 
+
+```{r simple-grp-scale-obs-join, message=FALSE}
+obs <- scale_param(obs, -273.15, new_units = "degC", col = T2m)
+
+fcst <- join_to_fcst(fcst, obs)
+```
+
+Now we can verify. This time we will tell `det_verify()` that we want scores for each lead time and forecast cycle. 
+```{r simple-grp-verif, warning=FALSE, message=FALSE, fig.align='center'}
+verif <- det_verify(
+  fcst, 
+  T2m, 
+  thresholds = seq(10, 20, 2.5),
+  groupings  = c("lead_time", "fcst_cycle")  
+)
+
+plot_point_verif(verif, rmse, facet_by = vars(fcst_cycle))
+```
+
+We now have plots for each forecast cycle, but what if we also want the combined forecast cycles as well? There are two ways we could tackle that - firstly we could compute the verification with `groupings = "lead_time"` (i.e. the default) and bind the output to what we already have with `bind_point_verif()`.
+
+```{r simple-grp-bind, message=FALSE, warning=FALSE, fig.align='center'}
+verif <- bind_point_verif(
+  verif, 
+  det_verify(fcst, T2m, thresholds = seq(10, 20, 2.5))
+)
+
+plot_point_verif(verif, rmse, facet_by = vars(fcst_cycle))
+```
+
+### Grouping Lists
+
+An easier way would be to pass a list to `groupings`. Each element in the list is treated as a separate verification and then they are bound together at the end. 
+
+```{r simple-grp-list, message=FALSE, warning=FALSE, fig.align='center'}
+verif <- det_verify(
+  fcst, 
+  T2m, 
+  thresholds = seq(10, 20, 2.5),
+  groupings  = list(
+    "lead_time",
+    c("lead_time", "fcst_cycle")  
+  )
+)
+
+save_point_verif(verif, here("data", "verification", "det", "fcst-cycle"))
+
+plot_point_verif(verif, rmse, facet_by = vars(fcst_cycle))
+```
+
+::: {.callout-tip}
+## __Tip__: Controlling the order of facets
+Facets are plotted in alphabetical order if the faceting variable is a string or coerced into a string. This means that the facets can be in an unexpected order. The `fct_*()` functions from the _forcats_ package can be used to help reorder the facets. Quite often the order in which the values of the variable appear in the data is the order you want the facets to be in so `fct_inorder()` can be used to reorder the facets.
+:::
+
+```{r simple-grp-fct-inorder, warning=FALSE, fig.align='center'}
+plot_point_verif(verif, rmse, facet_by = vars(fct_inorder(fcst_cycle)))
+```
+
+### Complex Grouping Lists
+#### Adding a station characteristic
+
+It is often desirable to group stations together by common characteristics, whether that be location, whether it's on the coast or in the mountains or any other characteristic. __harp__ includes a built in data frame of station groups that can be joined to the forecast and used to group the verification. We can join the station groups using `join_to_fcst()` with `force = TRUE` since we don't want a check on common units between the data frames to be joined together. 
+
+```{r cmplx-grp-join, message=FALSE, warning=FALSE}
+fcst <- join_to_fcst(fcst, station_groups, force = TRUE)
+```
+
+This has added a `"station_group"` column to the forecast which we can use in the `groupings` argument. Now we want verification for each lead time for all forecast cycles and station groups; for each lead time and each forecast cycle for all station groups; for each lead time and each station group for all forecast cycles; and for each lead time for each station group for each forecast cycle. Therefore we need a list of 4 different groupings. 
+
+```{r cmplx-grp-verif, message=FALSE, warning=FALSE}
+verif <- det_verify(
+  fcst, 
+  T2m, 
+  thresholds = seq(10, 20, 2.5),
+  groupings  = list(
+    "lead_time",
+    c("lead_time", "fcst_cycle"),
+    c("lead_time", "station_group"),
+    c("lead_time", "fcst_cycle", "station_group")
+  ) 
+)
+
+save_point_verif(verif, here("data", "verification", "det", "stations"))
+```
+
+Plotting now becomes quite complicated as you have to do a lot of filtering and faceting. For example:
+```{r cmplx-grp-plt, message=FALSE, warning=FALSE, fig.align='center', fig.height=12}
+plot_point_verif(
+  verif, 
+  equitable_threat_score, 
+  facet_by  = vars(station_group),
+  filter_by = vars(grepl(";", fcst_cycle), threshold == 15) 
+)
+```
+
+You may have noticed the saving of each verification result into specific directories. This is so that they can be plotted using an interactive app that runs in a web browser. The app is made using _R Shiny_ so we refer to it as a Shiny app. `save_point_verif()` uses very specific file names that describe some of the information about the verification object, but the grouping strategy is not one of those pieces of information, hence the separate directories. The Shiny app will create dropdown menus allowing you to choose the group for which you want to see the scores. 
+
+You can start the shiny app with:
+```{r shiny-app, eval=FALSE}
+shiny_plot_point_verif(
+  start_dir           = here("data", "verification"),
+  full_dir_navigation = FALSE, 
+  theme               = "light"
+) 
+```
+
+::: {.callout-tip collapse=true}
+## __Tip__: Shiny App Options
+When you start the shiny app it is best to give it a directory to start from to aid navigation. By setting `full_dir_navigation = FALSE` the use of modal windows to navigate your directory system is disabled, and all directories below the start directory are searched for __harp__ point verification files and the _Select Verfication Directory_ dropdown is populated - this is experimental and may not give the smoothest ride, but is often less cumbersome than navigation by modal windows. Finally you can choose between "light", "dark" and "white" for the colour theme of the app (the default is "dark").
+:::
+
+### Changing the Time Axis
+
+You can also use the `groupings` argument to specify different time axes to use for the verification. So far we have used the lead time for the time axis. However we could also use the time of day to get the diurnal cycle, or simply get the scores for each date-time in the data set. In this example we will still group by the forecast cycle as well. To get the time of day, we first need to run `expand_date()` on the data to get a column for `"valid_hour"`. 
+
+```{r time-axis-verif, message=FALSE, warning=FALSE}
+fcst <- expand_date(fcst, valid_dttm)
+
+verif <- det_verify(
+  fcst, 
+  T2m, 
+  thresholds = seq(10, 20, 2.5),
+  groupings  = list(
+    "lead_time",
+    c("lead_time", "fcst_cycle"),
+    "valid_hour",
+    c("valid_hour", "fcst_cycle"),
+    "valid_dttm",
+    c("valid_dttm", "fcst_cycle")
+  ) 
+)
+```
+
+::: {.callout-note collapse=true}
+## __Note__: A necessary hack
+Since the data are 6 hourly there are only 4 valid hours in the data set. When there are fewer than five different values in group the verification functions separate them with a ";" in the group value when they are all together, otherwise they are labelled as "All". `plot_point_verif()` only searches for "All" when figuring out which data to get for each different x-axis.  
+:::
+
+We need to use `mutate_list()` in conjunction with `case_when()` from the _dplyr_ package to modify the `"valid_hour"` column where all valid 
+hours are collected together. `mutate_list()` use `mutate()` from the _dplyr_ package to modify columns of data frames in a list whilst retaining the attributes of the list. 
+
+```{r hack-forward-slash-bodge, message=FALSE}
+verif <- mutate_list(
+  verif, 
+  valid_hour = case_when(
+    grepl(";", valid_hour) ~ "All",
+    .default = valid_hour
+  )
+)
+
+save_point_verif(verif, here("data", "verification", "det", "fcst-cycle"))
+```
+
+We can now use the `x-axis` argument to `plot_point_verif()` to decide which times to use on the x-axis. 
+
+```{r plt-x-axis, warning=FALSE, fig.align='center'}
+plot_point_verif(verif, mae, facet_by = vars(fct_inorder(fcst_cycle)))
+
+plot_point_verif(
+  verif, 
+  mae, 
+  x_axis   = valid_hour, 
+  facet_by = vars(fct_inorder(fcst_cycle))
+)
+
+plot_point_verif(
+  verif, 
+  mae, 
+  x_axis     = valid_dttm, 
+  facet_by   = vars(fct_inorder(fcst_cycle)),
+  point_size = 0 
+)
+
+```
+
+## Vertical Profiles
+
+Another application where grouping is important in the verification of vertical profiles. In general the workflow is once again the same, but there are some aspects where you need to take into account that the data are on vertical levels. 
+
+The first difference is that when reading in the data, you need to tell the read function what vertical coordinate the data are on via the `vertical_coordinate` argument. In most cases the data will be on pressure levels, but they could also be on height levels or model levels. 
+
+The data we are using here come from the AROME-Arctic model and the control member of MEPS, which at MET Norway is archived as MEPS_det (i.e. MEPS deterministic). There are forecasts available every 6 hours at 00-, 06-, 12- and 18-UTC. 
+
+```{r vrt-prf-read-fcst, message=FALSE, warning=FALSE}
+fcst <- read_point_forecast(
+  dttm                = seq_dttm(2023080100, 2023083118, "6h"),
+  fcst_model          = c("meps", "arome_arctic"),
+  fcst_type           = "det",
+  parameter           = "T",
+  file_path           = fcst_dir,
+  vertical_coordinate = "pressure"
+) |> 
+  scale_param(-273.15, "degC")
+```
+
+When finding the common cases, the default behaviour is to compare the `"fcst_dttm"`, `"lead_time"` and `"SID"` columns. When finding common cases for vertical profiles we also need to make sure that only the vertical levels that are common to all forecast models are included in the verification. We do this by adding the pressure column (`p`) to `common_cases()`.
+
+```{r vrt-prf-common-cases}
+fcst <- common_cases(fcst, p)
+```
+
+Similar to reading the forecasts, we also need to tell `read_point_obs` that the vertical coordinate is pressure. 
+
+```{r vrt-prf-read-obs, message=FALSE}
+obs <- read_point_obs(
+  dttm                = unique_valid_dttm(fcst),
+  parameter           = "T", 
+  stations            = unique_stations(fcst),
+  obs_path            = obs_dir,
+  vertical_coordinate = "pressure"
+) |> 
+  scale_param(-273.15, "degC", col = T)
+```
+
+Joining works exactly the same as for single level variables. 
+
+```{r vrt-prf-join, message=FALSE}
+fcst <- join_to_fcst(fcst, obs)
+```
+
+Now we can verify, making sure that we have `"p"` as one of the grouping variables. 
+
+```{r vrt-prf-verif, message=FALSE}
+verif <- det_verify(
+  fcst, 
+  T, 
+  groupings = list(
+    c("lead_time", "p"),
+    c("lead_time", "p", "fcst_cycle")
+  )
+)
+
+save_point_verif(
+  verif, 
+  here("data", "verification", "det", "fcst-cycle")
+)
+```
+
+We can now plot the profile verification using `plot_profile_verif()` making sure to filter and facet appropriately (for example, there is one profile for each lead time). 
+
+```{r vrt-prf-plt, warning=FALSE, fig.align='center', fig.height=10}
+plot_profile_verif(
+  verif, 
+  mae, 
+  filter_by = vars(grepl(";", fcst_cycle)),
+  facet_by  = vars(lead_time)
+)
+```
+
+We could also make a plot for a single vertical level in the normal way. We may also want to remove times when there are very few cases. 
+
+```{r vrt-prf-one-lvl-plt, warning=FALSE, fig.align='center'}
+plot_point_verif(
+  verif, 
+  bias, 
+  filter_by = vars(p == 925, num_cases > 5),
+  facet_by  = vars(fct_inorder(fcst_cycle)) 
+)
+```
+
+
+## Conditional Verification
+
+::: grid
+::: g-col-1
+<a href=read-forecast.html><i class="bi bi-arrow-left-circle-fill"></i></a>
+:::
+
+::: g-col-10
+:::
+
+::: g-col-1
+<a href=build-verif-script.html><i class="bi bi-arrow-right-circle-fill"></i></a>
+:::
+:::

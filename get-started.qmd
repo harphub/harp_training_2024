@@ -1,0 +1,136 @@
+---
+title: Getting started
+---
+
+## Prerequisites
+
+[**harp**](https://harphub.github.io/harp/) is a set of *R* packages. You will therefore need [*R*](https://cran.r-project.org/) to be installed.
+
+We will be running the course using [*RStudio*](https://posit.co/download/rstudio-desktop/) as our IDE as it provides many useful features for working in *R*.
+
+If you are unable to install *R* or *RStudio*, another solution may be to work with *RStudio* on [*Posit Cloud*](https://posit.co/products/cloud/cloud/). However, it should be noted that the free tier limits RAM to 1 GB, which may not be sufficient to follow all of the training course.
+
+You will also need the following system libraries
+
+-   libproj-dev
+-   libeccodes-dev
+-   libnetcdf-dev
+
+::: {.callout-note collapse="true"}
+## More information about these system libraries
+
+-   *libproj-dev* is essential to install **harp**. It provides the functionality for doing geographic transformations.
+-   *libeccodes-dev* is ECMWF's *eccodes* library. It powers the **Rgrib2** package that enables reading of GRIB files.
+-   *libnetcdf-dev* is used to enable reading of NetCDF files.
+
+The system libraries for reading GRIB and NetCDF files are not essential for installing harp as these features are optional.
+:::
+
+## Installation
+
+The **harp** packages are stored on [Github](https://github.com/harphub) under the *harphub* area. This means that to install harp you will need the `remotes` package. `remotes` is an official *R* package. All official *R* packages can be installed from the official repository of R packages, *CRAN*, using the `install.packages()` function.
+
+```{r install-remotes, eval=FALSE}
+install.packages("remotes")
+```
+
+When we want to use functions from a package, we attach that package using `library()`
+
+```{r attach-remotes, eval=FALSE}
+library(remotes)
+```
+
+We can now use the `install_github()` function to install **harp**.
+
+```{r install-harp, eval=FALSE}
+install_github("harphub/harp")
+```
+
+```{r tooltip, echo=FALSE}
+tt <- function(x, y) {
+  paste0('<a href="#" data-toggle="tooltip" title="',y,'">',x,'</a>')
+}
+```
+
+This will likely take some time (possibly around 30 minutes) as **harp** needs to compile and install a large number of `r tt("dependencies", "We hope to reduce the number of dependencies in future releases")`.
+
+::: {.callout-tip collapse="true"}
+## Tip: Get a Github PAT
+
+Github can sometimes throttle downloads, which may cause harp to fail to install. One solution is to wait for an hour and continue the installation, but it makes things much easier if you have a Github PAT (Personal Access Token).
+
+To get a Github PAT, you first need to register for an account at [Github](https://www.github.com). Once you have an account, follow the instructions [here](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens#creating-a-personal-access-token-classic) to generate a personal access token. Make sure to copy your token to the clipboard and then paste it into the file `$HOME/.Renviron` like this:
+
+```         
+GITHUB_PAT=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+but using your own Github PAT. Make sure that this file ends with a new line and restart R for the PAT to be recognised.
+:::
+
+## Setting up a project
+
+We are going to work in a clean directory that will be used as a root directory for all of the work we do during this course.
+
+In *RStudio*:
+
+-   Click File \> New Project
+-   Click on New Directory and then on New Project
+-   Give the project a name under Directory name (e.g. harp-training-2024)
+-   Choose where the directory you want your project to be under
+-   Click on Create Project
+
+The first thing we will do is install the `here` package, which will enable us to refer to all directories in the project relative to its top level directory.
+
+```{r install-here, eval=FALSE}
+install.packages("here")
+library(here)
+```
+
+::: {.callout-note collapse="true"}
+## Click for setting up a project outside of *RStudio*
+
+In *R* create your project directory and navigate to it, e.g.
+
+```{r project-dir, eval=FALSE}
+dir.create("/path/to/my/project/harp-training-2024")
+setwd("/path/to/my/project/harp-training-2024")
+```
+
+Note that you may need to set `recursive = TRUE` in `dir.create()` if there is more than the last directory in the tree doesn't exist.
+
+Next install the `here` package and set the project root as the current directory.
+
+```{r set-here, eval=FALSE}
+install.packages("here")
+library(here)
+set_here()
+```
+:::
+
+## Data
+
+We are now almost ready to start practising with **harp**. We just need some data to work with. First let's create a directory to keep our data.
+
+```{r data-directory, eval=FALSE}
+dir.create(here("data"))
+```
+
+The data we are going to be used can be downloaded from ... Copy the data into your new data directory and unpack it using
+
+```{r, eval=FALSE}
+system("tar -zxvf bla.tgz")
+```
+
+::: {.grid}
+
+:::: {.g-col-11}
+
+::::
+
+:::: {.g-col-1}
+<a href=read-forecast.html><i class="bi bi-arrow-right-circle-fill"></i></a>
+::::
+
+:::
+

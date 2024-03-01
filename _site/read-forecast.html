@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>harp Dublin 2024 - Reading forecast data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">harp Dublin 2024</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./agenda.html" rel="" target="">
+ <span class="menu-text">Agenda</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-lessons" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Lessons</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-lessons">    
+        <li>
+    <a class="dropdown-item" href="./get-started.html" rel="" target="">
+ <span class="dropdown-text">Getting started</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./read-forecast.html" rel="" target="">
+ <span class="dropdown-text">Reading forecast data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./point-verif-workflow.html" rel="" target="">
+ <span class="dropdown-text">Point Verifcation Workflow</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#read_grid" id="toc-read_grid" class="nav-link active" data-scroll-target="#read_grid"><code>read_grid()</code></a>
+  <ul class="collapse">
+  <li><a href="#basic-usage" id="toc-basic-usage" class="nav-link" data-scroll-target="#basic-usage">Basic Usage</a></li>
+  <li><a href="#parameter-names" id="toc-parameter-names" class="nav-link" data-scroll-target="#parameter-names">Parameter names</a></li>
+  <li><a href="#other-file-formats" id="toc-other-file-formats" class="nav-link" data-scroll-target="#other-file-formats">Other file formats</a></li>
+  <li><a href="#multiple-geofields-for-one-parameter" id="toc-multiple-geofields-for-one-parameter" class="nav-link" data-scroll-target="#multiple-geofields-for-one-parameter">Multiple <code>geofield</code>s for one parameter</a></li>
+  <li><a href="#file-format-options" id="toc-file-format-options" class="nav-link" data-scroll-target="#file-format-options">File format options</a></li>
+  </ul></li>
+  <li><a href="#read_forecast" id="toc-read_forecast" class="nav-link" data-scroll-target="#read_forecast"><code>read_forecast()</code></a>
+  <ul class="collapse">
+  <li><a href="#file-name-templates" id="toc-file-name-templates" class="nav-link" data-scroll-target="#file-name-templates">File Name Templates</a></li>
+  <li><a href="#data-classes" id="toc-data-classes" class="nav-link" data-scroll-target="#data-classes">Data classes</a></li>
+  <li><a href="#geographic-transformations" id="toc-geographic-transformations" class="nav-link" data-scroll-target="#geographic-transformations">Geographic transformations</a></li>
+  <li><a href="#lagged-ensembles" id="toc-lagged-ensembles" class="nav-link" data-scroll-target="#lagged-ensembles">Lagged ensembles</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Reading forecast data</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p>In this section you will learn how to use <code>read_grid()</code>, <code>read_forecast()</code> and <code>read_analysis()</code> to read gridded data from files of various formats.</p>
+<p>Before we begin, make sure that you are in your project directory for the training course and attach the packages that we are going to need.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(harp)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You should have copied the data for the course into your data directory. If not, follow the instructions <a href="get-started.html#data">here</a>.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Important</strong>: Helper packages
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>In order to read some file formats, specific packages are required. These can be installed as follows:</p>
+<p><em>Rgrib2</em> <code>remotes::install_github("harphub/Rgrib2")</code></p>
+<p><em>ncdf4</em> <code>install.packages("ncdf4")</code></p>
+<p><em>Rfa</em> <code>remotes::install_github("harphub/Rfa")</code></p>
+</div>
+</div>
+</div>
+<section id="read_grid" class="level2">
+<h2 class="anchored" data-anchor-id="read_grid"><code>read_grid()</code></h2>
+<section id="basic-usage" class="level3">
+<h3 class="anchored" data-anchor-id="basic-usage">Basic Usage</h3>
+<p><code>read_grid()</code> is used to read data from a single file. You give it the file name and the parameter you want to read as well as other options to describe the data you want to read and the output.</p>
+<p>Let’s begin by reading 2m temperature from a grib file.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_grid</span>(<span class="fu">here</span>(<span class="st">"data/grib/exp1/mbr001/fc2022071012+000grib2_fp"</span>), <span class="st">"t2m"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>eidb : Temperature  
+Time:
+ 2022/07/10 12:00 +0
+Domain summary:
+161 x 211 domain
+Projection summary:
+proj= lcc 
+NE = ( 13.73206 , 57.99135 )
+SW = ( 7.971006 , 53.08321 )
+Data summary:
+286.6064 289.4569 290.5917 290.6924 292.0204 300.3515 </code></pre>
+</div>
+</div>
+<p>The output of <code>read_grid()</code> is an object with a class of <code>geofield</code>. A <code>geofield</code> is a 2d array with information about the grid dimensions and its co-ordinate reference system. More about this later. When printing a <code>geofield</code> to the screen, some information about the domain is shown as well as a summary of the data. The values are the minimum, the first quartile, the median, the mean, the third quartile and the maximum of the data in the <code>geofield</code>.</p>
+</section>
+<section id="parameter-names" class="level3">
+<h3 class="anchored" data-anchor-id="parameter-names">Parameter names</h3>
+<p>The second argument to <code>read_grid()</code> is the name of the parameter to read. Here we use <code>"t2m"</code>, which is the parameter name that <strong>harp</strong> uses for 2m temperature. You can see all of the parameter names used by harp with <code>show_param_defs()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_param_defs</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 61 × 2
+   name          description                                                    
+   &lt;chr&gt;         &lt;chr&gt;                                                          
+ 1 accpcp12h     12-hour accumulated precipitation                              
+ 2 accpcp1h      1-hour accumulated precipitation                               
+ 3 accpcp24h     24-hour accumulated precipitation                              
+ 4 accpcp3h      3-hour accumulated precipitation                               
+ 5 accpcp6h      6-hour accumulated precipitation                               
+ 6 caf           Cloud area fraction at vertical levels                         
+ 7 cape          Convective available potential energy                          
+ 8 cbase         Height of cloud base                                           
+ 9 cc_below_7500 Cloud cover below 7500m                                        
+10 cchigh        High level cloud cover                                         
+11 cclow         Low level cloud cover                                          
+12 ccmed         Medium level cloud cover                                       
+13 cctot         Total integrated cloud cover                                   
+14 cin           Convective inhibition                                          
+15 d             Wind direction                                                 
+16 d10m          Wind direction at 10m above the ground                         
+17 g             Wind gust                                                      
+18 g10m          Wind gust at 10m above the ground                              
+19 gh            Geopotential height                                            
+20 gmax          Maximum wind gust at 10m above the ground                      
+21 lsm           land-sea mask                                                  
+22 pcp           Accumulated precipitaion                                       
+23 pmsl          Air pressure at mean sea level                                 
+24 pressure      Atmospheric air pressure                                       
+25 psfc          Surface air pressure                                           
+26 q             Specific humidity of air                                       
+27 q2m           Specific humidity of air at 2m above the ground                
+28 rh            Relative humidity of air                                       
+29 rh2m          Relative humidity of air at 2m above the ground                
+30 s             Wind speed                                                     
+31 s10m          Wind speed at 10m above the ground                             
+32 sea_ice       Sea ice concentration                                          
+33 sfc_geo       Surface geopotential                                           
+34 smax          Maximum wind speed at 10m above the ground                     
+35 snow          Snow depth                                                     
+36 sst           Sea surface temperature                                        
+37 t             Air temperature                                                
+38 t0m           Skin temperature                                               
+39 t2m           Air temperature at 2m above the ground                         
+40 td            Dew point temperature                                          
+41 td2m          Dew point temperature at 2m above the ground                   
+42 tmax          Maximum air temperature at 2m above the ground                 
+43 tmin          Minimum air temperature at 2m above the ground                 
+44 topo          Height of topography above sea level                           
+45 u             Wind speed in u direction                                      
+46 u10m          Wind speed in u direction at 10m above the ground              
+47 ugust         Wind gust in U direction                                       
+48 ugust10m      Wind gust at 10m above the ground in U direction               
+49 v             Wind speed in v direction                                      
+50 v10m          Wind speed in v direction at 10m above the ground              
+51 vgust         Wind gust in V direction                                       
+52 vgust10m      Wind gust at 10m above the ground in V direction               
+53 vis           Visibility in air                                              
+54 w             Vertical (upward) wind speed                                   
+55 wd            Wind direction calculated from U and V winds                   
+56 wd10m         Wind direction at 10m above the ground calculated from U and V…
+57 wg            Wind gust calculated from U and V gusts                        
+58 wg10m         Wind gust at 10m above the ground calculated from U gust and V…
+59 ws            Wind speed calculated from U and V winds                       
+60 ws10m         Wind speed at 10m above the ground calculated from U and V win…
+61 z             Geopotential                                                   </code></pre>
+</div>
+</div>
+<p>You can see how <strong>harp</strong> translates the parameter name for a particular file format with <code>get_param_def()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_param_def</span>(<span class="st">"t2m"</span>, <span class="st">"grib"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$name
+[1] "2t" "t" 
+
+$level_type
+[1] "heightAboveGround" "surface"          
+
+$level
+[1] 2</code></pre>
+</div>
+</div>
+<p>You can see that with <code>parameter = "t2m"</code> <strong>harp</strong> will get the grib message with a shortName of <code>t</code> or <code>2t</code> with a levelType of <code>heightAboveGround</code> or <code>surface</code>.</p>
+</section>
+<section id="other-file-formats" class="level3">
+<h3 class="anchored" data-anchor-id="other-file-formats">Other file formats</h3>
+<p><em>harp</em> has built in functionality to read <em>Grib</em>, <em>NetCDF</em>, <em>FA</em> and <em>vfld</em>, <em>vobs</em> and <em>obsoul</em> files. Note that although the latter three do not contain gridded data, they can still be read by <code>read_grid()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_grid</span>(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/netcdf/meps_lagged/2024/02/15/07/mbr03/meps_sfc_24_20240215T07Z.nc"</span>),</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"pcp"</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> : pcp kg/m^2 
+Time:
+ 2024/02/16 07:00
+Domain summary:
+201 x 201 domain
+Projection summary:
+proj= lcc 
+NE = ( 13.82773 , 62.55298 )
+SW = ( 5.582523 , 57.69936 )
+Data summary:
+1.470703 9.265625 13.08203 15.30311 19.65625 63.47949 </code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Tip</strong>: <em>vfld</em> files need a <code>lead_time</code> argument
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><em>vfld</em> files do not include enough metadata to get the lead time from the contents of the files. Therefore you need to give <code>read_grid()</code> the lead time in order to fully populate the output. You wouldn’t normally read <em>vfld</em> files directly with <code>read_grid()</code>, but would use <a href="read-forecast.html#read_forecast"><code>read_forecast()</code></a> instead.</p>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_grid</span>(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/vfld/MEPS_preop/vfldMEPS_preopmbr000202402190003"</span>), </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"T2m"</span>, </span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time =</span> <span class="dv">3</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2,083 × 9
+     SID   lat   lon model_elevation parameter station_data members lead_time
+   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;           &lt;dbl&gt; &lt;chr&gt;            &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+ 1  1001  70.9 -8.67             9   T2m               273.      NA         3
+ 2  1010  69.3 16.1              4.7 T2m               275.      NA         3
+ 3  1014  69.2 17.9             46.4 T2m               272.      NA         3
+ 4  1015  69.6 17.8              0.6 T2m               274.      NA         3
+ 5  1018  69.2 16.0            153.  T2m               273.      NA         3
+ 6  1021  70.0 18.7             24.4 T2m               275.      NA         3
+ 7  1022  70.0 18.7             24.4 T2m               275.      NA         3
+ 8  1023  69.1 18.5             66.2 T2m               271.      NA         3
+ 9  1025  69.7 18.9              3.9 T2m               272.      NA         3
+10  1026  69.7 18.9              1.3 T2m               272.      NA         3
+# ℹ 2,073 more rows
+# ℹ 1 more variable: units &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>Since <em>vfld</em> files contain point data, the output is a data frame with columns for other metadata. The data are in the <code>station_data</code> column.</p>
+</section>
+<section id="multiple-geofields-for-one-parameter" class="level3">
+<h3 class="anchored" data-anchor-id="multiple-geofields-for-one-parameter">Multiple <code>geofield</code>s for one parameter</h3>
+<p>Files can contain multiple entries for a single parameter. For example a file could contain multiple lead times, multiple ensemble members, multiple vertical levels, or any combination of these. When many entries for a single parameter exist, a <code>geolist</code> is returned.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_grid</span>(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/netcdf/arome_arctic/2024/02/19/arome_arctic_2_5km_20240219T12Z.nc"</span>),</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"t2m"</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;harp_geolist[13]&gt;
+ [[1]] &lt;numeric geofield [200 x 200] Min = 257.195 Max = 277.968 Mean = 270.880&gt;
+ [[2]] &lt;numeric geofield [200 x 200] Min = 257.907 Max = 278.076 Mean = 270.867&gt;
+ [[3]] &lt;numeric geofield [200 x 200] Min = 257.632 Max = 278.233 Mean = 270.622&gt;
+ [[4]] &lt;numeric geofield [200 x 200] Min = 256.557 Max = 278.322 Mean = 270.353&gt;
+ [[5]] &lt;numeric geofield [200 x 200] Min = 255.851 Max = 278.176 Mean = 270.146&gt;
+ [[6]] &lt;numeric geofield [200 x 200] Min = 254.634 Max = 278.187 Mean = 269.967&gt;
+ [[7]] &lt;numeric geofield [200 x 200] Min = 253.723 Max = 278.262 Mean = 269.810&gt;
+ [[8]] &lt;numeric geofield [200 x 200] Min = 253.297 Max = 278.318 Mean = 269.667&gt;
+ [[9]] &lt;numeric geofield [200 x 200] Min = 252.770 Max = 278.224 Mean = 269.533&gt;
+[[10]] &lt;numeric geofield [200 x 200] Min = 252.329 Max = 277.918 Mean = 269.387&gt;
+# 3 more geofields
+# Use `print(n = ...)` to see more</code></pre>
+</div>
+</div>
+<p>A <code>geolist</code> is simply a list of <code>geofield</code>s that are on the same domain. To get more metadata about each <code>geofield</code> you can set <code>data_frame = TRUE</code> to get the output in the form of a data frame.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_grid</span>(</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/netcdf/arome_arctic/2024/02/19/arome_arctic_2_5km_20240219T12Z.nc"</span>),</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"t2m"</span>,</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_frame =</span> <span class="cn">TRUE</span></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 8
+   fcst_dttm           valid_dttm          lead_time gridded_data units
+   &lt;dttm&gt;              &lt;dttm&gt;                  &lt;dbl&gt;    &lt;geolist&gt; &lt;chr&gt;
+ 1 2024-02-19 12:00:00 2024-02-19 12:00:00         0  [200 × 200] K    
+ 2 2024-02-19 12:00:00 2024-02-19 13:00:00         1  [200 × 200] K    
+ 3 2024-02-19 12:00:00 2024-02-19 14:00:00         2  [200 × 200] K    
+ 4 2024-02-19 12:00:00 2024-02-19 15:00:00         3  [200 × 200] K    
+ 5 2024-02-19 12:00:00 2024-02-19 16:00:00         4  [200 × 200] K    
+ 6 2024-02-19 12:00:00 2024-02-19 17:00:00         5  [200 × 200] K    
+ 7 2024-02-19 12:00:00 2024-02-19 18:00:00         6  [200 × 200] K    
+ 8 2024-02-19 12:00:00 2024-02-19 19:00:00         7  [200 × 200] K    
+ 9 2024-02-19 12:00:00 2024-02-19 20:00:00         8  [200 × 200] K    
+10 2024-02-19 12:00:00 2024-02-19 21:00:00         9  [200 × 200] K    
+11 2024-02-19 12:00:00 2024-02-19 22:00:00        10  [200 × 200] K    
+12 2024-02-19 12:00:00 2024-02-19 23:00:00        11  [200 × 200] K    
+13 2024-02-19 12:00:00 2024-02-20 00:00:00        12  [200 × 200] K    
+# ℹ 3 more variables: parameter &lt;chr&gt;, level_type &lt;chr&gt;, level &lt;dbl&gt;</code></pre>
+</div>
+</div>
+<p>Other arguments to <code>read_grid()</code> allow you to specify which <code>geofield</code>s for a parameter to get from the file. For example, to get lead times of 6 and 12 hours you would do this:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_grid</span>(</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/netcdf/arome_arctic/2024/02/19/arome_arctic_2_5km_20240219T12Z.nc"</span>),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"t2m"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time  =</span> <span class="fu">c</span>(<span class="dv">6</span>, <span class="dv">12</span>),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">data_frame =</span> <span class="cn">TRUE</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 8
+  fcst_dttm           valid_dttm          lead_time gridded_data units parameter
+  &lt;dttm&gt;              &lt;dttm&gt;                  &lt;dbl&gt;    &lt;geolist&gt; &lt;chr&gt; &lt;chr&gt;    
+1 2024-02-19 12:00:00 2024-02-19 18:00:00         6  [200 × 200] K     t2m      
+2 2024-02-19 12:00:00 2024-02-20 00:00:00        12  [200 × 200] K     t2m      
+# ℹ 2 more variables: level_type &lt;chr&gt;, level &lt;dbl&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="file-format-options" class="level3">
+<h3 class="anchored" data-anchor-id="file-format-options">File format options</h3>
+<section id="grib" class="level4">
+<h4 class="anchored" data-anchor-id="grib">Grib</h4>
+<p>Sometimes there isn’t sufficient information in the file, or the defaults are incorrect. Take, for example, a grib2 file that uses non standard parameter numbers for total precipitation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_grid</span>(</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/grib/exp1/mbr001/fc2022071012+006grib2_fp"</span>), </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"pcp"</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Parameter "pcp" (shortName: "tp", typeOfLevel: "heightAboveGround" /
+"surface" for level(s) 0) not found in grib file.</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error: None of the requested data could be read from grib file: /home/andrewts/R-projects/harp_training_2024/data/grib/exp1/mbr001/fc2022071012+006grib2_fp</code></pre>
+</div>
+</div>
+<p>We see that it is looking for a parameter with shortName <code>"tp"</code>, but cannot find it. Yet we know the file contains total precipitation. If you have access to the grib tables used to encode this grib file you can look up the correct information to get the data. In this case total precipitation uses the grib2 parameterNumber 8.</p>
+<p>Options for the file format are passed through the <code>file_format_opts</code> argument, and those options can be generated with helper functions for the file format. For grib files those options can be generated by <code>grib_opts()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">grib_opts</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$meta
+[1] TRUE
+
+$multi
+[1] FALSE
+
+$param_find
+NULL
+
+$level_find
+NULL
+
+$step_find
+NULL</code></pre>
+</div>
+</div>
+<p>Here, one of the arguments is <code>param_find</code> and we use that in conjunction with the <code>use_grib_*()</code> function <code>use_grib_parameterNumber()</code>. The <code>param_find</code> argument takes a named list, with the name the same as the parameter so that it knows which parameter to which to apply those options.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_grid</span>(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/grib/exp1/mbr001/fc2022071012+006grib2_fp"</span>), </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"pcp"</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_format_opts =</span> <span class="fu">grib_opts</span>(</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">param_find =</span> <span class="fu">list</span>(<span class="at">pcp =</span> <span class="fu">use_grib_parameterNumber</span>(<span class="dv">8</span>))</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>eidb : Total precipitation  
+Time:
+ 2022/07/10 12:00 +0
+Domain summary:
+161 x 211 domain
+Projection summary:
+proj= lcc 
+NE = ( 13.73206 , 57.99135 )
+SW = ( 7.971006 , 53.08321 )
+Data summary:
+0 0 0 0.0005843104 0 0.07226562 </code></pre>
+</div>
+</div>
+</section>
+<section id="netcdf" class="level4">
+<h4 class="anchored" data-anchor-id="netcdf">NetCDF</h4>
+<p>Reading NetCDF files with <strong>harp</strong> used to require the user to always specify the names of the dimensions and the projection variable in the file. This has improved in recent versions, and as shown above you can often read from NetCDF files without providing extra options. However, in some cases you still have to pass some information about the content of the file. This happens when the x and y dimensions are not named “x” and “y”, and/or the projection is not a lambert projection. Additionally if the data are stored in reverse order this must be specified. An example of this is would be forecasts from a global model like ECMWF’s IFS.</p>
+<p>In the below example, we tell the function that the x and y dimensions are “longitude” and “latitude”, the projection variable is “projection_regular_ll” and that the data are stored in reverse order in the y dimension (north - south as opposed to south - north).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_grid</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data/netcdf/ifsens/ifsens_20240219T000000Z.nc"</span>), </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"t2m"</span>,</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time        =</span> <span class="dv">6</span>,</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">members          =</span> <span class="dv">0</span>,</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_format_opts =</span> <span class="fu">netcdf_opts</span>(</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">x_dim     =</span> <span class="st">"longitude"</span>,</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">y_dim     =</span> <span class="st">"latitude"</span>,</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y_rev     =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">proj4_var =</span> <span class="st">"projection_regular_ll"</span></span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> : t2m K 
+Time:
+ 2024/02/19 00:00
+Domain summary:
+81 x 80 domain
+Projection summary:
+proj= longlat 
+NE = ( -4 , 57.9 )
+SW = ( -12 , 50 )
+Data summary:
+276.9579 281.7704 283.1766 282.7288 283.8329 285.3329 </code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="read_forecast" class="level2">
+<h2 class="anchored" data-anchor-id="read_forecast"><code>read_forecast()</code></h2>
+<p><code>read_grid()</code> is used to read data from a single file. In many cases, you will need to read data from multiple files. This is where <code>read_forecast()</code> comes in.</p>
+<p><code>read_forecast()</code> takes at a minimum the date-times you want to read, the name of the forecast model to give to the data, the parameter you want to read, the path of the files and a file template. Taking the first file we read in this tutorial, <code>here("data/grib/exp1/mbr001/fc2022071012+000grib2_fp")</code>, we can read the same data using <code>read_forecast()</code> with the following expression:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_forecast</span>(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm          =</span> <span class="dv">2022071012</span>,</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model    =</span> <span class="st">"exp1"</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter     =</span> <span class="st">"t2m"</span>,</span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time     =</span> <span class="dv">0</span>,</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members       =</span> <span class="dv">1</span>,</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path     =</span> <span class="fu">here</span>(<span class="st">"data/grib"</span>),</span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template =</span> <span class="st">"{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp"</span>,</span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">return_data   =</span> <span class="cn">TRUE</span> </span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>::ensemble gridded forecast:: # A tibble: 1 × 11
+  fcst_dttm           valid_dttm          lead_time parameter exp1_mbr001
+  &lt;dttm&gt;              &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;       &lt;geolist&gt;
+1 2022-07-10 12:00:00 2022-07-10 12:00:00         0 t2m       [161 × 211]
+# ℹ 6 more variables: fcst_model &lt;chr&gt;, step_range &lt;chr&gt;, level_type &lt;chr&gt;,
+#   level &lt;int&gt;, units &lt;chr&gt;, fcst_cycle &lt;chr&gt;</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Tip</strong>: You need to tell <code>read_forecast()</code> to return data
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>One of the primary functions of <code>read_forecast()</code> is to process large volumes of data to interpolate to points and write these interpolated data to new files. Such an operation would often lead to running out of memory if the data were returned to the global environment so the default behaviour is to not return any data. Therefore, if you want the data returned to your global environment, you must set <code>return_data = TRUE</code>. Note that this default behaviour is under review and may be changed in future versions.</p>
+</div>
+</div>
+</div>
+<section id="file-name-templates" class="level3">
+<h3 class="anchored" data-anchor-id="file-name-templates">File Name Templates</h3>
+<p>In the above example, the file names are generated by replacing everything that is inside braces with <em>dynamic</em> data. That is to say, values that can change depending on the date-time, the lead time, the ensemble member and the name of the forecast model. We refer to the embraced values as substitutions, and the available substitutions are listed below:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Substitution</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>{YYYY}</code></td>
+<td>4 digit year</td>
+</tr>
+<tr class="even">
+<td><code>{MM}</code></td>
+<td>2 digit month with leading zeros</td>
+</tr>
+<tr class="odd">
+<td><code>{M}</code></td>
+<td>Single digit month</td>
+</tr>
+<tr class="even">
+<td><code>{DD}</code></td>
+<td>2 digit day with leading zeros</td>
+</tr>
+<tr class="odd">
+<td><code>{D}</code></td>
+<td>Single digit day</td>
+</tr>
+<tr class="even">
+<td><code>{HH}</code></td>
+<td>2 digit hour with leading zeros</td>
+</tr>
+<tr class="odd">
+<td><code>{H}</code></td>
+<td>Single digit hour</td>
+</tr>
+<tr class="even">
+<td><code>{mm}</code></td>
+<td>2 digit minute with leading zeros</td>
+</tr>
+<tr class="odd">
+<td><code>{m}</code></td>
+<td>Single digit minute</td>
+</tr>
+<tr class="even">
+<td><code>{LDTx}</code></td>
+<td>Lead time</td>
+</tr>
+<tr class="odd">
+<td><code>{MBRx}</code></td>
+<td>Ensemble member</td>
+</tr>
+</tbody>
+</table>
+<p>In the above table, the substitutions <code>{LDTx}</code> and <code>{MBRx}</code> have an optional number of digits to use, where smaller values use leading zeros. The <code>x</code> should be replaced by the number of digits that the file name uses. Leaving off a value for <code>x</code> means that no leading zeros are used.</p>
+<p>Getting the file template correct can often be quite a trying process, so <strong>harp</strong> includes some built in templates that can be seen with <code>show_file_templates()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_file_templates</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 34 × 2
+   template_name          template                                              
+   &lt;chr&gt;                  &lt;chr&gt;                                                 
+ 1 arome_arctic_extracted /lustre/storeB/immutable/archive/projects/metproducti…
+ 2 arome_arctic_full      /lustre/storeB/immutable/archive/projects/metproducti…
+ 3 arome_arctic_sfx       /lustre/storeB/immutable/archive/projects/metproducti…
+ 4 fctable                {file_path}/{fcst_model}/{YYYY}/{MM}/FCTABLE_{paramet…
+ 5 fctable_det            {file_path}/{det_model}/{YYYY}/{MM}/FCTABLE_{paramete…
+ 6 fctable_eps            {file_path}/{eps_model}/{YYYY}/{MM}/FCTABLE_{paramete…
+ 7 fctable_eps_all_cycles {file_path}/{eps_model}/{YYYY}/{MM}/FCTABLE_{paramete…
+ 8 fctable_eps_all_leads  {file_path}/{eps_model}/{YYYY}/{MM}/FCTABLE_{paramete…
+ 9 glameps_grib           {file_path}/{eps_model}/{sub_model}/{YYYY}/{MM}/{DD}/…
+10 harmoneps_grib         {file_path}/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR3}/fc{YYYY}{…
+11 harmoneps_grib_fp      {file_path}/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR3}/fc{YYYY}{…
+12 harmoneps_grib_sfx     {file_path}/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR3}/fc{YYYY}{…
+13 harmonie_grib          {file_path}/{YYYY}/{MM}/{DD}/{HH}/fc{YYYY}{MM}{DD}{HH…
+14 harmonie_grib_fp       {file_path}/{YYYY}/{MM}/{DD}/{HH}/fc{YYYY}{MM}{DD}{HH…
+15 harmonie_grib_sfx      {file_path}/{YYYY}/{MM}/{DD}/{HH}/fc{YYYY}{MM}{DD}{HH…
+16 meps_cntrl_extracted   /lustre/storeB/immutable/archive/projects/metproducti…
+17 meps_cntrl_sfx         /lustre/storeB/immutable/archive/projects/metproducti…
+18 meps_det               /lustre/storeB/immutable/archive/projects/metproducti…
+19 meps_extracted         /lustre/storeB/immutable/archive/projects/metproducti…
+20 meps_full              /lustre/storeB/immutable/archive/projects/metproducti…
+21 meps_lagged_6h_subset  /lustre/storeB/immutable/archive/projects/metproducti…
+22 meps_sfx               /lustre/storeB/immutable/archive/projects/metproducti…
+23 meps_subset            /lustre/storeB/immutable/archive/projects/metproducti…
+24 obsoul                 {file_path}/obsoul_1_xxxxxy_{country}_{YYYY}{MM}{DD}{…
+25 obstable               {file_path}/OBSTABLE_{YYYY}.sqlite                    
+26 vfld                   {file_path}/{fcst_model}/vfld{fcst_model}{YYYY}{MM}{D…
+27 vfld_det               {file_path}/{det_model}/vfld{det_model}{YYYY}{MM}{DD}…
+28 vfld_det_noexp         {file_path}/{det_model}/vfld{YYYY}{MM}{DD}{HH}{LDT2}  
+29 vfld_eps               {file_path}/{sub_model}/vfld{sub_model}mbr{MBR3}{YYYY…
+30 vfld_eps_noexp         {file_path}/{sub_model}/vfldmbr{MBR3}{YYYY}{MM}{DD}{H…
+31 vfld_multimodel        {file_path}/{sub_model}/vfld{sub_model}mbr{MBR3}{YYYY…
+32 vfld_multimodel_noexp  {file_path}/{sub_model}/vfldmbr{MBR3}{YYYY}{MM}{DD}{H…
+33 vfld_noexp             {file_path}/{fcst_model}/vfldmbr{MBR3}{YYYY}{MM}{DD}{…
+34 vobs                   {file_path}/vobs{YYYY}{MM}{DD}{HH}                    </code></pre>
+</div>
+</div>
+<p>Often the templates are a bit long to be seen on screen so a single template can be shown by selecting the number for that template.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">show_file_templates</span>(<span class="dv">29</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+template_name:
+ vfld_eps 
+ 
+template:
+ {file_path}/{sub_model}/vfld{sub_model}mbr{MBR3}{YYYY}{MM}{DD}{HH}{LDT2} </code></pre>
+</div>
+</div>
+<p>This means we can, for example, read an ensemble <em>vfld</em> file with the <code>"vfld_eps"</code> template. Here we are setting <code>parameter = NULL</code>to read all parameters from the <em>vfld</em> file (this is only an option for <em>vfld</em> files).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_forecast</span>(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm          =</span> <span class="dv">2024021900</span>,</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model    =</span> <span class="st">"MEPS_preop"</span>,</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter     =</span> <span class="cn">NULL</span>,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time     =</span> <span class="dv">3</span>,</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members       =</span> <span class="dv">0</span>,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path     =</span> <span class="fu">here</span>(<span class="st">"data/vfld"</span>),</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template =</span> <span class="st">"vfld_eps"</span>,</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">return_data   =</span> <span class="cn">TRUE</span> </span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>::ensemble point forecast:: # A tibble: 80,746 × 12
+   fcst_dttm           lead_time parameter   SID MEPS_preop_mbr000 units
+   &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt;             &lt;dbl&gt; &lt;chr&gt;
+ 1 2024-02-19 00:00:00         3 CCtot      1001                 8 oktas
+ 2 2024-02-19 00:00:00         3 CCtot      1010                 8 oktas
+ 3 2024-02-19 00:00:00         3 CCtot      1014                 8 oktas
+ 4 2024-02-19 00:00:00         3 CCtot      1015                 8 oktas
+ 5 2024-02-19 00:00:00         3 CCtot      1018                 8 oktas
+ 6 2024-02-19 00:00:00         3 CCtot      1021                 8 oktas
+ 7 2024-02-19 00:00:00         3 CCtot      1022                 8 oktas
+ 8 2024-02-19 00:00:00         3 CCtot      1023                 7 oktas
+ 9 2024-02-19 00:00:00         3 CCtot      1025                 8 oktas
+10 2024-02-19 00:00:00         3 CCtot      1026                 8 oktas
+# ℹ 80,736 more rows
+# ℹ 6 more variables: fcst_model &lt;chr&gt;, lat &lt;dbl&gt;, lon &lt;dbl&gt;, p &lt;dbl&gt;,
+#   valid_dttm &lt;dttm&gt;, fcst_cycle &lt;chr&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="data-classes" class="level3">
+<h3 class="anchored" data-anchor-id="data-classes">Data classes</h3>
+<p>Unlike <code>read_grid()</code>, <code>read_forecast()</code> always returns a data frame. These data frames have a <code>harp_df</code> class and then an attempt is made to assign a subclass depending on the data. In the above examples you will see one output shown as</p>
+<p><span class="harp-class">::ensemble gridded forecast::</span></p>
+<p>and the other as</p>
+<p><span class="harp-class">::ensemble point forecast::</span></p>
+<p>This means that the function has recognised that these are ensemble gridded forecasts and ensemble point forecasts and assigned the appropriate sub classes. Since in both of these cases only one ensemble member has been read in, they can be converted to deterministic forecasts using <code>as_det()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_forecast</span>(</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm          =</span> <span class="dv">2024021900</span>,</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model    =</span> <span class="st">"MEPS_preop"</span>,</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter     =</span> <span class="cn">NULL</span>,</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time     =</span> <span class="dv">3</span>,</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members       =</span> <span class="dv">0</span>,</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path     =</span> <span class="fu">here</span>(<span class="st">"data/vfld"</span>),</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template =</span> <span class="st">"vfld_eps"</span>,</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">return_data   =</span> <span class="cn">TRUE</span> </span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_det</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>::deterministic point forecast:: # A tibble: 80,746 × 12
+   fcst_dttm           lead_time parameter   SID  fcst units fcst_model   lat
+   &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;     &lt;int&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt;      &lt;dbl&gt;
+ 1 2024-02-19 00:00:00         3 CCtot      1001     8 oktas MEPS_preop  70.9
+ 2 2024-02-19 00:00:00         3 CCtot      1010     8 oktas MEPS_preop  69.3
+ 3 2024-02-19 00:00:00         3 CCtot      1014     8 oktas MEPS_preop  69.2
+ 4 2024-02-19 00:00:00         3 CCtot      1015     8 oktas MEPS_preop  69.6
+ 5 2024-02-19 00:00:00         3 CCtot      1018     8 oktas MEPS_preop  69.2
+ 6 2024-02-19 00:00:00         3 CCtot      1021     8 oktas MEPS_preop  70.0
+ 7 2024-02-19 00:00:00         3 CCtot      1022     8 oktas MEPS_preop  70.0
+ 8 2024-02-19 00:00:00         3 CCtot      1023     7 oktas MEPS_preop  69.1
+ 9 2024-02-19 00:00:00         3 CCtot      1025     8 oktas MEPS_preop  69.7
+10 2024-02-19 00:00:00         3 CCtot      1026     8 oktas MEPS_preop  69.7
+# ℹ 80,736 more rows
+# ℹ 4 more variables: lon &lt;dbl&gt;, p &lt;dbl&gt;, valid_dttm &lt;dttm&gt;, fcst_cycle &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>The output is now labelled as <span class="harp-class">::deterministic point forecast::</span> and the data column is now simply <code>fcst</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Tip</strong>: <code>|&gt;</code> The pipe operator
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In the above we also use R’s pipe operator <code>|&gt;</code>. The pipe operator takes the result of the function that comes before it and passes it to the function that comes after it as the first argument. It can be thought of as “and then” or “and send to”.</p>
+</div>
+</div>
+<p>While the <code>harp_df</code> classes may not be something you need to know much about, many functions in <strong>harp</strong> rely on these classes in order to know what to do with the data.</p>
+<p>Any data frame can be converted to a <code>harp_df</code> data frame as long as it has a <code>valid_dttm</code> column. That is to say a column that contains the valid date time for each row of data. Deterministic data frames are initially recognised by having a column name that ends with “_det” and ensemble columns are recognised by column names that end with “_mbrXXX”, where XXX is a 3 digit member number with leading zeros.</p>
+<p>To demonstrate we can use some columns from <strong>harp</strong>’s built in test data to construct a data frame and give it a harp class using <code>as_harp_df()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>point_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_dttm  =</span> det_point_df<span class="sc">$</span>fcst_dttm[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">valid_dttm =</span> det_point_df<span class="sc">$</span>valid_dttm[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time  =</span> det_point_df<span class="sc">$</span>lead_time[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">SID        =</span> det_point_df<span class="sc">$</span>SID[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>],</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">point_det  =</span> det_point_df<span class="sc">$</span>fcst[<span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>]</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb37-8"><a href="#cb37-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb37-9"><a href="#cb37-9" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(point_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "data.frame"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>point_df <span class="ot">&lt;-</span> <span class="fu">as_harp_df</span>(point_df)</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(point_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "harp_det_point_df" "harp_point_df"     "harp_df"          
+[4] "tbl_df"            "tbl"               "data.frame"       </code></pre>
+</div>
+</div>
+<p>The <code>harp_df</code> class and subclasses can be removed with <code>deharp()</code>. This can be important as a small number functions that take simple data frames will not work with <code>harp_df</code> data frames.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(<span class="fu">deharp</span>(point_df))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+</div>
+</section>
+<section id="geographic-transformations" class="level3">
+<h3 class="anchored" data-anchor-id="geographic-transformations">Geographic transformations</h3>
+<p><code>read_forecast()</code> and <code>read_grid()</code> have the ability to perform geographic transformations on the data at read time. These transformations include interpolating to point locations, regridding to another grid, taking a subset of a grid or pulling out a line section through a grid to create cross sections. Here we will concentrate on the interpolation to point locations, <code>transformation = "interpolate"</code></p>
+<section id="interpolation-to-geographic-point-locations" class="level4">
+<h4 class="anchored" data-anchor-id="interpolation-to-geographic-point-locations">Interpolation to geographic point locations</h4>
+<p>When selecting a transformation, there is an accompanying <code>transformation_opts</code> argument to pass the options for that transformation. Each transformation has a function that generates those options - in the case of the “interpolate” transformation, that is <code>interpolate_opts()</code>, which has a number of default options.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">interpolate_opts</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>No stations specified. Using default stations: 'station_list'</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$stations
+# A tibble: 13,417 × 5
+     SID   lat   lon  elev name         
+   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;        
+ 1  1001  70.9 -8.67   9.4 JAN MAYEN    
+ 2  1002  80.1 16.2    8   VERLEGENHUKEN
+ 3  1003  77   15.5   11.1 HORNSUND     
+ 4  1004  78.9 11.9    8   NY-ALESUND II
+ 5  1006  78.3 22.8   14   EDGEOYA      
+ 6  1007  78.9 11.9    7.7 NY-ALESUND   
+ 7  1008  78.2 15.5   26.8 SVALBARD AP  
+ 8  1009  80.7 25.0    5   KARL XII OYA 
+ 9  1010  69.3 16.1   13.1 ANDOYA       
+10  1011  80.1 31.5   10   KVITOYA      
+# ℹ 13,407 more rows
+
+$method
+[1] "nearest"
+
+$correct_t2m
+[1] TRUE
+
+$keep_model_t2m
+[1] FALSE
+
+$lapse_rate
+[1] 0.0065
+
+$clim_file
+NULL
+
+$clim_file_format
+NULL
+
+$clim_file_opts
+NULL
+
+$clim_param
+[1] "sfc_geo"
+
+$use_mask
+[1] FALSE
+
+$weights
+NULL
+
+$keep_raw_data
+[1] FALSE</code></pre>
+</div>
+</div>
+<p>The most important information for the “interpolate” transformation is the locations to which to interpolate the data. This is provided in the <code>stations</code> argument, and by default <strong>harp</strong>’s built in list of meteorological stations, <code>station_list</code> is used. If not using the default, <code>stations</code> needs to be a data frame with the following columns:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Column name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>SID</td>
+<td>A unique identifier for the location</td>
+</tr>
+<tr class="even">
+<td>lat</td>
+<td>The latitude of the location in decimal degrees</td>
+</tr>
+<tr class="odd">
+<td>lon</td>
+<td>The longitude of the location in decimal degrees</td>
+</tr>
+<tr class="even">
+<td>elev*</td>
+<td>The elevation of the location in meters</td>
+</tr>
+<tr class="odd">
+<td>name*</td>
+<td>A name for the location</td>
+</tr>
+</tbody>
+</table>
+<p>Column names marked with * are optional.</p>
+<p>For a first example we will read in exp1 10m wind speed (“S10m”) for lead times 0 - 3 hours, and members 1 -3, and interpolate to the the default stations (in this case we do not need to set anything for <code>transformation_opts</code> as we will use the defaults).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_forecast</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm           =</span> <span class="dv">2022071012</span>,</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model     =</span> <span class="st">"exp1"</span>,</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter      =</span> <span class="st">"s10m"</span>,</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time      =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3</span>),</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members        =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">3</span>),</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path      =</span> <span class="fu">here</span>(<span class="st">"data/grib"</span>),</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template  =</span> <span class="st">"{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp"</span>,</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation =</span> <span class="st">"interpolate"</span>,</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">return_data    =</span> <span class="cn">TRUE</span> </span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: 'transformation_opts' not set for transformation = 'interpolate'.
+Using default interpolate_opts()</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Parameter "sfc_geo" (shortName: "z", typeOfLevel: "heightAboveGround"
+/ "surface" for level(s) 0) not found in grib file.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Error : None of the requested data could be read from grib file: /home/andrewts/R-projects/harp_training_2024/data/grib/exp1/mbr001/fc2022071012+000grib2_fp</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>::ensemble point forecast:: # A tibble: 628 × 16
+   fcst_dttm           valid_dttm          lead_time   SID exp1_mbr001
+   &lt;dttm&gt;              &lt;dttm&gt;                  &lt;dbl&gt; &lt;int&gt;       &lt;dbl&gt;
+ 1 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2512        5.29
+ 2 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2513        4.98
+ 3 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2516        4.96
+ 4 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2517        4.28
+ 5 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2518        5.92
+ 6 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2526        5.84
+ 7 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2527        5.85
+ 8 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2531        3.90
+ 9 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2536        5.45
+10 2022-07-10 12:00:00 2022-07-10 12:00:00         0  2539        5.42
+# ℹ 618 more rows
+# ℹ 11 more variables: exp1_mbr002 &lt;dbl&gt;, exp1_mbr003 &lt;dbl&gt;, units &lt;chr&gt;,
+#   fcst_model &lt;chr&gt;, parameter &lt;chr&gt;, step_range &lt;chr&gt;, level_type &lt;chr&gt;,
+#   level &lt;int&gt;, lat &lt;dbl&gt;, lon &lt;dbl&gt;, fcst_cycle &lt;chr&gt;</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Note</strong>: Warnings and errors
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Interpolation weights need to be computed from one of the fields in the file. By default it tries to get these from the surface geopotential. If surface geopotential is not found in the file a warning and error are thrown, but it simply continues to compute the interpolation weights from the first parameter to be read. It’s nothing to worry about!</p>
+</div>
+</div>
+</div>
+<p>It is also possible to interpolate to any point location (as long as it exists inside the domain - in this case over Denmark) with a data frame to be sent to the <code>stations</code> argument. In this case, we will also use bilinear interpolation (the default is nearest neighbour).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>my_stations <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">SID =</span> <span class="fu">c</span>(<span class="st">"CPH"</span>, <span class="st">"AAR"</span>),</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">lon =</span> <span class="fu">c</span>(<span class="fl">12.64</span>, <span class="fl">10.62</span>),</span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">lat =</span> <span class="fu">c</span>(<span class="fl">55.61</span>, <span class="fl">56.31</span>)</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Tip: Station IDs (SID) do not have to be numbers
+</div>
+</div>
+<div class="callout-body-container callout-body">
+
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_forecast</span>(</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="dv">2022071012</span>,</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model          =</span> <span class="st">"exp1"</span>,</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"s10m"</span>,</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time           =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3</span>),</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members             =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">3</span>),</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path           =</span> <span class="fu">here</span>(<span class="st">"data/grib"</span>),</span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template       =</span> <span class="st">"{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp"</span>,</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation      =</span> <span class="st">"interpolate"</span>,</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation_opts =</span> <span class="fu">interpolate_opts</span>(</span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">stations =</span> my_stations,</span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">method   =</span> <span class="st">"bilinear"</span></span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">return_data         =</span> <span class="cn">TRUE</span> </span>
+<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: No 'elev' column found in stations, and correct_t2m = TRUE. Setting
+correct_t2m = FALSE</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Parameter "sfc_geo" (shortName: "z", typeOfLevel: "heightAboveGround"
+/ "surface" for level(s) 0) not found in grib file.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Error : None of the requested data could be read from grib file: /home/andrewts/R-projects/harp_training_2024/data/grib/exp1/mbr001/fc2022071012+000grib2_fp</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>::ensemble point forecast:: # A tibble: 8 × 16
+  fcst_dttm           valid_dttm          lead_time SID   exp1_mbr001
+  &lt;dttm&gt;              &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;       &lt;dbl&gt;
+1 2022-07-10 12:00:00 2022-07-10 12:00:00         0 CPH          6.23
+2 2022-07-10 12:00:00 2022-07-10 12:00:00         0 AAR          8.32
+3 2022-07-10 12:00:00 2022-07-10 13:00:00         1 CPH          6.65
+4 2022-07-10 12:00:00 2022-07-10 13:00:00         1 AAR          8.36
+5 2022-07-10 12:00:00 2022-07-10 14:00:00         2 CPH          6.73
+6 2022-07-10 12:00:00 2022-07-10 14:00:00         2 AAR          8.14
+7 2022-07-10 12:00:00 2022-07-10 15:00:00         3 CPH          6.93
+8 2022-07-10 12:00:00 2022-07-10 15:00:00         3 AAR          7.94
+# ℹ 11 more variables: exp1_mbr002 &lt;dbl&gt;, exp1_mbr003 &lt;dbl&gt;, units &lt;chr&gt;,
+#   fcst_model &lt;chr&gt;, parameter &lt;chr&gt;, step_range &lt;chr&gt;, level_type &lt;chr&gt;,
+#   level &lt;int&gt;, lat &lt;dbl&gt;, lon &lt;dbl&gt;, fcst_cycle &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>Once the data are interpolated they can be output to files in SQLite format. SQLite files allow the data to be filtered and read much more quickly for further use, for example in verification. This is done with the argument <code>output_file_opts</code> and the options can be set with <code>fctable_opts()</code>, with the most important of those options being the path to which to write the files.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_forecast</span>(</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="dv">2022071012</span>,</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model          =</span> <span class="st">"exp1"</span>,</span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"s10m"</span>,</span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time           =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">3</span>),</span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members             =</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">3</span>),</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path           =</span> <span class="fu">here</span>(<span class="st">"data/grib"</span>),</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template       =</span> <span class="st">"{fcst_model}/mbr{MBR3}/fc{YYYY}{MM}{DD}{HH}+{LDT3}grib2_fp"</span>,</span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation      =</span> <span class="st">"interpolate"</span>,</span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation_opts =</span> <span class="fu">interpolate_opts</span>(</span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">stations =</span> my_stations,</span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">method   =</span> <span class="st">"bilinear"</span></span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_file_opts =</span> <span class="fu">fctable_opts</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data/FCTABLE"</span>))</span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: No 'elev' column found in stations, and correct_t2m = TRUE. Setting
+correct_t2m = FALSE</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Parameter "sfc_geo" (shortName: "z", typeOfLevel: "heightAboveGround"
+/ "surface" for level(s) 0) not found in grib file.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Error : None of the requested data could be read from grib file: /home/andrewts/R-projects/harp_training_2024/data/grib/exp1/mbr001/fc2022071012+000grib2_fp</code></pre>
+</div>
+</div>
+<p>When interpolating 2m temperature to geographic point locations an attempt is made to correct the temperature at the topographic height in the model to the actual topographic heights of the geographic point locations. This is done using a simple lapse rate conversion of 0.0065 K.m<sup>-1</sup>, although this can be set in <code>interpolate_opts()</code>. In order for this correction to happen, the <code>stations</code> data frame needs to have an “elev” column that has the contains the elevation of the station in meters. Furthermore, there needs to be information about the model elevation. By default the model elevation is inferred from the surface geopotential (“sfc_geo”), but it can be set to topographic elevation by setting the <code>clim_param</code> argument to <code>interpolate_opts()</code> to “topo”. This information about model elevation can be in the same file as the forecast, or in a separate file, the path to which can be set in the <code>clim_file</code> argument to <code>interpolate_opts()</code>.</p>
+<p>In the following example, the surface geopotential is in the same file as the forecast, but it requires different options to read the NetCDF variable (there is no time dimension), which we can use <code>modify_opts()</code> to modify the existing options. Since we need to set <code>clim_file_opts</code>, as things stand this means we also have to populate the <code>clim_file</code> argument. Since we are going to use the file format options repeatedly, it makes sense to write them to a variable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>ifsens_fmt_opts <span class="ot">&lt;-</span> <span class="fu">netcdf_opts</span>(</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_dim     =</span> <span class="st">"longitude"</span>, </span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_dim     =</span> <span class="st">"latitude"</span>,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">y_rev     =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">proj4_var =</span> <span class="st">"projection_regular_ll"</span></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>First we will read the height corrected 2m temperature</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>t2m <span class="ot">&lt;-</span> <span class="fu">read_forecast</span>(</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="dv">2024021900</span>,</span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model          =</span> <span class="st">"ifsens"</span>,</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"t2m"</span>,</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time           =</span> <span class="dv">0</span>,</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members             =</span> <span class="dv">0</span>,</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path           =</span> <span class="fu">here</span>(<span class="st">"data/netcdf"</span>),</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template       =</span> <span class="st">"{fcst_model}/{fcst_model}_{YYYY}{MM}{DD}T{HH}{mm}00Z.nc"</span>,</span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_format_opts    =</span> ifsens_fmt_opts,</span>
+<span id="cb62-10"><a href="#cb62-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation      =</span> <span class="st">"interpolate"</span>,</span>
+<span id="cb62-11"><a href="#cb62-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation_opts =</span> <span class="fu">interpolate_opts</span>(</span>
+<span id="cb62-12"><a href="#cb62-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">clim_file      =</span> <span class="fu">here</span>(<span class="st">"data/netcdf/ifsens/ifsens_20240219T000000Z.nc"</span>),</span>
+<span id="cb62-13"><a href="#cb62-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">clim_file_opts =</span> <span class="fu">modify_opts</span>(ifsens_fmt_opts, <span class="at">time_var =</span> <span class="cn">NA</span>)</span>
+<span id="cb62-14"><a href="#cb62-14" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb62-15"><a href="#cb62-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">return_data         =</span> <span class="cn">TRUE</span></span>
+<span id="cb62-16"><a href="#cb62-16" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And now the uncorrected, by setting <code>correct_t2m = FALSE</code> in <code>interpolate_opts()</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>t2m_uncorrected <span class="ot">&lt;-</span> <span class="fu">read_forecast</span>(</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="dv">2024021900</span>,</span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model          =</span> <span class="st">"ifsens"</span>,</span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"t2m"</span>,</span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time           =</span> <span class="dv">0</span>,</span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members             =</span> <span class="dv">0</span>,</span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path           =</span> <span class="fu">here</span>(<span class="st">"data/netcdf"</span>),</span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template       =</span> <span class="st">"{fcst_model}/{fcst_model}_{YYYY}{MM}{DD}T{HH}{mm}00Z.nc"</span>,</span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_format_opts    =</span> ifsens_fmt_opts,</span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation      =</span> <span class="st">"interpolate"</span>,</span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation_opts =</span> <span class="fu">interpolate_opts</span>(<span class="at">correct_t2m =</span> <span class="cn">FALSE</span>),</span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">return_data         =</span> <span class="cn">TRUE</span></span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Error in nc_id[["var"]][[nc_param]][["dim"]][[idx]] : 
+  attempt to select less than one element in get1index</code></pre>
+</div>
+</div>
+<p>And we can then compare the impact of the temperature correction.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>t2m<span class="sc">$</span>ifsens_mbr000 <span class="sc">-</span> t2m_uncorrected<span class="sc">$</span>ifsens_mbr000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  0.1458409286  0.0414019990 -0.3619363903  1.3419084521  0.1547063988
+ [6]  0.0507633395  0.4325378796 -3.9913955694 -0.1321044335 -4.7310049222
+[11]  1.4207357056  1.5684432188  1.9425989706  1.4803179003  0.3218133717
+[16] -0.0740768766  0.5275350526  0.4473404526  1.9519767322  0.5423946145
+[21]  0.5653087660  0.3477330038 -0.1038059902  0.9476696306  0.5350001595
+[26] -0.5841755696 -0.5483523687  0.2738574474 -0.2281737633  0.1697904205
+[31] -1.4340309741 -0.4900098497  0.6684409930 -0.2920713961 -0.1685245416
+[36]  0.0447920530 -0.0175268444 -0.3850984770  0.6235608309 -0.0081554177
+[41] -0.0016554177  0.0040337500  0.0945613069 -0.1910567042 -0.3376315915
+[46] -0.1266898831 -0.0464718076  0.2549739661  0.7939446467  0.1764446467
+[51]  0.2554832418  0.5228946145 -0.0522917743  0.2616012528  0.3904855446
+[56] -0.3578620560  0.0427422151  0.1355783016  0.0090695662 -0.3385631367
+[61]  0.1972646904  0.4642036200  0.0509845927  0.1260929935  0.6516448525
+[66] -0.0276085632 -0.0617536552  0.4499873715 -0.6436678067 -0.1589722066
+[71]  0.2974116092 -0.0125245416 -0.1436168226 -0.0905580551 -0.0002582609
+[76]  0.2583546686 -0.4707912983 -0.0034010500  0.1112770795 -0.8161154717
+[81] -0.0619781631  0.1267503825  0.1419074795 -0.1062954280</code></pre>
+</div>
+</div>
+</section>
+<section id="reading-sqlite-files" class="level4">
+<h4 class="anchored" data-anchor-id="reading-sqlite-files">Reading SQLite files</h4>
+<p>Once SQLite files have been written by <code>read_forecast()</code>, they can then be read using <code>read_point_forecast()</code>, which works in much the same way as <code>read_forecast()</code>. The main difference is that you have to specify whether you are reading ensemble (“eps”) or deterministic (“det”) forecasts via the <code>fcst_type</code> argument.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_point_forecast</span>(</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="dv">2022071012</span>,</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="st">"exp1"</span>, </span>
+<span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"s10m"</span>,</span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> <span class="fu">here</span>(<span class="st">"data/FCTABLE"</span>) </span>
+<span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>::ensemble point forecast:: # A tibble: 4 × 12
+  fcst_dttm           valid_dttm          lead_time SID   exp1_mbr001
+  &lt;dttm&gt;              &lt;dttm&gt;                  &lt;int&gt; &lt;chr&gt;       &lt;dbl&gt;
+1 2022-07-10 12:00:00 2022-07-10 12:00:00         0 AAR          8.32
+2 2022-07-10 12:00:00 2022-07-10 12:00:00         0 CPH          6.23
+3 2022-07-10 12:00:00 2022-07-10 15:00:00         3 AAR          7.94
+4 2022-07-10 12:00:00 2022-07-10 15:00:00         3 CPH          6.93
+# ℹ 7 more variables: exp1_mbr002 &lt;dbl&gt;, exp1_mbr003 &lt;dbl&gt;, units &lt;chr&gt;,
+#   fcst_model &lt;chr&gt;, parameter &lt;chr&gt;, z &lt;int&gt;, fcst_cycle &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p><code>read_point-forecast()</code> will be explained further in the <a href="./point-verif-workflow.html">Point Verification Workflow tutorial</a></p>
+</section>
+</section>
+<section id="lagged-ensembles" class="level3">
+<h3 class="anchored" data-anchor-id="lagged-ensembles">Lagged ensembles</h3>
+<p>Many ensembles are generated with time lags with the goal of maximising the number of ensemble members while making most efficient use of computing resources. This means that output files for different members are produced for different forecast times. This creates a challenge in reading in the data using <code>read_forecast()</code>’s templating system. However, the <code>lags</code> argument allows you to specify which members have output files for which forecast times. This is done by having a vector that is the same length as the vector for <code>members</code> with the corresponding lag for each member.</p>
+<p>MEPS, the ensemble run by MetCoOp (a collaboration between MET Norway, SMHI and FMI) is one such example. It produces 5 ensemble members every hour, resulting in 15 independent members every 3 hours. If we take the 12:00 UTC 15 member ensemble as an example, the members are allocated as follows:</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th>Time (UTC)</th>
+<th>Members</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>12:00</td>
+<td>0, 1, 2, 9, 12</td>
+</tr>
+<tr class="even">
+<td>11:00</td>
+<td>5, 6, 8, 11, 14</td>
+</tr>
+<tr class="odd">
+<td>10:00</td>
+<td>3, 4, 7, 10, 13</td>
+</tr>
+</tbody>
+</table>
+<p>This means that the members at 11:00 UTC have a lag of 1 hour and those at 10:00 UTC have a lag of 2 hours.</p>
+<p>Rather than have to write the members and lags out as a vector, we can make a nested list of the lagging information and a function to generate those vectors.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>meps_mbrs <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">lag =</span> <span class="dv">0</span>, <span class="at">members =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">9</span>, <span class="dv">12</span>)),</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">lag =</span> <span class="dv">1</span>, <span class="at">members =</span> <span class="fu">c</span>(<span class="dv">5</span>, <span class="dv">6</span>, <span class="dv">8</span>, <span class="dv">11</span>, <span class="dv">14</span>)),</span>
+<span id="cb69-4"><a href="#cb69-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">lag =</span> <span class="dv">2</span>, <span class="at">members =</span> <span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">7</span>, <span class="dv">10</span>, <span class="dv">13</span>))</span>
+<span id="cb69-5"><a href="#cb69-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb69-6"><a href="#cb69-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-7"><a href="#cb69-7" aria-hidden="true" tabindex="-1"></a>get_mbrs <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">mbr =</span> <span class="st">"members"</span>) {</span>
+<span id="cb69-8"><a href="#cb69-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlist</span>(<span class="fu">lapply</span>(x, \(d) d[[mbr]]))</span>
+<span id="cb69-9"><a href="#cb69-9" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-10"><a href="#cb69-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-11"><a href="#cb69-11" aria-hidden="true" tabindex="-1"></a>get_lags <span class="ot">&lt;-</span> <span class="cf">function</span>(x, <span class="at">lag =</span> <span class="st">"lag"</span>, <span class="at">mbr =</span> <span class="st">"members"</span>) {</span>
+<span id="cb69-12"><a href="#cb69-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unlist</span>(<span class="fu">lapply</span>(x, \(d) <span class="fu">rep</span>(d[[lag]], <span class="fu">length</span>(d[[mbr]]))))</span>
+<span id="cb69-13"><a href="#cb69-13" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb69-14"><a href="#cb69-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb69-15"><a href="#cb69-15" aria-hidden="true" tabindex="-1"></a><span class="fu">get_mbrs</span>(meps_mbrs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1]  0  1  2  9 12  5  6  8 11 14  3  4  7 10 13</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_lags</span>(meps_mbrs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] 0 0 0 0 0 1 1 1 1 1 2 2 2 2 2</code></pre>
+</div>
+</div>
+<p>And now we can run <code>read_forecast()</code> for those lags and members</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_forecast</span>(</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm             =</span> <span class="dv">2024021512</span>, </span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model       =</span> <span class="st">"meps"</span>,</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter        =</span> <span class="st">"pcp"</span>,</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time        =</span> <span class="dv">0</span>, </span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members          =</span> <span class="fu">get_mbrs</span>(meps_mbrs),</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">lags             =</span> <span class="fu">get_lags</span>(meps_mbrs),</span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path        =</span> <span class="fu">here</span>(<span class="st">"data/netcdf"</span>), </span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template    =</span> <span class="st">"{fcst_model}_lagged/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR2}/{fcst_model}_sfc_{LDT2}_{YYYY}{MM}{DD}T{HH}Z.nc"</span>,</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_format_opts =</span> <span class="fu">netcdf_opts</span>(<span class="at">ref_time_var =</span> <span class="st">"forecast_reference_time"</span>), </span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">return_data      =</span> <span class="cn">TRUE</span> </span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>::ensemble gridded forecast:: # A tibble: 1 × 24
+  fcst_dttm           valid_dttm          lead_time parameter meps_mbr000
+  &lt;dttm&gt;              &lt;dttm&gt;                  &lt;dbl&gt; &lt;chr&gt;       &lt;geolist&gt;
+1 2024-02-15 12:00:00 2024-02-15 12:00:00         0 pcp       [201 × 201]
+# ℹ 19 more variables: meps_mbr001 &lt;geolist&gt;, meps_mbr002 &lt;geolist&gt;,
+#   meps_mbr009 &lt;geolist&gt;, meps_mbr012 &lt;geolist&gt;, meps_mbr005_lag1h &lt;geolist&gt;,
+#   meps_mbr006_lag1h &lt;geolist&gt;, meps_mbr008_lag1h &lt;geolist&gt;,
+#   meps_mbr011_lag1h &lt;geolist&gt;, meps_mbr014_lag1h &lt;geolist&gt;,
+#   meps_mbr003_lag2h &lt;geolist&gt;, meps_mbr004_lag2h &lt;geolist&gt;,
+#   meps_mbr007_lag2h &lt;geolist&gt;, meps_mbr010_lag2h &lt;geolist&gt;,
+#   meps_mbr013_lag2h &lt;geolist&gt;, units &lt;chr&gt;, fcst_model &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Errors and Warnings
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>You may see warnings along the likes of <code>Ensemble members were requested for  'pcp' but there is no member information</code>. This occurs because the NetCDF files do not have an <code>ensemble_member</code> dimension since each file only contains one ensemble member.</p>
+</div>
+</div>
+</div>
+<p>Since these 15 members are produced by MEPS every three hours, then to read more than one ensemble the value for <code>dttm</code> should have a 3 hour time step, This can be achieved by using <code>seq_dttm()</code> to generate a sequence of date-times as will be seen in the next example.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Tip</strong>: Writing interpolated lagged forecasts to SQLite
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>When writing lagged forecasts to SQLite files the members are not all collected together to form the full ensemble as was returned in the above example. Rather the members for each lag for the full ensemble are collected together in SQLite files for each date-time that contributes to the ensemble. This allows for more flexibility in constructing lagged ensembles from SQLite files and has implications for how you specify lags for <code>read_point_forecast()</code> as will be seen below.</p>
+</div>
+</div>
+<p>Here we will get the lagged ensemble for 2 forecasts 3 hours apart, interpolate the data to points and write the results to SQLite files.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_forecast</span>(</span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm             =</span> <span class="fu">seq_dttm</span>(<span class="dv">2024021509</span>, <span class="dv">2024021512</span>, <span class="st">"3h"</span>), </span>
+<span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model       =</span> <span class="st">"meps"</span>,</span>
+<span id="cb75-4"><a href="#cb75-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter        =</span> <span class="st">"pcp"</span>,</span>
+<span id="cb75-5"><a href="#cb75-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time        =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">6</span>), </span>
+<span id="cb75-6"><a href="#cb75-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members          =</span> <span class="fu">get_mbrs</span>(meps_mbrs),</span>
+<span id="cb75-7"><a href="#cb75-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">lags             =</span> <span class="fu">get_lags</span>(meps_mbrs),</span>
+<span id="cb75-8"><a href="#cb75-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path        =</span> <span class="fu">here</span>(<span class="st">"data/netcdf"</span>), </span>
+<span id="cb75-9"><a href="#cb75-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template    =</span> <span class="st">"{fcst_model}_lagged/{YYYY}/{MM}/{DD}/{HH}/mbr{MBR2}/{fcst_model}_sfc_{LDT2}_{YYYY}{MM}{DD}T{HH}Z.nc"</span>,</span>
+<span id="cb75-10"><a href="#cb75-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_format_opts =</span> <span class="fu">netcdf_opts</span>(<span class="at">ref_time_var =</span> <span class="st">"forecast_reference_time"</span>), </span>
+<span id="cb75-11"><a href="#cb75-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation   =</span> <span class="st">"interpolate"</span>,</span>
+<span id="cb75-12"><a href="#cb75-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">output_file_opts =</span> <span class="fu">fctable_opts</span>(<span class="at">path =</span> <span class="fu">here</span>(<span class="st">"data/FCTABLE"</span>))</span>
+<span id="cb75-13"><a href="#cb75-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Error : None of the requested parameters found in file: /home/andrewts/R-projects/harp_training_2024/data/netcdf/meps_lagged/2024/02/15/09/mbr00/meps_sfc_00_20240215T09Z.nc</code></pre>
+</div>
+</div>
+<p>When reading the data back with <code>read_point_forecast()</code>, we only need to provide the lags (here we have to specify that they are in hours), since all of the members are collected together for each lag.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_point_forecast</span>(</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2024021509</span>, <span class="dv">2024021512</span>, <span class="st">"3h"</span>), </span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="st">"meps"</span>,</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"pcp"</span>,</span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">lags       =</span> <span class="fu">paste0</span>(<span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="st">"h"</span>),</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> <span class="fu">here</span>(<span class="st">"data/FCTABLE"</span>) </span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>::ensemble point forecast:: # A tibble: 1,038 × 23
+   fcst_dttm           valid_dttm          lead_time   SID meps_mbr000
+   &lt;dttm&gt;              &lt;dttm&gt;                  &lt;dbl&gt; &lt;int&gt;       &lt;dbl&gt;
+ 1 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1203           0
+ 2 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1207           0
+ 3 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1209           0
+ 4 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1218           0
+ 5 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1230           0
+ 6 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1233           0
+ 7 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1238           0
+ 8 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1239           0
+ 9 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1250           0
+10 2024-02-15 09:00:00 2024-02-15 09:00:00         0  1265           0
+# ℹ 1,028 more rows
+# ℹ 18 more variables: meps_mbr001 &lt;dbl&gt;, meps_mbr002 &lt;dbl&gt;, meps_mbr009 &lt;dbl&gt;,
+#   meps_mbr012 &lt;dbl&gt;, meps_mbr005 &lt;dbl&gt;, meps_mbr006 &lt;dbl&gt;, meps_mbr008 &lt;dbl&gt;,
+#   meps_mbr011 &lt;dbl&gt;, meps_mbr014 &lt;dbl&gt;, meps_mbr003 &lt;dbl&gt;, meps_mbr004 &lt;dbl&gt;,
+#   meps_mbr007 &lt;dbl&gt;, meps_mbr010 &lt;dbl&gt;, meps_mbr013 &lt;dbl&gt;, units &lt;chr&gt;,
+#   fcst_model &lt;chr&gt;, parameter &lt;chr&gt;, fcst_cycle &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>Here the member column names do not include how much that member is lagged.</p>
+<p>Since the data are precipitation, we can return the accumulated precipitation for given accumulation periods. This is done by prefixing the parameter name with “Acc” and following it with the accumulation period. So, 3 hour accumulated precipitation would be “Accpcp3h”. We can read any selection of stations by specifying their IDs (SID) in the <code>stations</code> argument.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">read_point_forecast</span>(</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2024021509</span>, <span class="dv">2024021512</span>, <span class="st">"3h"</span>), </span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="st">"meps"</span>,</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"Accpcp3h"</span>,</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">lags       =</span> <span class="fu">paste0</span>(<span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span>), <span class="st">"h"</span>),</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations   =</span> <span class="fu">c</span>(<span class="dv">1425</span>, <span class="dv">1439</span>), </span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> <span class="fu">here</span>(<span class="st">"data/FCTABLE"</span>) </span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>::ensemble point forecast:: # A tibble: 8 × 23
+  fcst_dttm           valid_dttm          lead_time   SID meps_mbr000
+  &lt;dttm&gt;              &lt;dttm&gt;                  &lt;dbl&gt; &lt;int&gt;       &lt;dbl&gt;
+1 2024-02-15 09:00:00 2024-02-15 12:00:00         3  1425        2.77
+2 2024-02-15 09:00:00 2024-02-15 12:00:00         3  1439        3.48
+3 2024-02-15 09:00:00 2024-02-15 15:00:00         6  1425        5.74
+4 2024-02-15 09:00:00 2024-02-15 15:00:00         6  1439        5.28
+5 2024-02-15 12:00:00 2024-02-15 15:00:00         3  1425        6.02
+6 2024-02-15 12:00:00 2024-02-15 15:00:00         3  1439        5.47
+7 2024-02-15 12:00:00 2024-02-15 18:00:00         6  1425        9.06
+8 2024-02-15 12:00:00 2024-02-15 18:00:00         6  1439        5.98
+# ℹ 18 more variables: meps_mbr001 &lt;dbl&gt;, meps_mbr002 &lt;dbl&gt;, meps_mbr009 &lt;dbl&gt;,
+#   meps_mbr012 &lt;dbl&gt;, meps_mbr005 &lt;dbl&gt;, meps_mbr006 &lt;dbl&gt;, meps_mbr008 &lt;dbl&gt;,
+#   meps_mbr011 &lt;dbl&gt;, meps_mbr014 &lt;dbl&gt;, meps_mbr003 &lt;dbl&gt;, meps_mbr004 &lt;dbl&gt;,
+#   meps_mbr007 &lt;dbl&gt;, meps_mbr010 &lt;dbl&gt;, meps_mbr013 &lt;dbl&gt;, units &lt;chr&gt;,
+#   fcst_model &lt;chr&gt;, parameter &lt;chr&gt;, fcst_cycle &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>In the next tutorial we will going through the workflow for doing point verification.</p>
+<div class="grid">
+<div class="g-col-1">
+<p><a href="get-started.html"><i class="bi bi-arrow-left-circle-fill"></i></a></p>
+</div>
+<div class="g-col-10">
+
+</div>
+<div class="g-col-1">
+<p><a href="point-verif-workflow.html"><i class="bi bi-arrow-right-circle-fill"></i></a></p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'alternate';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

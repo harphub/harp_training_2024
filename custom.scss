@@ -1,0 +1,25 @@
+/*-- scss:defaults --*/
+
+// stylelint-disable-next-line value-keyword-case
+$font-family-sans-serif:      Lato, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol" !default;
+
+$nav-link-padding-x:                2rem !default;
+
+$navbar-padding-y:                  1rem !default;
+
+$class-col: green;
+
+/*-- scss:rules --*/
+
+$web-font-path: "https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400&display=swap" !default;
+@if $web-font-path {
+  @import url($web-font-path);
+}
+
+.grid .card-row {
+  row-gap: 1rem;
+}
+
+.harp-class {
+  color: $class-col;
+}
