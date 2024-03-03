@@ -171,6 +171,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </ul></li>
   <li><a href="#basic-ensemble-verification" id="toc-basic-ensemble-verification" class="nav-link" data-scroll-target="#basic-ensemble-verification">Basic ensemble verification</a></li>
   <li><a href="#comparing-forecast-models" id="toc-comparing-forecast-models" class="nav-link" data-scroll-target="#comparing-forecast-models">Comparing forecast models</a></li>
+  <li><a href="#observation-errors" id="toc-observation-errors" class="nav-link" data-scroll-target="#observation-errors">Observation errors</a>
+  <ul class="collapse">
+  <li><a href="#gross-error-check" id="toc-gross-error-check" class="nav-link" data-scroll-target="#gross-error-check">Gross error check</a></li>
+  <li><a href="#checking-observations-against-forecasts" id="toc-checking-observations-against-forecasts" class="nav-link" data-scroll-target="#checking-observations-against-forecasts">Checking observations against forecasts</a></li>
+  <li><a href="#ensemble-rescaling" id="toc-ensemble-rescaling" class="nav-link" data-scroll-target="#ensemble-rescaling">Ensemble rescaling</a></li>
+  </ul></li>
   <li><a href="#grouped-verification-and-scaling" id="toc-grouped-verification-and-scaling" class="nav-link" data-scroll-target="#grouped-verification-and-scaling">Grouped Verification and Scaling</a>
   <ul class="collapse">
   <li><a href="#basic-grouping" id="toc-basic-grouping" class="nav-link" data-scroll-target="#basic-grouping">Basic Grouping</a></li>
@@ -179,7 +185,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#changing-the-time-axis" id="toc-changing-the-time-axis" class="nav-link" data-scroll-target="#changing-the-time-axis">Changing the Time Axis</a></li>
   </ul></li>
   <li><a href="#vertical-profiles" id="toc-vertical-profiles" class="nav-link" data-scroll-target="#vertical-profiles">Vertical Profiles</a></li>
-  <li><a href="#conditional-verification" id="toc-conditional-verification" class="nav-link" data-scroll-target="#conditional-verification">Conditional Verification</a></li>
+  <li><a href="#conditional-verification" id="toc-conditional-verification" class="nav-link" data-scroll-target="#conditional-verification">Conditional Verification</a>
+  <ul class="collapse">
+  <li><a href="#classification-by-observed-value" id="toc-classification-by-observed-value" class="nav-link" data-scroll-target="#classification-by-observed-value">Classification by observed value</a></li>
+  <li><a href="#classification-by-a-different-parameter" id="toc-classification-by-a-different-parameter" class="nav-link" data-scroll-target="#classification-by-a-different-parameter">Classification by a different parameter</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -747,47 +757,260 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
+<section id="observation-errors" class="level2">
+<h2 class="anchored" data-anchor-id="observation-errors">Observation errors</h2>
+<section id="gross-error-check" class="level3">
+<h3 class="anchored" data-anchor-id="gross-error-check">Gross error check</h3>
+<p>When reading observations, <code>read_point_obs()</code> will do a gross error check on the observations to make sure that they have realistic values. You can set the bounds with the <code>min_obs_allowed</code> and <code>max_obs_allowed</code> arguments. For some parameters, there are default values for the minimum and maximum allowed. These can be seen in the parameter definitions with <code>get_param_def()</code>. For example, for 2m temperature we see that the minimum and maximum values are 223 and 333 Kelvin.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_param_def</span>(<span class="st">"t2m"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$description
+[1] "Air temperature at 2m above the ground"
+
+$min
+[1] 223
+
+$max
+[1] 333
+
+$grib
+$grib$name
+[1] "2t" "t" 
+
+$grib$level_type
+[1] "heightAboveGround" "surface"          
+
+$grib$level
+[1] 2
+
+
+$netcdf
+$netcdf$name
+[1] "air_temperature_2m"
+
+
+$v
+$v$harp_param
+[1] "T2m"
+
+$v$name
+[1] "TT"
+
+$v$param_units
+[1] "K"
+
+$v$type
+[1] "SYNOP"
+
+
+$wrf
+$wrf$name
+[1] "T2"
+
+
+$fa
+$fa$name
+[1] "CLSTEMPERATURE  "
+
+$fa$units
+[1] "K"
+
+
+$obsoul
+$obsoul$name
+[1] 39
+
+$obsoul$units
+[1] "K"
+
+$obsoul$harp_name
+[1] "T2m"</code></pre>
+</div>
+</div>
+</section>
+<section id="checking-observations-against-forecasts" class="level3">
+<h3 class="anchored" data-anchor-id="checking-observations-against-forecasts">Checking observations against forecasts</h3>
+<p>Another check that can be done is to compare the values of the observations with forecasts. This is done with the <code>check_obs_against_fcst()</code> function. By default the data are grouped by each station ID and time of day, where the day is split into 4 parts of the day [00:00, 06:00), [06, 12:00), [12:00, 18:00) and [18:00, 00:00) and the standard deviation of the forecast for each of these is computed. The observations are then compared with the forecasts, and if the difference between the, is larger than a certain number of standard deviations then that row is removed from the data.</p>
+<p>Using the default value of 6 standard deviations we see that no observations are removed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">check_obs_against_fcst</span>(fcst, T2m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ Using default `num_sd_allowed = 6` for `parameter = T2m`
+! 0 cases with more than 6 std devs error.</code></pre>
+</div>
+</div>
+<p>If we make the check more strict to remove all cases where the observations are more than 1 standard deviation away from the forecast, we see that now 723 cases are removed. We can see the removed cases in the <code>"removed_cases"</code> attribute of the result.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">check_obs_against_fcst</span>(fcst, T2m, <span class="at">num_sd_allowed =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>! 723 cases with more than 1 std dev error.
+ℹ Removed cases can be seen in the "removed_cases" attribute.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attr</span>(fcst, <span class="st">"removed_cases"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 723 × 5
+     SID valid_dttm            T2m dist_to_fcst tolerance
+   &lt;int&gt; &lt;dttm&gt;              &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+ 1  1001 2023-08-09 12:00:00  283.         2.94      1.21
+ 2  1001 2023-08-10 00:00:00  282.         1.54      1.09
+ 3  1001 2023-08-10 06:00:00  282.         1.20      1.20
+ 4  1001 2023-08-13 00:00:00  279.         2.89      1.09
+ 5  1001 2023-08-19 00:00:00  280.         1.17      1.09
+ 6  1001 2023-08-21 00:00:00  282.         1.55      1.09
+ 7  1001 2023-08-23 00:00:00  276.         2.33      1.09
+ 8  1001 2023-08-24 00:00:00  276.         1.30      1.09
+ 9  1001 2023-08-24 06:00:00  276.         1.66      1.20
+10  1001 2023-08-30 18:00:00  280.         1.39      1.15
+# ℹ 713 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="ensemble-rescaling" class="level3">
+<h3 class="anchored" data-anchor-id="ensemble-rescaling">Ensemble rescaling</h3>
+<p>When verifying ensembles, we can take the observation error into account by attempting to rescale the distribution of the ensemble forecast to that of the observations. This is done by adding an assumed error distribution to the ensemble forecast by sampling from the error distribution and adding each random draw to an ensemble member. If the error distribution has a mean of 0, the impact will be negligible on most scores. However, for the rank histogram and ensemble spread, this will in effect take the observation errors into account. In <strong>harp</strong> we call this jittering the forecast and is done by using the <code>jitter_fcst()</code> function.</p>
+<p>Take for example the rank histograms for our MEPS and IFSENS ensembles for 2m temperature.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083112</span>, <span class="st">"12h"</span>), </span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>),</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>, </span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">common_cases</span>()</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>, <span class="at">col =</span> T2m)</span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(fcst, T2m)</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>  normalized_rank_histogram, </span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">rank_is_relative =</span> <span class="cn">TRUE</span></span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/rank-hist-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  spread_skill</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/spread-skill-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We see that both models are underdispersed with a U-shaped rank histogram. If we say that the observations have a noraml error distribution with a mean of 0 and standard deviation of 1 we can jitter the ensemble forecast by adding random draws from that distribution.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">jitter_fcst</span>(</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(x) x <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(x), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(fcst, T2m)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  normalized_rank_histogram, </span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">rank_is_relative =</span> <span class="cn">TRUE</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/jitter-fcst-rh-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  spread_skill</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/jitter-fcst-ss-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now we see that the forecast is much less underdispersed with many of the ranks have a normalized frequency close to 1 and the ensemble spread much closer to the ensemble RMSE.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning: Error Distributions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>harp</strong> does not include any estimates for error distributions. It is the user’s responsibility to provide those error distributions. In this example, a normal distribution with a mean of 0 and standard deviation of 1 is for illustrative purposes only.</p>
+</div>
+</div>
+</section>
+</section>
 <section id="grouped-verification-and-scaling" class="level2">
 <h2 class="anchored" data-anchor-id="grouped-verification-and-scaling">Grouped Verification and Scaling</h2>
 <section id="basic-grouping" class="level3">
 <h3 class="anchored" data-anchor-id="basic-grouping">Basic Grouping</h3>
 <p>So far we have just done verification stratified by <code>lead_time</code>. We can use the <code>groupings</code> argument to tell the verification function how to group the data together to compute scores. The most common grouping after lead time would be to group by the forecast cycle. Rather than read in only the forecasts initialized at 00:00 UTC, we will read in the 12:00 UTC forecasts as well.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083112</span>, <span class="st">"12h"</span>),</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>),</span>
-<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
-<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>, </span>
-<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members    =</span> <span class="dv">0</span>, </span>
-<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
-<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
-<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_det</span>()</span>
-<span id="cb34-10"><a href="#cb34-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-11"><a href="#cb34-11" aria-hidden="true" tabindex="-1"></a>fcst<span class="sc">$</span>arome_arctic <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
-<span id="cb34-12"><a href="#cb34-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083112</span>, <span class="st">"12h"</span>),</span>
-<span id="cb34-13"><a href="#cb34-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="st">"arome_arctic"</span>,</span>
-<span id="cb34-14"><a href="#cb34-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"det"</span>,</span>
-<span id="cb34-15"><a href="#cb34-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>, </span>
-<span id="cb34-16"><a href="#cb34-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
-<span id="cb34-17"><a href="#cb34-17" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb34-18"><a href="#cb34-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb34-19"><a href="#cb34-19" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">common_cases</span>(fcst)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083112</span>, <span class="st">"12h"</span>),</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>),</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>, </span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members    =</span> <span class="dv">0</span>, </span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_det</span>()</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>fcst<span class="sc">$</span>arome_arctic <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083112</span>, <span class="st">"12h"</span>),</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="st">"arome_arctic"</span>,</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"det"</span>,</span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>, </span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">common_cases</span>(fcst)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>The forecasts are in Kelvin, but it may be more useful to have them in °C. We can scale the data using <code>scale_param()</code>. At a minimum we need to give the function the scaling to apply and a new name for the units. By default the scaling is additive, but it can be made multiplicative by setting <code>mult = TRUE</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">scale_param</span>(fcst, <span class="sc">-</span><span class="fl">273.15</span>, <span class="at">new_units =</span> <span class="st">"degC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">scale_param</span>(fcst, <span class="sc">-</span><span class="fl">273.15</span>, <span class="at">new_units =</span> <span class="st">"degC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we can read the observations and join to the forecast.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning: .fcst has units: degC and .join has units: K</code></pre>
 </div>
@@ -798,20 +1021,20 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </div>
 <p>Here the join fails because the forecasts and observations do not have the same units. We therefore also need to scale the observations with <code>scale_param()</code>. When scaling observations, the name of the observations column also needs to be provided.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">scale_param</span>(obs, <span class="sc">-</span><span class="fl">273.15</span>, <span class="at">new_units =</span> <span class="st">"degC"</span>, <span class="at">col =</span> T2m)</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">scale_param</span>(obs, <span class="sc">-</span><span class="fl">273.15</span>, <span class="at">new_units =</span> <span class="st">"degC"</span>, <span class="at">col =</span> T2m)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we can verify. This time we will tell <code>det_verify()</code> that we want scores for each lead time and forecast cycle.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
-<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
-<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
-<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
-<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>)  </span>
-<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb41-7"><a href="#cb41-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb41-8"><a href="#cb41-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(fcst_cycle))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>)  </span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(fcst_cycle))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -822,12 +1045,12 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </div>
 <p>We now have plots for each forecast cycle, but what if we also want the combined forecast cycles as well? There are two ways we could tackle that - firstly we could compute the verification with <code>groupings = "lead_time"</code> (i.e.&nbsp;the default) and bind the output to what we already have with <code>bind_point_verif()</code>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">bind_point_verif</span>(</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">det_verify</span>(fcst, T2m, <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>))</span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(fcst_cycle))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">bind_point_verif</span>(</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">det_verify</span>(fcst, T2m, <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>))</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(fcst_cycle))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -841,19 +1064,19 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 <h3 class="anchored" data-anchor-id="grouping-lists">Grouping Lists</h3>
 <p>An easier way would be to pass a list to <code>groupings</code>. Each element in the list is treated as a separate verification and then they are bound together at the end.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
-<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
-<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
-<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
-<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">list</span>(</span>
-<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lead_time"</span>,</span>
-<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>)  </span>
-<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"fcst-cycle"</span>))</span>
-<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(fcst_cycle))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">list</span>(</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lead_time"</span>,</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>)  </span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"fcst-cycle"</span>))</span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(fcst_cycle))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -876,7 +1099,7 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </div>
 </div>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -892,32 +1115,32 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 <h4 class="anchored" data-anchor-id="adding-a-station-characteristic">Adding a station characteristic</h4>
 <p>It is often desirable to group stations together by common characteristics, whether that be location, whether it’s on the coast or in the mountains or any other characteristic. <strong>harp</strong> includes a built in data frame of station groups that can be joined to the forecast and used to group the verification. We can join the station groups using <code>join_to_fcst()</code> with <code>force = TRUE</code> since we don’t want a check on common units between the data frames to be joined together.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, station_groups, <span class="at">force =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, station_groups, <span class="at">force =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>This has added a <code>"station_group"</code> column to the forecast which we can use in the <code>groupings</code> argument. Now we want verification for each lead time for all forecast cycles and station groups; for each lead time and each forecast cycle for all station groups; for each lead time and each station group for all forecast cycles; and for each lead time for each station group for each forecast cycle. Therefore we need a list of 4 different groupings.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">list</span>(</span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lead_time"</span>,</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>),</span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"station_group"</span>),</span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>, <span class="st">"station_group"</span>)</span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>  ) </span>
-<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"stations"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">list</span>(</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lead_time"</span>,</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>),</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"station_group"</span>),</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>, <span class="st">"station_group"</span>)</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"stations"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Plotting now becomes quite complicated as you have to do a lot of filtering and faceting. For example:</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
-<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
-<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  equitable_threat_score, </span>
-<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(station_group),</span>
-<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(<span class="fu">grepl</span>(<span class="st">";"</span>, fcst_cycle), threshold <span class="sc">==</span> <span class="dv">15</span>) </span>
-<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  equitable_threat_score, </span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(station_group),</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(<span class="fu">grepl</span>(<span class="st">";"</span>, fcst_cycle), threshold <span class="sc">==</span> <span class="dv">15</span>) </span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -929,14 +1152,14 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 <p>You may have noticed the saving of each verification result into specific directories. This is so that they can be plotted using an interactive app that runs in a web browser. The app is made using <em>R Shiny</em> so we refer to it as a Shiny app. <code>save_point_verif()</code> uses very specific file names that describe some of the information about the verification object, but the grouping strategy is not one of those pieces of information, hence the separate directories. The Shiny app will create dropdown menus allowing you to choose the group for which you want to see the scores.</p>
 <p>You can start the shiny app with:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shiny_plot_point_verif</span>(</span>
-<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">start_dir           =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>),</span>
-<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">full_dir_navigation =</span> <span class="cn">FALSE</span>, </span>
-<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">theme               =</span> <span class="st">"light"</span></span>
-<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shiny_plot_point_verif</span>(</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">start_dir           =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>),</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">full_dir_navigation =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">theme               =</span> <span class="st">"light"</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -945,7 +1168,7 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>When you start the shiny app it is best to give it a directory to start from to aid navigation. By setting <code>full_dir_navigation = FALSE</code> the use of modal windows to navigate your directory system is disabled, and all directories below the start directory are searched for <strong>harp</strong> point verification files and the <em>Select Verfication Directory</em> dropdown is populated - this is experimental and may not give the smoothest ride, but is often less cumbersome than navigation by modal windows. Finally you can choose between “light”, “dark” and “white” for the colour theme of the app (the default is “dark”).</p>
 </div>
@@ -957,24 +1180,24 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 <h3 class="anchored" data-anchor-id="changing-the-time-axis">Changing the Time Axis</h3>
 <p>You can also use the <code>groupings</code> argument to specify different time axes to use for the verification. So far we have used the lead time for the time axis. However we could also use the time of day to get the diurnal cycle, or simply get the scores for each date-time in the data set. In this example we will still group by the forecast cycle as well. To get the time of day, we first need to run <code>expand_date()</code> on the data to get a column for <code>"valid_hour"</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">expand_date</span>(fcst, valid_dttm)</span>
-<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
-<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
-<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
-<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
-<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">list</span>(</span>
-<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lead_time"</span>,</span>
-<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>),</span>
-<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"valid_hour"</span>,</span>
-<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"valid_hour"</span>, <span class="st">"fcst_cycle"</span>),</span>
-<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"valid_dttm"</span>,</span>
-<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"valid_dttm"</span>, <span class="st">"fcst_cycle"</span>)</span>
-<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>  ) </span>
-<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">expand_date</span>(fcst, valid_dttm)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">list</span>(</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lead_time"</span>,</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>),</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"valid_hour"</span>,</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"valid_hour"</span>, <span class="st">"fcst_cycle"</span>),</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"valid_dttm"</span>,</span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"valid_dttm"</span>, <span class="st">"fcst_cycle"</span>)</span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
-<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -983,7 +1206,7 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Since the data are 6 hourly there are only 4 valid hours in the data set. When there are fewer than five different values in group the verification functions separate them with a “;” in the group value when they are all together, otherwise they are labelled as “All”. <code>plot_point_verif()</code> only searches for “All” when figuring out which data to get for each different x-axis.</p>
 </div>
@@ -991,19 +1214,19 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </div>
 <p>We need to use <code>mutate_list()</code> in conjunction with <code>case_when()</code> from the <em>dplyr</em> package to modify the <code>"valid_hour"</code> column where all valid hours are collected together. <code>mutate_list()</code> use <code>mutate()</code> from the <em>dplyr</em> package to modify columns of data frames in a list whilst retaining the attributes of the list.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">mutate_list</span>(</span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">valid_hour =</span> <span class="fu">case_when</span>(</span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">";"</span>, valid_hour) <span class="sc">~</span> <span class="st">"All"</span>,</span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> valid_hour</span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"fcst-cycle"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">mutate_list</span>(</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">valid_hour =</span> <span class="fu">case_when</span>(</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">";"</span>, valid_hour) <span class="sc">~</span> <span class="st">"All"</span>,</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> valid_hour</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"fcst-cycle"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now use the <code>x-axis</code> argument to <code>plot_point_verif()</code> to decide which times to use on the x-axis.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, mae, <span class="at">facet_by =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, mae, <span class="at">facet_by =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1011,12 +1234,12 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>  mae, </span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_axis   =</span> valid_hour, </span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle))</span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  mae, </span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_axis   =</span> valid_hour, </span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle))</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1024,13 +1247,13 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </figure>
 </div>
 </div>
-<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
-<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
-<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  mae, </span>
-<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_axis     =</span> valid_dttm, </span>
-<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by   =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)),</span>
-<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">point_size =</span> <span class="dv">0</span> </span>
-<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  mae, </span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_axis     =</span> valid_dttm, </span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by   =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)),</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">point_size =</span> <span class="dv">0</span> </span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1047,59 +1270,59 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 <p>The first difference is that when reading in the data, you need to tell the read function what vertical coordinate the data are on via the <code>vertical_coordinate</code> argument. In most cases the data will be on pressure levels, but they could also be on height levels or model levels.</p>
 <p>The data we are using here come from the AROME-Arctic model and the control member of MEPS, which at MET Norway is archived as MEPS_det (i.e.&nbsp;MEPS deterministic). There are forecasts available every 6 hours at 00-, 06-, 12- and 18-UTC.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083118</span>, <span class="st">"6h"</span>),</span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model          =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"arome_arctic"</span>),</span>
-<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type           =</span> <span class="st">"det"</span>,</span>
-<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"T"</span>,</span>
-<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path           =</span> fcst_dir,</span>
-<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">vertical_coordinate =</span> <span class="st">"pressure"</span></span>
-<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
-<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083118</span>, <span class="st">"6h"</span>),</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model          =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"arome_arctic"</span>),</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type           =</span> <span class="st">"det"</span>,</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"T"</span>,</span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path           =</span> fcst_dir,</span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">vertical_coordinate =</span> <span class="st">"pressure"</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>When finding the common cases, the default behaviour is to compare the <code>"fcst_dttm"</code>, <code>"lead_time"</code> and <code>"SID"</code> columns. When finding common cases for vertical profiles we also need to make sure that only the vertical levels that are common to all forecast models are included in the verification. We do this by adding the pressure column (<code>p</code>) to <code>common_cases()</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">common_cases</span>(fcst, p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">common_cases</span>(fcst, p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Similar to reading the forecasts, we also need to tell <code>read_point_obs</code> that the vertical coordinate is pressure.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
-<span id="cb56-2"><a href="#cb56-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
-<span id="cb56-3"><a href="#cb56-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"T"</span>, </span>
-<span id="cb56-4"><a href="#cb56-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations            =</span> <span class="fu">unique_stations</span>(fcst),</span>
-<span id="cb56-5"><a href="#cb56-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path            =</span> obs_dir,</span>
-<span id="cb56-6"><a href="#cb56-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">vertical_coordinate =</span> <span class="st">"pressure"</span></span>
-<span id="cb56-7"><a href="#cb56-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
-<span id="cb56-8"><a href="#cb56-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>, <span class="at">col =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"T"</span>, </span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations            =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path            =</span> obs_dir,</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">vertical_coordinate =</span> <span class="st">"pressure"</span></span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>, <span class="at">col =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Joining works exactly the same as for single level variables.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Now we can verify, making sure that we have <code>"p"</code> as one of the grouping variables.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
-<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
-<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  T, </span>
-<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings =</span> <span class="fu">list</span>(</span>
-<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"p"</span>),</span>
-<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"p"</span>, <span class="st">"fcst_cycle"</span>)</span>
-<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(</span>
-<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>  verif, </span>
-<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"fcst-cycle"</span>)</span>
-<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>  T, </span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings =</span> <span class="fu">list</span>(</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"p"</span>),</span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"p"</span>, <span class="st">"fcst_cycle"</span>)</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(</span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"fcst-cycle"</span>)</span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We can now plot the profile verification using <code>plot_profile_verif()</code> making sure to filter and facet appropriately (for example, there is one profile for each lead time).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_profile_verif</span>(</span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  mae, </span>
-<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(<span class="fu">grepl</span>(<span class="st">";"</span>, fcst_cycle)),</span>
-<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(lead_time)</span>
-<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_profile_verif</span>(</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  mae, </span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(<span class="fu">grepl</span>(<span class="st">";"</span>, fcst_cycle)),</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(lead_time)</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1110,12 +1333,12 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </div>
 <p>We could also make a plot for a single vertical level in the normal way. We may also want to remove times when there are very few cases.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  bias, </span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(p <span class="sc">==</span> <span class="dv">925</span>, num_cases <span class="sc">&gt;</span> <span class="dv">5</span>),</span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)) </span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  bias, </span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(p <span class="sc">==</span> <span class="dv">925</span>, num_cases <span class="sc">&gt;</span> <span class="dv">5</span>),</span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)) </span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -1127,6 +1350,241 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </section>
 <section id="conditional-verification" class="level2">
 <h2 class="anchored" data-anchor-id="conditional-verification">Conditional Verification</h2>
+<section id="classification-by-observed-value" class="level3">
+<h3 class="anchored" data-anchor-id="classification-by-observed-value">Classification by observed value</h3>
+<p>On occasion, it may be instructive to verify for particular conditions. For example, to verify temperature for different temperature ranges. This can be done by creating a grouping column for each range of observed temperature. Here the workflow would be to use <code>mutate()</code> from the <em>dplyr</em> package in association with the base R function <code>cut()</code> to create a grouping column on the observations before joining to the forecast.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083100</span>, <span class="st">"24h"</span>),</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>),</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">common_cases</span>()</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>, <span class="at">col =</span> T2m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We are going to classify the temperature by having the left side of each range open and right side closed. This basically means that each range goes from &gt;= the lower value to &lt; the upper value. We do this by setting <code>right = FALSE</code> in the call to <code>cut()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  obs, </span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">temp_range =</span> <span class="fu">cut</span>(T2m, <span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">25</span>, <span class="fl">2.5</span>), <span class="at">right =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>obs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 23,756 × 8
+   valid_dttm            SID   lon   lat  elev units   T2m temp_range
+   &lt;dttm&gt;              &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;fct&gt;     
+ 1 2023-08-01 00:00:00  1001 -8.67  70.9    10 degC   6.75 [5,7.5)   
+ 2 2023-08-01 00:00:00  1010 16.1   69.3    13 degC  14.4  [12.5,15) 
+ 3 2023-08-01 00:00:00  1015 17.8   69.6    33 degC  18.6  [17.5,20) 
+ 4 2023-08-01 00:00:00  1023 18.5   69.1    77 degC  13.1  [12.5,15) 
+ 5 2023-08-01 00:00:00  1025 18.9   69.7     9 degC  13.0  [12.5,15) 
+ 6 2023-08-01 00:00:00  1026 18.9   69.7   115 degC  14.2  [12.5,15) 
+ 7 2023-08-01 00:00:00  1027 18.9   69.7    20 degC  13.0  [12.5,15) 
+ 8 2023-08-01 00:00:00  1028 19.0   74.5    16 degC   4.55 &lt;NA&gt;      
+ 9 2023-08-01 00:00:00  1033 19.5   70.2    24 degC  14.5  [12.5,15) 
+10 2023-08-01 00:00:00  1035 20.1   69.6   710 degC  12.9  [12.5,15) 
+# ℹ 23,746 more rows</code></pre>
+</div>
+</div>
+<p>You will see that <code>cut()</code> labels values outside of the breaks as <code>NA</code>. This isn’t necessarily meaningful, so we will use the <em>dplyr</em> function <code>case_when()</code> to give more meaningful labels. We will also take the opportunity to format the other ranges a bit better.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  obs, </span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">temp_range =</span> <span class="fu">case_when</span>(</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>    T2m <span class="sc">&lt;</span>  <span class="dv">5</span>  <span class="sc">~</span> <span class="st">"&lt; 5"</span>,</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>    T2m <span class="sc">&gt;=</span> <span class="dv">25</span> <span class="sc">~</span> <span class="st">"&gt;= 25"</span>,</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> <span class="fu">gsub</span>(<span class="st">","</span>, <span class="st">", "</span>, temp_range)</span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>  ), </span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">temp_range =</span> <span class="fu">fct_relevel</span>(</span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a>    temp_range, </span>
+<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"&lt; 5"</span>, </span>
+<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">gsub</span>(</span>
+<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">","</span>, </span>
+<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">", "</span>, </span>
+<span id="cb76-15"><a href="#cb76-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">levels</span>(<span class="fu">cut</span>(<span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">25</span>), <span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">25</span>, <span class="fl">2.5</span>), <span class="at">right =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb76-16"><a href="#cb76-16" aria-hidden="true" tabindex="-1"></a>      ), </span>
+<span id="cb76-17"><a href="#cb76-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"&gt;= 25"</span></span>
+<span id="cb76-18"><a href="#cb76-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb76-19"><a href="#cb76-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb76-20"><a href="#cb76-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In the above we also set the factor levels to an order that makes sense for when we come to plot the scores. We can now continue as normal, adding “<code>temp_range"</code> as a grouping variable.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings =</span> <span class="fu">c</span>(<span class="st">"leadtime"</span>, <span class="st">"temp_range"</span>)</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a>  spread_skill, </span>
+<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by =</span> <span class="fu">vars</span>(temp_range)  </span>
+<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/cond-temp-verif-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="classification-by-a-different-parameter" class="level3">
+<h3 class="anchored" data-anchor-id="classification-by-a-different-parameter">Classification by a different parameter</h3>
+<p>One important aspect of forecast model performance is how it performs in different weather regimes. For example, it may be useful to know how the model performs for a particular parameter when the wind is coming from a certain direction. There are a couple of approaches to this, but it must be noted that it is important to include the possibility for false alarms in the verification.</p>
+<p>Here we will compute the verification scores for an ensemble forecast for 2m temperature when the wind is coming from the west, so let’s say a wind direction between 45° and 135°. We will first read in the wind direction observations for the cases we already have for 2m temperature.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>wind_dir <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"D10m"</span>,</span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will now create a column to have the groups “westerly” and “other” based on the values in the <code>"D10m"</code> column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>wind_dir <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>  wind_dir, </span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">wind_direction =</span> <span class="fu">case_when</span>(</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">between</span>(D10m, <span class="dv">45</span>, <span class="dv">135</span>) <span class="sc">~</span> <span class="st">"westerly"</span>,</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> <span class="st">"other"</span></span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now join the wind direction data to the 2m temperature data that we want to verify. Here we have to set <code>force = TRUE</code> in <code>join_to_fcst()</code> since it will fail the check for the forecasts and observations having the same units.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, wind_dir, <span class="at">force =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now verify 2m temperature and group by the wind direction.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings =</span> <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"wind_direction"</span>)</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>::Computing verification for fcst_model `meps`::</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Det summary for sub_model, member, lead_time &amp; wind_direction✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Hexbin for sub_model, member, lead_time &amp; wind_direction✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Spread; Skill for lead_time &amp; wind_direction✔
+Hexbin for lead_time &amp; wind_direction✔
+Rank histogram for lead_time &amp; wind_direction✔
+CRPS for lead_time &amp; wind_direction✔
+::Computing verification for fcst_model `ifsens`::
+Det summary for sub_model, member, lead_time &amp; wind_direction✔
+Hexbin for sub_model, member, lead_time &amp; wind_direction✔
+Spread; Skill for lead_time &amp; wind_direction✔
+Hexbin for lead_time &amp; wind_direction✔
+Rank histogram for lead_time &amp; wind_direction✔
+CRPS for lead_time &amp; wind_direction✔</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>  mean_bias, </span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by =</span> <span class="fu">vars</span>(wind_direction)</span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: plot_num_cases = TRUE cannot be used with facet_by. plot_num_cases set
+to FALSE.</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/cond-wind-verif-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A more thorough method might be to include whether westerly winds were forecast or not in the analysis, such that we have cases of westerly being observed only, forecasted only, both observed and forecasted, and neither observed nor forecasted.</p>
+<p>So now we need read in the wind direction forecasts as well. In this case we need to set the units to “degrees” as they are incorrect in the file (due to a bug :/ ).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>fcst_wind_dir <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">unique_fcst_dttm</span>(fcst),</span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>), </span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"wd10m"</span>,</span>
+<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time  =</span> <span class="fu">unique_col</span>(fcst, lead_time), </span>
+<span id="cb88-7"><a href="#cb88-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations   =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb88-8"><a href="#cb88-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb88-9"><a href="#cb88-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb88-10"><a href="#cb88-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_units</span>(<span class="st">"degrees"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Since the forecasts are from ensemble, we could identify forecasts that have westerly winds as those where at least one member has a wind direction between 45° and and 135° To identify these cases we can find the binary probability for each member and then compute the ensemble mean with <code>ens_stats()</code>. We can apply a function to multiple columns using <code>across()</code> from the <em>dplyr</em> package together with <code>mutate()</code>. Since we are generating logical values, we need to tell <code>ens_stats()</code> not to compute the standard deviation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>fcst_wind_dir <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>  fcst_wind_dir,</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">across</span>(<span class="fu">contains</span>(<span class="st">"_mbr"</span>), <span class="sc">~</span><span class="fu">between</span>(.x, <span class="dv">45</span>, <span class="dv">135</span>))</span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ens_stats</span>(<span class="at">sd =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can join the wind direction observations, generate our groups and select only those columns we need.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>fcst_wind_dir <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst_wind_dir, wind_dir)</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>fcst_wind_dir <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>  fcst_wind_dir, </span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">westerly =</span> <span class="fu">case_when</span>(</span>
+<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>    ens_mean  <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> wind_direction <span class="sc">==</span> <span class="st">"westerly"</span> <span class="sc">~</span> <span class="st">"both"</span>,</span>
+<span id="cb90-7"><a href="#cb90-7" aria-hidden="true" tabindex="-1"></a>    ens_mean  <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> wind_direction <span class="sc">==</span> <span class="st">"other"</span> <span class="sc">~</span> <span class="st">"forecast only"</span>,</span>
+<span id="cb90-8"><a href="#cb90-8" aria-hidden="true" tabindex="-1"></a>    ens_mean <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> wind_direction <span class="sc">==</span> <span class="st">"westerly"</span> <span class="sc">~</span> <span class="st">"observed only"</span>,</span>
+<span id="cb90-9"><a href="#cb90-9" aria-hidden="true" tabindex="-1"></a>    ens_mean <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> wind_direction <span class="sc">==</span> <span class="st">"other"</span> <span class="sc">~</span> <span class="st">"neither"</span>, </span>
+<span id="cb90-10"><a href="#cb90-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> <span class="cn">NA</span></span>
+<span id="cb90-11"><a href="#cb90-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb90-12"><a href="#cb90-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb90-13"><a href="#cb90-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(fcst_dttm, lead_time, SID, westerly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now join our data frame with the verification groups to the 2m temperature forecasts to be verified. Since we have two models, we can merge them into a single data frame using <code>bind()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind</span>(fcst_wind_dir), </span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">force =</span> <span class="cn">TRUE</span></span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can verify and plot for our new groups.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(</span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>  T2m,</span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings =</span> <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"westerly"</span>)</span>
+<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb92-7"><a href="#cb92-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb92-8"><a href="#cb92-8" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb92-9"><a href="#cb92-9" aria-hidden="true" tabindex="-1"></a>  mean_bias, </span>
+<span id="cb92-10"><a href="#cb92-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by       =</span> <span class="fu">vars</span>(<span class="fu">fct_relevel</span>(westerly, <span class="sc">~</span>.x[<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">3</span>)])),</span>
+<span id="cb92-11"><a href="#cb92-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">num_facet_cols =</span> <span class="dv">2</span></span>
+<span id="cb92-12"><a href="#cb92-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/cond-wind-fcst-grp-verif-plt-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In the next tutorial will put everything you have learned here into practice by building a script that could be used for repeated verification tasks.</p>
 <div class="grid">
 <div class="g-col-1">
 <p><a href="read-forecast.html"><i class="bi bi-arrow-left-circle-fill"></i></a></p>
@@ -1140,6 +1598,7 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

@@ -126,7 +126,7 @@
     },
     "RcppArmadillo": {
       "Package": "RcppArmadillo",
-      "Version": "0.12.8.0.0",
+      "Version": "0.12.8.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
@@ -136,7 +136,7 @@
         "stats",
         "utils"
       ],
-      "Hash": "847fc78bd9f83f55696b4b016482f7ed"
+      "Hash": "e78bbbb81a5dcd71a4bd3268d6ede0b1"
     },
     "SpecsVerification": {
       "Package": "SpecsVerification",
@@ -687,7 +687,7 @@
     },
     "harpPoint": {
       "Package": "harpPoint",
-      "Version": "0.2.1.9004",
+      "Version": "0.2.1.9005",
       "Source": "GitHub",
       "Remotes": "harphub/harpCore@develop, harphub/harpIO@develop",
       "RemoteType": "github",
@@ -695,7 +695,7 @@
       "RemoteRepo": "harpPoint",
       "RemoteUsername": "harphub",
       "RemoteRef": "develop",
-      "RemoteSha": "92fa0961a41d427e236521618ffa454819ad42d9",
+      "RemoteSha": "bb8933b2d9094b78eec150c6b537a464ba958e68",
       "Requirements": [
         "R",
         "Rcpp",
@@ -720,7 +720,7 @@
         "tidyselect",
         "verification"
       ],
-      "Hash": "5e0861943c0b03662829340d952008c9"
+      "Hash": "f77214a9d28c40e610865a114c3af6f2"
     },
     "harpSpatial": {
       "Package": "harpSpatial",
