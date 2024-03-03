@@ -81,7 +81,7 @@
     "href": "get-started.html#data",
     "title": "Getting started",
     "section": "Data",
-    "text": "Data\nWe are now almost ready to start practising with harp. We just need some data to work with. First let’s create a directory to keep our data.\n\ndir.create(here(\"data\"))\n\nThe data we are going to be used can be downloaded from here Copy the data into your new data directory and unpack it using\n\nsystem(\"tar -zxvf harpTrainnigData2024.tar.gz\")"
+    "text": "Data\nWe are now almost ready to start practising with harp. We just need some data to work with. First let’s create a directory to keep our data.\n\ndir.create(here(\"data\"))\n\nThe data we are going to use can be downloaded from here Copy the data into your new data directory and unpack it using\n\nsystem(\"tar -zxvf harpTrainnigData2024.tar.gz\")"
   },
   {
     "objectID": "read-forecast.html",
