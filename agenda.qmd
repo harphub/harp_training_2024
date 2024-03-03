@@ -14,7 +14,7 @@ second half of the week.
 
 We will give a brief introduction to harp and R and
 
-#### [_Basic reading of data_](read-forecast.qmd)
+#### _Basic reading of data_
 
 Andrew will introduce the `read_forecast()` function and go through reading data 
 in _Grib_, _NetCDF_ and _vfld_ formats. We will look at how to deal with complex 

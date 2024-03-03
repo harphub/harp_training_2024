@@ -27,7 +27,7 @@ Installation and setup
 From basic reading of files to complex lagged systems
 :::
 
-<a href="read-forecast.html" class="stretched-link"></a>
+<a href="#" class="stretched-link"></a>
 :::
 :::
 :::
