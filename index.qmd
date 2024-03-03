@@ -136,7 +136,7 @@ Git, Github, harphub, Pull Requests
 :::
 
 ::: card-text
-Interpoperability with Python
+Interoperability with Python
 :::
 
 <a href="#" class="stretched-link"></a>
