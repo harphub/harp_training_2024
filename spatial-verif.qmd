@@ -1,0 +1,16 @@
+---
+title: Spatial Verification
+---
+
+::: grid
+::: g-col-1
+<a href=build-verif-script.html><i class="bi bi-arrow-left-circle-fill"></i></a>
+:::
+
+::: g-col-10
+:::
+
+::: g-col-1
+<a href=#><i class="bi bi-arrow-right-circle-fill"></i></a>
+:::
+:::
