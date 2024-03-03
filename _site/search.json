@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Getting Started",
     "section": "",
-    "text": "Getting Started\n\n\nInstallation, basic reading of data and harp classes\n\n\n\n\n\n\n\n\n\nPoint Verification\n\n\nInterpolation to points and basic point verification workflow\n\n\n\n\n\n\n\n\n\nComplex Verification\n\n\nMultiple verification groups and conditional verification\n\n\n\n\n\n\n\n\n\nBuild a Script\n\n\nWriting scripts for verification tasks\n\n\n\n\n\n\n\n\n\nSpatial Verifcation\n\n\nHow to run spatial verification\n\n\n\n\n\n\n\n\n\nSpatial Data\n\n\nExplore, plot and manipulate spatial data\n\n\n\n\n\n\n\n\n\nExternal Data Formats\n\n\nWrite functions to read other data formats\n\n\n\n\n\n\n\n\n\nTroubleshooting\n\n\nReproducible examples and debugging\n\n\n\n\n\n\n\n\n\nContributing to harp\n\n\nGit, Github, tests and pull requests"
+    "text": "Getting Started\n\n\nInstallation and setup\n\n\n\n\n\n\n\n\n\nReading data\n\n\nFrom basic reading of files to complex lagged systems\n\n\n\n\n\n\n\n\n\nPoint Verification\n\n\nFrom basic verificatio to multiple verification groups and conditions\n\n\n\n\n\n\n\n\n\nBuild a Script\n\n\nWriting scripts for verification tasks\n\n\n\n\n\n\n\n\n\nSpatial Verifcation\n\n\nHow to run spatial verification\n\n\n\n\n\n\n\n\n\nSpatial Data\n\n\nExplore, plot and manipulate spatial data\n\n\n\n\n\n\n\n\n\nExternal Data Formats\n\n\nWrite functions to read other data formats\n\n\n\n\n\n\n\n\n\nContributing\n\n\nGit, Github, harphub, Pull Requests\n\n\n\n\n\n\n\n\n\nharps’ Future\n\n\nInterpoperability with Python"
   },
   {
     "objectID": "about.html",
