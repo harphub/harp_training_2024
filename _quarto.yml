@@ -11,8 +11,6 @@ website:
       - text: "Lessons"
         menu:
           - get-started.qmd
-          - read-forecast.qmd
-          - point-verif-workflow.qmd
 
 format:
   html:

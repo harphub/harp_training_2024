@@ -8,10 +8,26 @@
 :::
 
 ::: card-text
-Installation, basic reading of data and harp classes
+Installation and setup
 :::
 
 <a href="get-started.html" class="stretched-link"></a>
+:::
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6 .g-col-xl-4}
+::: {.card .h-100}
+::: card-body
+::: card-title
+# Reading data
+:::
+
+::: card-text
+From basic reading of files to complex lagged systems
+:::
+
+<a href="#" class="stretched-link"></a>
 :::
 :::
 :::
@@ -24,23 +40,7 @@ Installation, basic reading of data and harp classes
 :::
 
 ::: card-text
-Interpolation to points and basic point verification workflow
-:::
-
-<a href="#" class="stretched-link"></a>
-:::
-:::
-:::
-
-::: {.g-col-12 .g-col-md-6 .g-col-xl-4}
-::: {.card .h-100}
-::: card-body
-::: card-title
-# Complex Verification
-:::
-
-::: card-text
-Multiple verification groups and conditional verification
+From basic verificatio to multiple verification groups and conditions
 :::
 
 <a href="#" class="stretched-link"></a>
@@ -116,11 +116,11 @@ Write functions to read other data formats
 ::: {.card .h-100}
 ::: card-body
 ::: card-title
-# Troubleshooting
+# Contributing
 :::
 
 ::: card-text
-Reproducible examples and debugging
+Git, Github, harphub, Pull Requests
 :::
 
 <a href="#" class="stretched-link"></a>
@@ -132,11 +132,11 @@ Reproducible examples and debugging
 ::: {.card .h-100}
 ::: card-body
 ::: card-title
-# Contributing to harp
+# harps' Future
 :::
 
 ::: card-text
-Git, Github, tests and pull requests
+Interpoperability with Python
 :::
 
 <a href="#" class="stretched-link"></a>
