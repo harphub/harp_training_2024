@@ -129,7 +129,7 @@ system("tar -zxvf bla.tgz")
 ::::
 
 :::: {.g-col-1}
-<a href=#><i class="bi bi-arrow-right-circle-fill"></i></a>
+<a href=read-forecast.html><i class="bi bi-arrow-right-circle-fill"></i></a>
 ::::
 
 :::

@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>harp Dublin 2024 - Point Verifcation Workflow</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">harp Dublin 2024</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html" rel="" target="">
+ <span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./agenda.html" rel="" target="">
+ <span class="menu-text">Agenda</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-lessons" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
+ <span class="menu-text">Lessons</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-lessons">    
+        <li>
+    <a class="dropdown-item" href="./get-started.html" rel="" target="">
+ <span class="dropdown-text">Getting started</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./read-forecast.html" rel="" target="">
+ <span class="dropdown-text">Reading forecast data</span></a>
+  </li>  
+    </ul>
+  </li>
+</ul>
+            <div class="quarto-navbar-tools ms-auto">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#workflow-steps" id="toc-workflow-steps" class="nav-link active" data-scroll-target="#workflow-steps">Workflow Steps</a></li>
+  <li><a href="#basic-deterministic-verification" id="toc-basic-deterministic-verification" class="nav-link" data-scroll-target="#basic-deterministic-verification">Basic deterministic verification</a>
+  <ul class="collapse">
+  <li><a href="#read-forecast" id="toc-read-forecast" class="nav-link" data-scroll-target="#read-forecast">Read forecast</a></li>
+  <li><a href="#read-observations" id="toc-read-observations" class="nav-link" data-scroll-target="#read-observations">Read observations</a></li>
+  <li><a href="#join" id="toc-join" class="nav-link" data-scroll-target="#join">Join</a></li>
+  <li><a href="#verify" id="toc-verify" class="nav-link" data-scroll-target="#verify">Verify</a></li>
+  <li><a href="#save-plot" id="toc-save-plot" class="nav-link" data-scroll-target="#save-plot">Save / Plot</a></li>
+  </ul></li>
+  <li><a href="#basic-ensemble-verification" id="toc-basic-ensemble-verification" class="nav-link" data-scroll-target="#basic-ensemble-verification">Basic ensemble verification</a></li>
+  <li><a href="#comparing-forecast-models" id="toc-comparing-forecast-models" class="nav-link" data-scroll-target="#comparing-forecast-models">Comparing forecast models</a></li>
+  <li><a href="#observation-errors" id="toc-observation-errors" class="nav-link" data-scroll-target="#observation-errors">Observation errors</a>
+  <ul class="collapse">
+  <li><a href="#gross-error-check" id="toc-gross-error-check" class="nav-link" data-scroll-target="#gross-error-check">Gross error check</a></li>
+  <li><a href="#checking-observations-against-forecasts" id="toc-checking-observations-against-forecasts" class="nav-link" data-scroll-target="#checking-observations-against-forecasts">Checking observations against forecasts</a></li>
+  <li><a href="#ensemble-rescaling" id="toc-ensemble-rescaling" class="nav-link" data-scroll-target="#ensemble-rescaling">Ensemble rescaling</a></li>
+  </ul></li>
+  <li><a href="#grouped-verification-and-scaling" id="toc-grouped-verification-and-scaling" class="nav-link" data-scroll-target="#grouped-verification-and-scaling">Grouped Verification and Scaling</a>
+  <ul class="collapse">
+  <li><a href="#basic-grouping" id="toc-basic-grouping" class="nav-link" data-scroll-target="#basic-grouping">Basic Grouping</a></li>
+  <li><a href="#grouping-lists" id="toc-grouping-lists" class="nav-link" data-scroll-target="#grouping-lists">Grouping Lists</a></li>
+  <li><a href="#complex-grouping-lists" id="toc-complex-grouping-lists" class="nav-link" data-scroll-target="#complex-grouping-lists">Complex Grouping Lists</a></li>
+  <li><a href="#changing-the-time-axis" id="toc-changing-the-time-axis" class="nav-link" data-scroll-target="#changing-the-time-axis">Changing the Time Axis</a></li>
+  </ul></li>
+  <li><a href="#vertical-profiles" id="toc-vertical-profiles" class="nav-link" data-scroll-target="#vertical-profiles">Vertical Profiles</a></li>
+  <li><a href="#conditional-verification" id="toc-conditional-verification" class="nav-link" data-scroll-target="#conditional-verification">Conditional Verification</a>
+  <ul class="collapse">
+  <li><a href="#classification-by-observed-value" id="toc-classification-by-observed-value" class="nav-link" data-scroll-target="#classification-by-observed-value">Classification by observed value</a></li>
+  <li><a href="#classification-by-a-different-parameter" id="toc-classification-by-a-different-parameter" class="nav-link" data-scroll-target="#classification-by-a-different-parameter">Classification by a different parameter</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Point Verifcation Workflow</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="workflow-steps" class="level2">
+<h2 class="anchored" data-anchor-id="workflow-steps">Workflow Steps</h2>
+<p>When doing a point verification there are a number of steps to the workflow. Some of these steps you have to do every time, and others might depend on the forecast parameter being verified, the scores you want to compute, or any conditions that you want to apply to the verification. The compulsory steps can be described as:</p>
+<ul>
+<li>Read forecast</li>
+<li>Read observations</li>
+<li>Join</li>
+<li>Verify</li>
+<li>(Save / Plot)</li>
+</ul>
+<p>In this tutorial we will go through each of these steps in turn and then introduce some optional steps, increasing the complexity as we go. It is assumed that SQLite files for both forecasts and observations have been prepared.</p>
+</section>
+<section id="basic-deterministic-verification" class="level2">
+<h2 class="anchored" data-anchor-id="basic-deterministic-verification">Basic deterministic verification</h2>
+<p>Here we will demonstrate the workflow for a simple deterministic verification of 2m temperature. The forecasts come from the AROME-Arctic model that is run operationally by MET Norway, and we will do the verification for August 2023.</p>
+<section id="read-forecast" class="level3">
+<h3 class="anchored" data-anchor-id="read-forecast">Read forecast</h3>
+<p>As always, the first thing we need to do is to attach the packages that we are going to need. There may be some unfamiliar packages here, but they will be explained as we begin to use functions from them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(harp)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(forcats)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>All of our forecasts and observations use the same root directories so we’ll set them here</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>fcst_dir <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"FCTABLE"</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>obs_dir  <span class="ot">&lt;-</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"OBSTABLE"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Forecasts are read in with <code>read_point_forecast()</code>. We will read in the 00:00 UTC forecasts for lead times 0 - 24 hours every 3 hours.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083100</span>, <span class="st">"24h"</span>),</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="st">"arome_arctic"</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"det"</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="read-observations" class="level3">
+<h3 class="anchored" data-anchor-id="read-observations">Read observations</h3>
+<p>Observations are read in with <code>read_point_obs()</code>. Observations files often contain more times and locations than we have for the forecasts. Therefore, we can tell the the function which times and locations to read with the help of <code>unique_valid_dttm()</code> and <code>unique_station()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="join" class="level3">
+<h3 class="anchored" data-anchor-id="join">Join</h3>
+<p>Now that we have the forecasts and observations, we need to match the forecasts and observations to the same date-times and locations. We do this by joining the forecast and observations to each other using <code>join_to_fcst()</code>. Basically this is doing an inner join between the forecast and observations data frames with an extra check to make sure the forecast and observations data have the same units.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="verify" class="level3">
+<h3 class="anchored" data-anchor-id="verify">Verify</h3>
+<p>We are now ready to verify. For deterministic forecasts this is done with <code>det_verify()</code>. By default the verification is stratified by lead time. All we need to tell the function is which column contains the observations. In this case, that would be “T2m”.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">det_verify</span>(fcst, T2m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>::det_summary_scores:: # A tibble: 9 × 9
+  fcst_model lead_time num_cases num_stations    bias  rmse   mae  stde hexbin  
+  &lt;chr&gt;          &lt;int&gt;     &lt;int&gt;        &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;  
+1 arome_arc…         0      5611          191  0.501   1.50 1.06   1.42 &lt;tibble&gt;
+2 arome_arc…         3      5669          192  0.427   1.50 1.05   1.44 &lt;tibble&gt;
+3 arome_arc…         6      5703          194 -0.0388  1.16 0.848  1.16 &lt;tibble&gt;
+4 arome_arc…         9      5723          193 -0.222   1.38 1.05   1.36 &lt;tibble&gt;
+5 arome_arc…        12      5715          194 -0.268   1.47 1.11   1.44 &lt;tibble&gt;
+6 arome_arc…        15      5745          193 -0.265   1.42 1.06   1.40 &lt;tibble&gt;
+7 arome_arc…        18      5664          194  0.135   1.28 0.934  1.27 &lt;tibble&gt;
+8 arome_arc…        21      5692          192  0.572   1.75 1.24   1.66 &lt;tibble&gt;
+9 arome_arc…        24      5615          191  0.695   2.00 1.41   1.88 &lt;tibble&gt;
+
+--harp verification for T2m--
+ # for forecasts from 00:00 UTC 01 aug. 2023 to 00:00 UTC 31 aug. 2023
+ # using 194 observation stations
+ # for verification groups: 
+    -&gt; lead_time</code></pre>
+</div>
+</div>
+<p>We can also compute categorical scores by adding some thresholds. This will compute scores for &gt;= threshold categories.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">det_verify</span>(fcst, T2m, <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">280</span>, <span class="dv">290</span>, <span class="fl">2.5</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>::det_summary_scores:: # A tibble: 9 × 9
+  fcst_model lead_time num_cases num_stations    bias  rmse   mae  stde hexbin  
+  &lt;chr&gt;          &lt;int&gt;     &lt;int&gt;        &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;  
+1 arome_arc…         0      5611          191  0.501   1.50 1.06   1.42 &lt;tibble&gt;
+2 arome_arc…         3      5669          192  0.427   1.50 1.05   1.44 &lt;tibble&gt;
+3 arome_arc…         6      5703          194 -0.0388  1.16 0.848  1.16 &lt;tibble&gt;
+4 arome_arc…         9      5723          193 -0.222   1.38 1.05   1.36 &lt;tibble&gt;
+5 arome_arc…        12      5715          194 -0.268   1.47 1.11   1.44 &lt;tibble&gt;
+6 arome_arc…        15      5745          193 -0.265   1.42 1.06   1.40 &lt;tibble&gt;
+7 arome_arc…        18      5664          194  0.135   1.28 0.934  1.27 &lt;tibble&gt;
+8 arome_arc…        21      5692          192  0.572   1.75 1.24   1.66 &lt;tibble&gt;
+9 arome_arc…        24      5615          191  0.695   2.00 1.41   1.88 &lt;tibble&gt;
+
+::det_threshold_scores:: # A tibble: 45 × 41
+   fcst_model   lead_time threshold num_stations num_cases_for_threshold_total
+   &lt;chr&gt;            &lt;int&gt;     &lt;dbl&gt;        &lt;int&gt;                         &lt;int&gt;
+ 1 arome_arctic         0      280           191                          5335
+ 2 arome_arctic         0      282.          191                          4646
+ 3 arome_arctic         0      285           191                          3216
+ 4 arome_arctic         0      288.          191                          1667
+ 5 arome_arctic         0      290           191                           561
+ 6 arome_arctic         3      280           192                          5314
+ 7 arome_arctic         3      282.          192                          4549
+ 8 arome_arctic         3      285           192                          3125
+ 9 arome_arctic         3      288.          192                          1565
+10 arome_arctic         3      290           192                           494
+# ℹ 35 more rows
+# ℹ 36 more variables: num_cases_for_threshold_observed &lt;dbl&gt;,
+#   num_cases_for_threshold_forecast &lt;dbl&gt;, cont_tab &lt;list&gt;,
+#   threat_score &lt;dbl&gt;, hit_rate &lt;dbl&gt;, miss_rate &lt;dbl&gt;,
+#   false_alarm_rate &lt;dbl&gt;, false_alarm_ratio &lt;dbl&gt;, heidke_skill_score &lt;dbl&gt;,
+#   pierce_skill_score &lt;dbl&gt;, kuiper_skill_score &lt;dbl&gt;, percent_correct &lt;dbl&gt;,
+#   frequency_bias &lt;dbl&gt;, equitable_threat_score &lt;dbl&gt;, odds_ratio &lt;dbl&gt;, …
+
+--harp verification for T2m--
+ # for forecasts from 00:00 UTC 01 aug. 2023 to 00:00 UTC 31 aug. 2023
+ # using 194 observation stations
+ # for verification groups: 
+    -&gt; lead_time &amp; threshold</code></pre>
+</div>
+</div>
+</section>
+<section id="save-plot" class="level3">
+<h3 class="anchored" data-anchor-id="save-plot">Save / Plot</h3>
+<p>Once the verification is done we can save the data using <code>save_point_verif()</code> and plot the data using <code>plot_point_verif()</code>. For plotting we give the function the verification data and the score we want to plot. The scores are basically column names in any of the verification data’s data frames.</p>
+<p>First we need to write the verification to a variable, and then save.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(fcst, T2m, <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">280</span>, <span class="dv">290</span>, <span class="fl">2.5</span>))</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="at">verif_path =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now plot some scores</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, bias)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-verif-plt-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, frequency_bias)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-verif-plt-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The last plot looks strange. That’s because the scores exist for each threshold and they are not being separated. We can separate them by mapping the colour to each threshold, by faceting by threshold (faceting means to separate into panels), or by filtering to a single threshold.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, frequency_bias, <span class="at">colour_by =</span> threshold)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-verif-plt-col-fct-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, frequency_bias, <span class="at">facet_by =</span> <span class="fu">vars</span>(threshold))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-verif-plt-col-fct-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, frequency_bias, <span class="at">filter_by =</span> <span class="fu">vars</span>(threshold <span class="sc">==</span> <span class="dv">285</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-verif-plt-col-fct-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Note</strong>: <code>facet_by</code> and <code>filter_by</code> values must be wrapped in <code>vars()</code>
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>This is because faceting and filtering can be done by more than one variable and the <code>vars()</code> function facilitates that.</p>
+</div>
+</div>
+</div>
+<p>For hexbin plots, the plots are automatically faceted by the grouping variable of the verification - in this case lead time.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, hexbin)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-verif-plt-hex-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="basic-ensemble-verification" class="level2">
+<h2 class="anchored" data-anchor-id="basic-ensemble-verification">Basic ensemble verification</h2>
+<p>The workflow for verifying ensemble forecasts is much the same as that for deterministic verification. The only real difference is using the <code>ens_verify()</code> function to compute the score. In this example we will use data from the MEPS model for the same time period as before.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083100</span>, <span class="st">"1d"</span>),</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="st">"meps"</span>,</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>, </span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(fcst, T2m, <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">280</span>, <span class="dv">290</span>, <span class="fl">2.5</span>))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>verif</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>::ens_summary_scores:: # A tibble: 9 × 16
+  fcst_model lead_time num_cases num_stations mean_bias  stde  rmse spread
+  &lt;chr&gt;          &lt;int&gt;     &lt;int&gt;        &lt;int&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 meps               0      5830          192   0.219    1.40  1.41  0.952
+2 meps               3      5884          193   0.227    1.49  1.51  0.942
+3 meps               6      5920          195   0.127    1.20  1.21  0.770
+4 meps               9      5940          194   0.0789   1.27  1.27  0.942
+5 meps              12      5933          195   0.00602  1.32  1.32  1.01 
+6 meps              15      5966          194  -0.0223   1.27  1.27  0.989
+7 meps              18      5884          195   0.292    1.22  1.26  0.782
+8 meps              21      5909          193   0.511    1.61  1.69  0.812
+9 meps              24      5832          192   0.593    1.82  1.92  0.878
+# ℹ 8 more variables: dropped_members_spread &lt;dbl&gt;, spread_skill_ratio &lt;dbl&gt;,
+#   dropped_members_spread_skill_ratio &lt;dbl&gt;, hexbin &lt;list&gt;,
+#   rank_histogram &lt;list&gt;, crps &lt;dbl&gt;, crps_potential &lt;dbl&gt;,
+#   crps_reliability &lt;dbl&gt;
+
+::ens_threshold_scores:: # A tibble: 45 × 19
+   fcst_model lead_time threshold fair_brier_score sample_climatology
+   &lt;chr&gt;          &lt;int&gt;     &lt;dbl&gt;            &lt;dbl&gt;              &lt;dbl&gt;
+ 1 meps               0      280           0.0457               0.892
+ 2 meps               3      280           0.0578               0.878
+ 3 meps               6      280           0.0132               0.975
+ 4 meps               9      280           0.00352              0.991
+ 5 meps              12      280           0.00304              0.994
+ 6 meps              15      280           0.00362              0.993
+ 7 meps              18      280           0.00339              0.990
+ 8 meps              21      280           0.0451               0.941
+ 9 meps              24      280           0.0719               0.891
+10 meps               0      282.          0.0753               0.732
+# ℹ 35 more rows
+# ℹ 14 more variables: bss_ref_climatology &lt;dbl&gt;, num_stations &lt;int&gt;,
+#   num_cases_total &lt;int&gt;, num_cases_observed &lt;int&gt;, num_cases_forecast &lt;int&gt;,
+#   brier_score &lt;dbl&gt;, brier_skill_score &lt;dbl&gt;, brier_score_reliability &lt;dbl&gt;,
+#   brier_score_resolution &lt;dbl&gt;, brier_score_uncertainty &lt;dbl&gt;,
+#   reliability &lt;list&gt;, roc &lt;list&gt;, roc_area &lt;dbl&gt;, economic_value &lt;list&gt;
+
+::det_summary_scores:: # A tibble: 54 × 11
+   fcst_model sub_model member lead_time num_cases num_stations    bias  rmse
+   &lt;chr&gt;      &lt;chr&gt;     &lt;chr&gt;      &lt;int&gt;     &lt;int&gt;        &lt;int&gt;   &lt;dbl&gt; &lt;dbl&gt;
+ 1 meps       meps      mbr000         0      5830          192  0.244   1.29
+ 2 meps       meps      mbr000         3      5884          193  0.231   1.44
+ 3 meps       meps      mbr000         6      5920          195  0.147   1.21
+ 4 meps       meps      mbr000         9      5940          194  0.108   1.32
+ 5 meps       meps      mbr000        12      5933          195  0.0298  1.39
+ 6 meps       meps      mbr000        15      5966          194 -0.0109  1.35
+ 7 meps       meps      mbr000        18      5884          195  0.331   1.33
+ 8 meps       meps      mbr000        21      5909          193  0.557   1.76
+ 9 meps       meps      mbr000        24      5832          192  0.634   1.99
+10 meps       meps      mbr001         0      5830          192  0.0680  1.60
+# ℹ 44 more rows
+# ℹ 3 more variables: mae &lt;dbl&gt;, stde &lt;dbl&gt;, hexbin &lt;list&gt;
+
+--harp verification for T2m--
+ # for forecasts from 00:00 UTC 01 aug. 2023 to 00:00 UTC 31 aug. 2023
+ # using 195 observation stations
+ # for verification groups: 
+    -&gt; lead_time</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"ens"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Since this is ensemble data, ensemble specific scores have been computed as well as deterministic summary scores for each member. There are a couple of scores that <code>plot_point_verif()</code> can derive that are not columns in the data frames - these are <code>spread_skill</code> and <code>brier_score_decomposition</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, spread_skill)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, crps)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/ens-verif-plt-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, brier_score, <span class="at">facet_by =</span> <span class="fu">vars</span>(threshold))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/ens-verif-plt-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, brier_score_decomposition, <span class="at">facet_by =</span> <span class="fu">vars</span>(threshold))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/ens-verif-plt-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, reliability, <span class="at">facet_by =</span> <span class="fu">vars</span>(threshold))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/ens-verif-plt-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Again the last one has issues with overplotting. This is because there should be one plot for each threshold and each grouping variable (in this case <code>lead_time</code>), so we need to filter.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  reliability, </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by =</span> <span class="fu">vars</span>(threshold),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(lead_time <span class="sc">==</span> <span class="dv">12</span>)</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/ens-verif-plt-rel-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="comparing-forecast-models" class="level2">
+<h2 class="anchored" data-anchor-id="comparing-forecast-models">Comparing forecast models</h2>
+<p>Verification scores are often useful for comparing the performance of different models, or model developments. With harp it is straightforward to compare different models - it is simply case of reading multiple forecasts in in one go. Here we are going to do a deterministic comparison of the AROME-Arctic model and member 0 of the MEPS and IFSENS ensembles. We need to read the ensemble and deterministic forecasts in separately due to the different <code>fcst_type</code> argument. When there are multiple forecast models, we get a <code>harp_list</code>, which works in the same way as a standard list in R. This means that when we read for the second time we can put the output in a named element of the <code>harp_list</code></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083100</span>, <span class="st">"1d"</span>),</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>),</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>, </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members    =</span> <span class="dv">0</span>, </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_det</span>()</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>fcst<span class="sc">$</span>arome_arctic <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083100</span>, <span class="st">"1d"</span>),</span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="st">"arome_arctic"</span>,</span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"det"</span>,</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>, </span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb26-17"><a href="#cb26-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb26-18"><a href="#cb26-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-19"><a href="#cb26-19" aria-hidden="true" tabindex="-1"></a>fcst</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>• meps
+::deterministic point forecast:: # A tibble: 67,239 × 10
+   fcst_model fcst_dttm           valid_dttm          lead_time   SID parameter
+ * &lt;chr&gt;      &lt;dttm&gt;              &lt;dttm&gt;                  &lt;int&gt; &lt;int&gt; &lt;chr&gt;    
+ 1 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1001 T2m      
+ 2 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1010 T2m      
+ 3 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1014 T2m      
+ 4 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1015 T2m      
+ 5 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1018 T2m      
+ 6 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1023 T2m      
+ 7 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1025 T2m      
+ 8 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1026 T2m      
+ 9 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1027 T2m      
+10 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1028 T2m      
+# ℹ 67,229 more rows
+# ℹ 4 more variables: fcst_cycle &lt;chr&gt;, model_elevation &lt;dbl&gt;, units &lt;chr&gt;,
+#   fcst &lt;dbl&gt;
+
+• ifsens
+::deterministic point forecast:: # A tibble: 37,355 × 10
+   fcst_model fcst_dttm           valid_dttm          lead_time   SID parameter
+ * &lt;chr&gt;      &lt;dttm&gt;              &lt;dttm&gt;                  &lt;int&gt; &lt;int&gt; &lt;chr&gt;    
+ 1 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1001 T2m      
+ 2 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1010 T2m      
+ 3 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1014 T2m      
+ 4 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1015 T2m      
+ 5 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1018 T2m      
+ 6 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1023 T2m      
+ 7 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1025 T2m      
+ 8 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1026 T2m      
+ 9 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1027 T2m      
+10 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1028 T2m      
+# ℹ 37,345 more rows
+# ℹ 4 more variables: fcst_cycle &lt;chr&gt;, model_elevation &lt;dbl&gt;, units &lt;chr&gt;,
+#   fcst &lt;dbl&gt;
+
+• arome_arctic
+::deterministic point forecast:: # A tibble: 64,800 × 11
+   fcst_model  fcst_dttm           valid_dttm          lead_time   SID parameter
+   &lt;chr&gt;       &lt;dttm&gt;              &lt;dttm&gt;                  &lt;int&gt; &lt;int&gt; &lt;chr&gt;    
+ 1 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1001 T2m      
+ 2 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1010 T2m      
+ 3 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1014 T2m      
+ 4 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1015 T2m      
+ 5 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1018 T2m      
+ 6 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1023 T2m      
+ 7 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1025 T2m      
+ 8 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1026 T2m      
+ 9 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1027 T2m      
+10 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1028 T2m      
+# ℹ 64,790 more rows
+# ℹ 5 more variables: z &lt;dbl&gt;, fcst &lt;dbl&gt;, fcst_cycle &lt;chr&gt;,
+#   model_elevation &lt;dbl&gt;, units &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>When we have multiple forecast models we should ensure that we are comparing like with like. We therefore only want to verify the cases that are common to all of the forecast models. We can select these cases using <code>common_cases()</code>. Note the number of rows in each of the data frames before selecting the common cases above and after selecting the common cases below.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">common_cases</span>(fcst)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>fcst</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>• meps
+::deterministic point forecast:: # A tibble: 36,000 × 11
+   fcst_model fcst_dttm           valid_dttm          lead_time   SID parameter
+   &lt;chr&gt;      &lt;dttm&gt;              &lt;dttm&gt;                  &lt;int&gt; &lt;int&gt; &lt;chr&gt;    
+ 1 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1001 T2m      
+ 2 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1010 T2m      
+ 3 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1014 T2m      
+ 4 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1015 T2m      
+ 5 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1018 T2m      
+ 6 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1023 T2m      
+ 7 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1025 T2m      
+ 8 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1026 T2m      
+ 9 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1027 T2m      
+10 meps       2023-08-01 00:00:00 2023-08-01 00:00:00         0  1028 T2m      
+# ℹ 35,990 more rows
+# ℹ 5 more variables: fcst_cycle &lt;chr&gt;, model_elevation &lt;dbl&gt;, units &lt;chr&gt;,
+#   fcst &lt;dbl&gt;, z &lt;dbl&gt;
+
+• ifsens
+::deterministic point forecast:: # A tibble: 36,000 × 11
+   fcst_model fcst_dttm           valid_dttm          lead_time   SID parameter
+   &lt;chr&gt;      &lt;dttm&gt;              &lt;dttm&gt;                  &lt;int&gt; &lt;int&gt; &lt;chr&gt;    
+ 1 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1001 T2m      
+ 2 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1010 T2m      
+ 3 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1014 T2m      
+ 4 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1015 T2m      
+ 5 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1018 T2m      
+ 6 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1023 T2m      
+ 7 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1025 T2m      
+ 8 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1026 T2m      
+ 9 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1027 T2m      
+10 ifsens     2023-08-01 00:00:00 2023-08-01 00:00:00         0  1028 T2m      
+# ℹ 35,990 more rows
+# ℹ 5 more variables: fcst_cycle &lt;chr&gt;, model_elevation &lt;dbl&gt;, units &lt;chr&gt;,
+#   fcst &lt;dbl&gt;, z &lt;dbl&gt;
+
+• arome_arctic
+::deterministic point forecast:: # A tibble: 36,000 × 11
+   fcst_model  fcst_dttm           valid_dttm          lead_time   SID parameter
+   &lt;chr&gt;       &lt;dttm&gt;              &lt;dttm&gt;                  &lt;int&gt; &lt;int&gt; &lt;chr&gt;    
+ 1 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1001 T2m      
+ 2 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1010 T2m      
+ 3 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1014 T2m      
+ 4 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1015 T2m      
+ 5 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1018 T2m      
+ 6 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1023 T2m      
+ 7 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1025 T2m      
+ 8 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1026 T2m      
+ 9 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1027 T2m      
+10 arome_arct… 2023-08-01 00:00:00 2023-08-01 00:00:00         0  1028 T2m      
+# ℹ 35,990 more rows
+# ℹ 5 more variables: z &lt;dbl&gt;, fcst &lt;dbl&gt;, fcst_cycle &lt;chr&gt;,
+#   model_elevation &lt;dbl&gt;, units &lt;chr&gt;</code></pre>
+</div>
+</div>
+<p>The rest of the verification workflow is exactly the same.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(fcst, T2m , <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">280</span>, <span class="dv">290</span>, <span class="fl">2.5</span>))</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When plotting the scores, each of the forecast models is automatically assigned a different colour.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, stde)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/common-cases-plt-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We could however plot each forecast model in a separate panel and assign, for example, threshold to control the colour.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  frequency_bias, </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">colour_by =</span> threshold,</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(fcst_model)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/common-cases-fct-model-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="observation-errors" class="level2">
+<h2 class="anchored" data-anchor-id="observation-errors">Observation errors</h2>
+<section id="gross-error-check" class="level3">
+<h3 class="anchored" data-anchor-id="gross-error-check">Gross error check</h3>
+<p>When reading observations, <code>read_point_obs()</code> will do a gross error check on the observations to make sure that they have realistic values. You can set the bounds with the <code>min_obs_allowed</code> and <code>max_obs_allowed</code> arguments. For some parameters, there are default values for the minimum and maximum allowed. These can be seen in the parameter definitions with <code>get_param_def()</code>. For example, for 2m temperature we see that the minimum and maximum values are 223 and 333 Kelvin.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_param_def</span>(<span class="st">"t2m"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>$description
+[1] "Air temperature at 2m above the ground"
+
+$min
+[1] 223
+
+$max
+[1] 333
+
+$grib
+$grib$name
+[1] "2t" "t" 
+
+$grib$level_type
+[1] "heightAboveGround" "surface"          
+
+$grib$level
+[1] 2
+
+
+$netcdf
+$netcdf$name
+[1] "air_temperature_2m"
+
+
+$v
+$v$harp_param
+[1] "T2m"
+
+$v$name
+[1] "TT"
+
+$v$param_units
+[1] "K"
+
+$v$type
+[1] "SYNOP"
+
+
+$wrf
+$wrf$name
+[1] "T2"
+
+
+$fa
+$fa$name
+[1] "CLSTEMPERATURE  "
+
+$fa$units
+[1] "K"
+
+
+$obsoul
+$obsoul$name
+[1] 39
+
+$obsoul$units
+[1] "K"
+
+$obsoul$harp_name
+[1] "T2m"</code></pre>
+</div>
+</div>
+</section>
+<section id="checking-observations-against-forecasts" class="level3">
+<h3 class="anchored" data-anchor-id="checking-observations-against-forecasts">Checking observations against forecasts</h3>
+<p>Another check that can be done is to compare the values of the observations with forecasts. This is done with the <code>check_obs_against_fcst()</code> function. By default the data are grouped by each station ID and time of day, where the day is split into 4 parts of the day [00:00, 06:00), [06, 12:00), [12:00, 18:00) and [18:00, 00:00) and the standard deviation of the forecast for each of these is computed. The observations are then compared with the forecasts, and if the difference between the, is larger than a certain number of standard deviations then that row is removed from the data.</p>
+<p>Using the default value of 6 standard deviations we see that no observations are removed.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">check_obs_against_fcst</span>(fcst, T2m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>ℹ Using default `num_sd_allowed = 6` for `parameter = T2m`
+! 0 cases with more than 6 std devs error.</code></pre>
+</div>
+</div>
+<p>If we make the check more strict to remove all cases where the observations are more than 1 standard deviation away from the forecast, we see that now 723 cases are removed. We can see the removed cases in the <code>"removed_cases"</code> attribute of the result.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">check_obs_against_fcst</span>(fcst, T2m, <span class="at">num_sd_allowed =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>! 723 cases with more than 1 std dev error.
+ℹ Removed cases can be seen in the "removed_cases" attribute.</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">attr</span>(fcst, <span class="st">"removed_cases"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 723 × 5
+     SID valid_dttm            T2m dist_to_fcst tolerance
+   &lt;int&gt; &lt;dttm&gt;              &lt;dbl&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+ 1  1001 2023-08-09 12:00:00  283.         2.94      1.21
+ 2  1001 2023-08-10 00:00:00  282.         1.54      1.09
+ 3  1001 2023-08-10 06:00:00  282.         1.20      1.20
+ 4  1001 2023-08-13 00:00:00  279.         2.89      1.09
+ 5  1001 2023-08-19 00:00:00  280.         1.17      1.09
+ 6  1001 2023-08-21 00:00:00  282.         1.55      1.09
+ 7  1001 2023-08-23 00:00:00  276.         2.33      1.09
+ 8  1001 2023-08-24 00:00:00  276.         1.30      1.09
+ 9  1001 2023-08-24 06:00:00  276.         1.66      1.20
+10  1001 2023-08-30 18:00:00  280.         1.39      1.15
+# ℹ 713 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="ensemble-rescaling" class="level3">
+<h3 class="anchored" data-anchor-id="ensemble-rescaling">Ensemble rescaling</h3>
+<p>When verifying ensembles, we can take the observation error into account by attempting to rescale the distribution of the ensemble forecast to that of the observations. This is done by adding an assumed error distribution to the ensemble forecast by sampling from the error distribution and adding each random draw to an ensemble member. If the error distribution has a mean of 0, the impact will be negligible on most scores. However, for the rank histogram and ensemble spread, this will in effect take the observation errors into account. In <strong>harp</strong> we call this jittering the forecast and is done by using the <code>jitter_fcst()</code> function.</p>
+<p>Take for example the rank histograms for our MEPS and IFSENS ensembles for 2m temperature.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083112</span>, <span class="st">"12h"</span>), </span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>),</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>, </span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">common_cases</span>()</span>
+<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>, <span class="at">col =</span> T2m)</span>
+<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span>
+<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(fcst, T2m)</span>
+<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>  normalized_rank_histogram, </span>
+<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a>  <span class="at">rank_is_relative =</span> <span class="cn">TRUE</span></span>
+<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/rank-hist-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  spread_skill</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/spread-skill-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We see that both models are underdispersed with a U-shaped rank histogram. If we say that the observations have a noraml error distribution with a mean of 0 and standard deviation of 1 we can jitter the ensemble forecast by adding random draws from that distribution.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">jitter_fcst</span>(</span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="cf">function</span>(x) x <span class="sc">+</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(x), <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="dv">1</span>)</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(fcst, T2m)</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>  normalized_rank_histogram, </span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">rank_is_relative =</span> <span class="cn">TRUE</span></span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/jitter-fcst-rh-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  spread_skill</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/jitter-fcst-ss-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now we see that the forecast is much less underdispersed with many of the ranks have a normalized frequency close to 1 and the ensemble spread much closer to the ensemble RMSE.</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning: Error Distributions
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><strong>harp</strong> does not include any estimates for error distributions. It is the user’s responsibility to provide those error distributions. In this example, a normal distribution with a mean of 0 and standard deviation of 1 is for illustrative purposes only.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="grouped-verification-and-scaling" class="level2">
+<h2 class="anchored" data-anchor-id="grouped-verification-and-scaling">Grouped Verification and Scaling</h2>
+<section id="basic-grouping" class="level3">
+<h3 class="anchored" data-anchor-id="basic-grouping">Basic Grouping</h3>
+<p>So far we have just done verification stratified by <code>lead_time</code>. We can use the <code>groupings</code> argument to tell the verification function how to group the data together to compute scores. The most common grouping after lead time would be to group by the forecast cycle. Rather than read in only the forecasts initialized at 00:00 UTC, we will read in the 12:00 UTC forecasts as well.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083112</span>, <span class="st">"12h"</span>),</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>),</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>, </span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">members    =</span> <span class="dv">0</span>, </span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_det</span>()</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>fcst<span class="sc">$</span>arome_arctic <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083112</span>, <span class="st">"12h"</span>),</span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="st">"arome_arctic"</span>,</span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"det"</span>,</span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>, </span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">common_cases</span>(fcst)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The forecasts are in Kelvin, but it may be more useful to have them in °C. We can scale the data using <code>scale_param()</code>. At a minimum we need to give the function the scaling to apply and a new name for the units. By default the scaling is additive, but it can be made multiplicative by setting <code>mult = TRUE</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">scale_param</span>(fcst, <span class="sc">-</span><span class="fl">273.15</span>, <span class="at">new_units =</span> <span class="st">"degC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can read the observations and join to the forecast.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: .fcst has units: degC and .join has units: K</code></pre>
+</div>
+<div class="cell-output cell-output-error">
+<pre><code>Error: Join will not be done due to units incompatibility. You can force the join by setting force = TRUE
+OR, units imcompatibility can be fixed with the set_units(), or scale_param() functions.</code></pre>
+</div>
+</div>
+<p>Here the join fails because the forecasts and observations do not have the same units. We therefore also need to scale the observations with <code>scale_param()</code>. When scaling observations, the name of the observations column also needs to be provided.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">scale_param</span>(obs, <span class="sc">-</span><span class="fl">273.15</span>, <span class="at">new_units =</span> <span class="st">"degC"</span>, <span class="at">col =</span> T2m)</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can verify. This time we will tell <code>det_verify()</code> that we want scores for each lead time and forecast cycle.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>)  </span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(fcst_cycle))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-grp-verif-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We now have plots for each forecast cycle, but what if we also want the combined forecast cycles as well? There are two ways we could tackle that - firstly we could compute the verification with <code>groupings = "lead_time"</code> (i.e.&nbsp;the default) and bind the output to what we already have with <code>bind_point_verif()</code>.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">bind_point_verif</span>(</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">det_verify</span>(fcst, T2m, <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>))</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(fcst_cycle))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-grp-bind-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="grouping-lists" class="level3">
+<h3 class="anchored" data-anchor-id="grouping-lists">Grouping Lists</h3>
+<p>An easier way would be to pass a list to <code>groupings</code>. Each element in the list is treated as a separate verification and then they are bound together at the end.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">list</span>(</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lead_time"</span>,</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>)  </span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"fcst-cycle"</span>))</span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(fcst_cycle))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-grp-list-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Tip</strong>: Controlling the order of facets
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Facets are plotted in alphabetical order if the faceting variable is a string or coerced into a string. This means that the facets can be in an unexpected order. The <code>fct_*()</code> functions from the <em>forcats</em> package can be used to help reorder the facets. Quite often the order in which the values of the variable appear in the data is the order you want the facets to be in so <code>fct_inorder()</code> can be used to reorder the facets.</p>
+</div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, rmse, <span class="at">facet_by =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/simple-grp-fct-inorder-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="complex-grouping-lists" class="level3">
+<h3 class="anchored" data-anchor-id="complex-grouping-lists">Complex Grouping Lists</h3>
+<section id="adding-a-station-characteristic" class="level4">
+<h4 class="anchored" data-anchor-id="adding-a-station-characteristic">Adding a station characteristic</h4>
+<p>It is often desirable to group stations together by common characteristics, whether that be location, whether it’s on the coast or in the mountains or any other characteristic. <strong>harp</strong> includes a built in data frame of station groups that can be joined to the forecast and used to group the verification. We can join the station groups using <code>join_to_fcst()</code> with <code>force = TRUE</code> since we don’t want a check on common units between the data frames to be joined together.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, station_groups, <span class="at">force =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This has added a <code>"station_group"</code> column to the forecast which we can use in the <code>groupings</code> argument. Now we want verification for each lead time for all forecast cycles and station groups; for each lead time and each forecast cycle for all station groups; for each lead time and each station group for all forecast cycles; and for each lead time for each station group for each forecast cycle. Therefore we need a list of 4 different groupings.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb58-4"><a href="#cb58-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
+<span id="cb58-5"><a href="#cb58-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">list</span>(</span>
+<span id="cb58-6"><a href="#cb58-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lead_time"</span>,</span>
+<span id="cb58-7"><a href="#cb58-7" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>),</span>
+<span id="cb58-8"><a href="#cb58-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"station_group"</span>),</span>
+<span id="cb58-9"><a href="#cb58-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>, <span class="st">"station_group"</span>)</span>
+<span id="cb58-10"><a href="#cb58-10" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb58-11"><a href="#cb58-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb58-12"><a href="#cb58-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb58-13"><a href="#cb58-13" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"stations"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Plotting now becomes quite complicated as you have to do a lot of filtering and faceting. For example:</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  equitable_threat_score, </span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(station_group),</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(<span class="fu">grepl</span>(<span class="st">";"</span>, fcst_cycle), threshold <span class="sc">==</span> <span class="dv">15</span>) </span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/cmplx-grp-plt-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>You may have noticed the saving of each verification result into specific directories. This is so that they can be plotted using an interactive app that runs in a web browser. The app is made using <em>R Shiny</em> so we refer to it as a Shiny app. <code>save_point_verif()</code> uses very specific file names that describe some of the information about the verification object, but the grouping strategy is not one of those pieces of information, hence the separate directories. The Shiny app will create dropdown menus allowing you to choose the group for which you want to see the scores.</p>
+<p>You can start the shiny app with:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a><span class="fu">shiny_plot_point_verif</span>(</span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">start_dir           =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>),</span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">full_dir_navigation =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">theme               =</span> <span class="st">"light"</span></span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Tip</strong>: Shiny App Options
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>When you start the shiny app it is best to give it a directory to start from to aid navigation. By setting <code>full_dir_navigation = FALSE</code> the use of modal windows to navigate your directory system is disabled, and all directories below the start directory are searched for <strong>harp</strong> point verification files and the <em>Select Verfication Directory</em> dropdown is populated - this is experimental and may not give the smoothest ride, but is often less cumbersome than navigation by modal windows. Finally you can choose between “light”, “dark” and “white” for the colour theme of the app (the default is “dark”).</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="changing-the-time-axis" class="level3">
+<h3 class="anchored" data-anchor-id="changing-the-time-axis">Changing the Time Axis</h3>
+<p>You can also use the <code>groupings</code> argument to specify different time axes to use for the verification. So far we have used the lead time for the time axis. However we could also use the time of day to get the diurnal cycle, or simply get the scores for each date-time in the data set. In this example we will still group by the forecast cycle as well. To get the time of day, we first need to run <code>expand_date()</code> on the data to get a column for <code>"valid_hour"</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">expand_date</span>(fcst, valid_dttm)</span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">thresholds =</span> <span class="fu">seq</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="fl">2.5</span>),</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings  =</span> <span class="fu">list</span>(</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lead_time"</span>,</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"fcst_cycle"</span>),</span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">"valid_hour"</span>,</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"valid_hour"</span>, <span class="st">"fcst_cycle"</span>),</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">"valid_dttm"</span>,</span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"valid_dttm"</span>, <span class="st">"fcst_cycle"</span>)</span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<strong>Note</strong>: A necessary hack
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Since the data are 6 hourly there are only 4 valid hours in the data set. When there are fewer than five different values in group the verification functions separate them with a “;” in the group value when they are all together, otherwise they are labelled as “All”. <code>plot_point_verif()</code> only searches for “All” when figuring out which data to get for each different x-axis.</p>
+</div>
+</div>
+</div>
+<p>We need to use <code>mutate_list()</code> in conjunction with <code>case_when()</code> from the <em>dplyr</em> package to modify the <code>"valid_hour"</code> column where all valid hours are collected together. <code>mutate_list()</code> use <code>mutate()</code> from the <em>dplyr</em> package to modify columns of data frames in a list whilst retaining the attributes of the list.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">mutate_list</span>(</span>
+<span id="cb62-2"><a href="#cb62-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb62-3"><a href="#cb62-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">valid_hour =</span> <span class="fu">case_when</span>(</span>
+<span id="cb62-4"><a href="#cb62-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">grepl</span>(<span class="st">";"</span>, valid_hour) <span class="sc">~</span> <span class="st">"All"</span>,</span>
+<span id="cb62-5"><a href="#cb62-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> valid_hour</span>
+<span id="cb62-6"><a href="#cb62-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb62-7"><a href="#cb62-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb62-8"><a href="#cb62-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb62-9"><a href="#cb62-9" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(verif, <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"fcst-cycle"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now use the <code>x-axis</code> argument to <code>plot_point_verif()</code> to decide which times to use on the x-axis.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(verif, mae, <span class="at">facet_by =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/plt-x-axis-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>  mae, </span>
+<span id="cb64-4"><a href="#cb64-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_axis   =</span> valid_hour, </span>
+<span id="cb64-5"><a href="#cb64-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle))</span>
+<span id="cb64-6"><a href="#cb64-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/plt-x-axis-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  mae, </span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">x_axis     =</span> valid_dttm, </span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by   =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)),</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">point_size =</span> <span class="dv">0</span> </span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/plt-x-axis-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="vertical-profiles" class="level2">
+<h2 class="anchored" data-anchor-id="vertical-profiles">Vertical Profiles</h2>
+<p>Another application where grouping is important in the verification of vertical profiles. In general the workflow is once again the same, but there are some aspects where you need to take into account that the data are on vertical levels.</p>
+<p>The first difference is that when reading in the data, you need to tell the read function what vertical coordinate the data are on via the <code>vertical_coordinate</code> argument. In most cases the data will be on pressure levels, but they could also be on height levels or model levels.</p>
+<p>The data we are using here come from the AROME-Arctic model and the control member of MEPS, which at MET Norway is archived as MEPS_det (i.e.&nbsp;MEPS deterministic). There are forecasts available every 6 hours at 00-, 06-, 12- and 18-UTC.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083118</span>, <span class="st">"6h"</span>),</span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model          =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"arome_arctic"</span>),</span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type           =</span> <span class="st">"det"</span>,</span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"T"</span>,</span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path           =</span> fcst_dir,</span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">vertical_coordinate =</span> <span class="st">"pressure"</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When finding the common cases, the default behaviour is to compare the <code>"fcst_dttm"</code>, <code>"lead_time"</code> and <code>"SID"</code> columns. When finding common cases for vertical profiles we also need to make sure that only the vertical levels that are common to all forecast models are included in the verification. We do this by adding the pressure column (<code>p</code>) to <code>common_cases()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">common_cases</span>(fcst, p)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Similar to reading the forecasts, we also need to tell <code>read_point_obs</code> that the vertical coordinate is pressure.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm                =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb68-3"><a href="#cb68-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"T"</span>, </span>
+<span id="cb68-4"><a href="#cb68-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations            =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb68-5"><a href="#cb68-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path            =</span> obs_dir,</span>
+<span id="cb68-6"><a href="#cb68-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">vertical_coordinate =</span> <span class="st">"pressure"</span></span>
+<span id="cb68-7"><a href="#cb68-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb68-8"><a href="#cb68-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>, <span class="at">col =</span> T)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Joining works exactly the same as for single level variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can verify, making sure that we have <code>"p"</code> as one of the grouping variables.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">det_verify</span>(</span>
+<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a>  T, </span>
+<span id="cb70-4"><a href="#cb70-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings =</span> <span class="fu">list</span>(</span>
+<span id="cb70-5"><a href="#cb70-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"p"</span>),</span>
+<span id="cb70-6"><a href="#cb70-6" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"p"</span>, <span class="st">"fcst_cycle"</span>)</span>
+<span id="cb70-7"><a href="#cb70-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb70-8"><a href="#cb70-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb70-9"><a href="#cb70-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb70-10"><a href="#cb70-10" aria-hidden="true" tabindex="-1"></a><span class="fu">save_point_verif</span>(</span>
+<span id="cb70-11"><a href="#cb70-11" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb70-12"><a href="#cb70-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"verification"</span>, <span class="st">"det"</span>, <span class="st">"fcst-cycle"</span>)</span>
+<span id="cb70-13"><a href="#cb70-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now plot the profile verification using <code>plot_profile_verif()</code> making sure to filter and facet appropriately (for example, there is one profile for each lead time).</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_profile_verif</span>(</span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>  mae, </span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(<span class="fu">grepl</span>(<span class="st">";"</span>, fcst_cycle)),</span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(lead_time)</span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/vrt-prf-plt-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>We could also make a plot for a single vertical level in the normal way. We may also want to remove times when there are very few cases.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>  bias, </span>
+<span id="cb72-4"><a href="#cb72-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">filter_by =</span> <span class="fu">vars</span>(p <span class="sc">==</span> <span class="dv">925</span>, num_cases <span class="sc">&gt;</span> <span class="dv">5</span>),</span>
+<span id="cb72-5"><a href="#cb72-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by  =</span> <span class="fu">vars</span>(<span class="fu">fct_inorder</span>(fcst_cycle)) </span>
+<span id="cb72-6"><a href="#cb72-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/vrt-prf-one-lvl-plt-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="conditional-verification" class="level2">
+<h2 class="anchored" data-anchor-id="conditional-verification">Conditional Verification</h2>
+<section id="classification-by-observed-value" class="level3">
+<h3 class="anchored" data-anchor-id="classification-by-observed-value">Classification by observed value</h3>
+<p>On occasion, it may be instructive to verify for particular conditions. For example, to verify temperature for different temperature ranges. This can be done by creating a grouping column for each range of observed temperature. Here the workflow would be to use <code>mutate()</code> from the <em>dplyr</em> package in association with the base R function <code>cut()</code> to create a grouping column on the observations before joining to the forecast.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">seq_dttm</span>(<span class="dv">2023080100</span>, <span class="dv">2023083100</span>, <span class="st">"24h"</span>),</span>
+<span id="cb73-3"><a href="#cb73-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>),</span>
+<span id="cb73-4"><a href="#cb73-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb73-5"><a href="#cb73-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb73-6"><a href="#cb73-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir</span>
+<span id="cb73-7"><a href="#cb73-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-8"><a href="#cb73-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-9"><a href="#cb73-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">common_cases</span>()</span>
+<span id="cb73-10"><a href="#cb73-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb73-11"><a href="#cb73-11" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb73-12"><a href="#cb73-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb73-13"><a href="#cb73-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"T2m"</span>,</span>
+<span id="cb73-14"><a href="#cb73-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb73-15"><a href="#cb73-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb73-16"><a href="#cb73-16" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb73-17"><a href="#cb73-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_param</span>(<span class="sc">-</span><span class="fl">273.15</span>, <span class="st">"degC"</span>, <span class="at">col =</span> T2m)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We are going to classify the temperature by having the left side of each range open and right side closed. This basically means that each range goes from &gt;= the lower value to &lt; the upper value. We do this by setting <code>right = FALSE</code> in the call to <code>cut()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a>  obs, </span>
+<span id="cb74-3"><a href="#cb74-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">temp_range =</span> <span class="fu">cut</span>(T2m, <span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">25</span>, <span class="fl">2.5</span>), <span class="at">right =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb74-4"><a href="#cb74-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb74-5"><a href="#cb74-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb74-6"><a href="#cb74-6" aria-hidden="true" tabindex="-1"></a>obs</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 23,756 × 8
+   valid_dttm            SID   lon   lat  elev units   T2m temp_range
+   &lt;dttm&gt;              &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;fct&gt;     
+ 1 2023-08-01 00:00:00  1001 -8.67  70.9    10 degC   6.75 [5,7.5)   
+ 2 2023-08-01 00:00:00  1010 16.1   69.3    13 degC  14.4  [12.5,15) 
+ 3 2023-08-01 00:00:00  1015 17.8   69.6    33 degC  18.6  [17.5,20) 
+ 4 2023-08-01 00:00:00  1023 18.5   69.1    77 degC  13.1  [12.5,15) 
+ 5 2023-08-01 00:00:00  1025 18.9   69.7     9 degC  13.0  [12.5,15) 
+ 6 2023-08-01 00:00:00  1026 18.9   69.7   115 degC  14.2  [12.5,15) 
+ 7 2023-08-01 00:00:00  1027 18.9   69.7    20 degC  13.0  [12.5,15) 
+ 8 2023-08-01 00:00:00  1028 19.0   74.5    16 degC   4.55 &lt;NA&gt;      
+ 9 2023-08-01 00:00:00  1033 19.5   70.2    24 degC  14.5  [12.5,15) 
+10 2023-08-01 00:00:00  1035 20.1   69.6   710 degC  12.9  [12.5,15) 
+# ℹ 23,746 more rows</code></pre>
+</div>
+</div>
+<p>You will see that <code>cut()</code> labels values outside of the breaks as <code>NA</code>. This isn’t necessarily meaningful, so we will use the <em>dplyr</em> function <code>case_when()</code> to give more meaningful labels. We will also take the opportunity to format the other ranges a bit better.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a>obs <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb76-2"><a href="#cb76-2" aria-hidden="true" tabindex="-1"></a>  obs, </span>
+<span id="cb76-3"><a href="#cb76-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">temp_range =</span> <span class="fu">case_when</span>(</span>
+<span id="cb76-4"><a href="#cb76-4" aria-hidden="true" tabindex="-1"></a>    T2m <span class="sc">&lt;</span>  <span class="dv">5</span>  <span class="sc">~</span> <span class="st">"&lt; 5"</span>,</span>
+<span id="cb76-5"><a href="#cb76-5" aria-hidden="true" tabindex="-1"></a>    T2m <span class="sc">&gt;=</span> <span class="dv">25</span> <span class="sc">~</span> <span class="st">"&gt;= 25"</span>,</span>
+<span id="cb76-6"><a href="#cb76-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> <span class="fu">gsub</span>(<span class="st">","</span>, <span class="st">", "</span>, temp_range)</span>
+<span id="cb76-7"><a href="#cb76-7" aria-hidden="true" tabindex="-1"></a>  ), </span>
+<span id="cb76-8"><a href="#cb76-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">temp_range =</span> <span class="fu">fct_relevel</span>(</span>
+<span id="cb76-9"><a href="#cb76-9" aria-hidden="true" tabindex="-1"></a>    temp_range, </span>
+<span id="cb76-10"><a href="#cb76-10" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb76-11"><a href="#cb76-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"&lt; 5"</span>, </span>
+<span id="cb76-12"><a href="#cb76-12" aria-hidden="true" tabindex="-1"></a>      <span class="fu">gsub</span>(</span>
+<span id="cb76-13"><a href="#cb76-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">","</span>, </span>
+<span id="cb76-14"><a href="#cb76-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">", "</span>, </span>
+<span id="cb76-15"><a href="#cb76-15" aria-hidden="true" tabindex="-1"></a>        <span class="fu">levels</span>(<span class="fu">cut</span>(<span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">25</span>), <span class="fu">seq</span>(<span class="dv">5</span>, <span class="dv">25</span>, <span class="fl">2.5</span>), <span class="at">right =</span> <span class="cn">FALSE</span>))</span>
+<span id="cb76-16"><a href="#cb76-16" aria-hidden="true" tabindex="-1"></a>      ), </span>
+<span id="cb76-17"><a href="#cb76-17" aria-hidden="true" tabindex="-1"></a>      <span class="st">"&gt;= 25"</span></span>
+<span id="cb76-18"><a href="#cb76-18" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb76-19"><a href="#cb76-19" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb76-20"><a href="#cb76-20" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In the above we also set the factor levels to an order that makes sense for when we come to plot the scores. We can now continue as normal, adding “<code>temp_range"</code> as a grouping variable.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, obs)</span>
+<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(</span>
+<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings =</span> <span class="fu">c</span>(<span class="st">"leadtime"</span>, <span class="st">"temp_range"</span>)</span>
+<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a>  spread_skill, </span>
+<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by =</span> <span class="fu">vars</span>(temp_range)  </span>
+<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/cond-temp-verif-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="classification-by-a-different-parameter" class="level3">
+<h3 class="anchored" data-anchor-id="classification-by-a-different-parameter">Classification by a different parameter</h3>
+<p>One important aspect of forecast model performance is how it performs in different weather regimes. For example, it may be useful to know how the model performs for a particular parameter when the wind is coming from a certain direction. There are a couple of approaches to this, but it must be noted that it is important to include the possibility for false alarms in the verification.</p>
+<p>Here we will compute the verification scores for an ensemble forecast for 2m temperature when the wind is coming from the west, so let’s say a wind direction between 45° and 135°. We will first read in the wind direction observations for the cases we already have for 2m temperature.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>wind_dir <span class="ot">&lt;-</span> <span class="fu">read_point_obs</span>(</span>
+<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm      =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter =</span> <span class="st">"D10m"</span>,</span>
+<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations  =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">obs_path  =</span> obs_dir </span>
+<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We will now create a column to have the groups “westerly” and “other” based on the values in the <code>"D10m"</code> column.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>wind_dir <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a>  wind_dir, </span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">wind_direction =</span> <span class="fu">case_when</span>(</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a>    <span class="fu">between</span>(D10m, <span class="dv">45</span>, <span class="dv">135</span>) <span class="sc">~</span> <span class="st">"westerly"</span>,</span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> <span class="st">"other"</span></span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now join the wind direction data to the 2m temperature data that we want to verify. Here we have to set <code>force = TRUE</code> in <code>join_to_fcst()</code> since it will fail the check for the forecasts and observations having the same units.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst, wind_dir, <span class="at">force =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now verify 2m temperature and group by the wind direction.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(</span>
+<span id="cb81-2"><a href="#cb81-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb81-3"><a href="#cb81-3" aria-hidden="true" tabindex="-1"></a>  T2m, </span>
+<span id="cb81-4"><a href="#cb81-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings =</span> <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"wind_direction"</span>)</span>
+<span id="cb81-5"><a href="#cb81-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>::Computing verification for fcst_model `meps`::</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Det summary for sub_model, member, lead_time &amp; wind_direction✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Hexbin for sub_model, member, lead_time &amp; wind_direction✔</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Spread; Skill for lead_time &amp; wind_direction✔
+Hexbin for lead_time &amp; wind_direction✔
+Rank histogram for lead_time &amp; wind_direction✔
+CRPS for lead_time &amp; wind_direction✔
+::Computing verification for fcst_model `ifsens`::
+Det summary for sub_model, member, lead_time &amp; wind_direction✔
+Hexbin for sub_model, member, lead_time &amp; wind_direction✔
+Spread; Skill for lead_time &amp; wind_direction✔
+Hexbin for lead_time &amp; wind_direction✔
+Rank histogram for lead_time &amp; wind_direction✔
+CRPS for lead_time &amp; wind_direction✔</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>  mean_bias, </span>
+<span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by =</span> <span class="fu">vars</span>(wind_direction)</span>
+<span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: plot_num_cases = TRUE cannot be used with facet_by. plot_num_cases set
+to FALSE.</code></pre>
+</div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/cond-wind-verif-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>A more thorough method might be to include whether westerly winds were forecast or not in the analysis, such that we have cases of westerly being observed only, forecasted only, both observed and forecasted, and neither observed nor forecasted.</p>
+<p>So now we need read in the wind direction forecasts as well. In this case we need to set the units to “degrees” as they are incorrect in the file (due to a bug :/ ).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb88"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb88-1"><a href="#cb88-1" aria-hidden="true" tabindex="-1"></a>fcst_wind_dir <span class="ot">&lt;-</span> <span class="fu">read_point_forecast</span>(</span>
+<span id="cb88-2"><a href="#cb88-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm       =</span> <span class="fu">unique_fcst_dttm</span>(fcst),</span>
+<span id="cb88-3"><a href="#cb88-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_model =</span> <span class="fu">c</span>(<span class="st">"meps"</span>, <span class="st">"ifsens"</span>), </span>
+<span id="cb88-4"><a href="#cb88-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">fcst_type  =</span> <span class="st">"eps"</span>,</span>
+<span id="cb88-5"><a href="#cb88-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter  =</span> <span class="st">"wd10m"</span>,</span>
+<span id="cb88-6"><a href="#cb88-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">lead_time  =</span> <span class="fu">unique_col</span>(fcst, lead_time), </span>
+<span id="cb88-7"><a href="#cb88-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">stations   =</span> <span class="fu">unique_stations</span>(fcst),</span>
+<span id="cb88-8"><a href="#cb88-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path  =</span> fcst_dir </span>
+<span id="cb88-9"><a href="#cb88-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb88-10"><a href="#cb88-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">set_units</span>(<span class="st">"degrees"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Since the forecasts are from ensemble, we could identify forecasts that have westerly winds as those where at least one member has a wind direction between 45° and and 135° To identify these cases we can find the binary probability for each member and then compute the ensemble mean with <code>ens_stats()</code>. We can apply a function to multiple columns using <code>across()</code> from the <em>dplyr</em> package together with <code>mutate()</code>. Since we are generating logical values, we need to tell <code>ens_stats()</code> not to compute the standard deviation.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a>fcst_wind_dir <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb89-2"><a href="#cb89-2" aria-hidden="true" tabindex="-1"></a>  fcst_wind_dir,</span>
+<span id="cb89-3"><a href="#cb89-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">across</span>(<span class="fu">contains</span>(<span class="st">"_mbr"</span>), <span class="sc">~</span><span class="fu">between</span>(.x, <span class="dv">45</span>, <span class="dv">135</span>))</span>
+<span id="cb89-4"><a href="#cb89-4" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb89-5"><a href="#cb89-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ens_stats</span>(<span class="at">sd =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can join the wind direction observations, generate our groups and select only those columns we need.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb90"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb90-1"><a href="#cb90-1" aria-hidden="true" tabindex="-1"></a>fcst_wind_dir <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(fcst_wind_dir, wind_dir)</span>
+<span id="cb90-2"><a href="#cb90-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb90-3"><a href="#cb90-3" aria-hidden="true" tabindex="-1"></a>fcst_wind_dir <span class="ot">&lt;-</span> <span class="fu">mutate</span>(</span>
+<span id="cb90-4"><a href="#cb90-4" aria-hidden="true" tabindex="-1"></a>  fcst_wind_dir, </span>
+<span id="cb90-5"><a href="#cb90-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">westerly =</span> <span class="fu">case_when</span>(</span>
+<span id="cb90-6"><a href="#cb90-6" aria-hidden="true" tabindex="-1"></a>    ens_mean  <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> wind_direction <span class="sc">==</span> <span class="st">"westerly"</span> <span class="sc">~</span> <span class="st">"both"</span>,</span>
+<span id="cb90-7"><a href="#cb90-7" aria-hidden="true" tabindex="-1"></a>    ens_mean  <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> wind_direction <span class="sc">==</span> <span class="st">"other"</span> <span class="sc">~</span> <span class="st">"forecast only"</span>,</span>
+<span id="cb90-8"><a href="#cb90-8" aria-hidden="true" tabindex="-1"></a>    ens_mean <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> wind_direction <span class="sc">==</span> <span class="st">"westerly"</span> <span class="sc">~</span> <span class="st">"observed only"</span>,</span>
+<span id="cb90-9"><a href="#cb90-9" aria-hidden="true" tabindex="-1"></a>    ens_mean <span class="sc">==</span> <span class="dv">0</span> <span class="sc">&amp;</span> wind_direction <span class="sc">==</span> <span class="st">"other"</span> <span class="sc">~</span> <span class="st">"neither"</span>, </span>
+<span id="cb90-10"><a href="#cb90-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">.default =</span> <span class="cn">NA</span></span>
+<span id="cb90-11"><a href="#cb90-11" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb90-12"><a href="#cb90-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span> </span>
+<span id="cb90-13"><a href="#cb90-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(fcst_dttm, lead_time, SID, westerly)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We can now join our data frame with the verification groups to the 2m temperature forecasts to be verified. Since we have two models, we can merge them into a single data frame using <code>bind()</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>fcst <span class="ot">&lt;-</span> <span class="fu">join_to_fcst</span>(</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">bind</span>(fcst_wind_dir), </span>
+<span id="cb91-4"><a href="#cb91-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">force =</span> <span class="cn">TRUE</span></span>
+<span id="cb91-5"><a href="#cb91-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can verify and plot for our new groups.</p>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a>verif <span class="ot">&lt;-</span> <span class="fu">ens_verify</span>(</span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a>  fcst, </span>
+<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a>  T2m,</span>
+<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">groupings =</span> <span class="fu">c</span>(<span class="st">"lead_time"</span>, <span class="st">"westerly"</span>)</span>
+<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb92-7"><a href="#cb92-7" aria-hidden="true" tabindex="-1"></a><span class="fu">plot_point_verif</span>(</span>
+<span id="cb92-8"><a href="#cb92-8" aria-hidden="true" tabindex="-1"></a>  verif, </span>
+<span id="cb92-9"><a href="#cb92-9" aria-hidden="true" tabindex="-1"></a>  mean_bias, </span>
+<span id="cb92-10"><a href="#cb92-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">facet_by       =</span> <span class="fu">vars</span>(<span class="fu">fct_relevel</span>(westerly, <span class="sc">~</span>.x[<span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">3</span>)])),</span>
+<span id="cb92-11"><a href="#cb92-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">num_facet_cols =</span> <span class="dv">2</span></span>
+<span id="cb92-12"><a href="#cb92-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="point-verif-workflow_files/figure-html/cond-wind-fcst-grp-verif-plt-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In the next tutorial will put everything you have learned here into practice by building a script that could be used for repeated verification tasks.</p>
+<div class="grid">
+<div class="g-col-1">
+<p><a href="read-forecast.html"><i class="bi bi-arrow-left-circle-fill"></i></a></p>
+</div>
+<div class="g-col-10">
+
+</div>
+<div class="g-col-1">
+<p><a href="build-verif-script.html"><i class="bi bi-arrow-right-circle-fill"></i></a></p>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'alternate';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
