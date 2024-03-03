@@ -724,24 +724,26 @@
     },
     "harpSpatial": {
       "Package": "harpSpatial",
-      "Version": "0.0.1.9004",
+      "Version": "0.0.1.9009",
       "Source": "GitHub",
-      "Remotes": "harphub/meteogrid, harphub/harpIO",
+      "Remotes": "harphub/meteogrid, harphub/harpIO@develop, harphub/harpCore@develop",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "harpSpatial",
       "RemoteUsername": "harphub",
-      "RemoteRef": "HEAD",
-      "RemoteSha": "b9c6b9879e2e8e58188eeebab6ed26463e362e0d",
+      "RemoteRef": "develop",
+      "RemoteSha": "ec2a1a561938da097f81c3dd27eb03c9120d9376",
       "Requirements": [
         "R",
         "Rcpp",
+        "harpCore",
+        "harpIO",
         "lubridate",
         "meteogrid",
         "readr",
         "tibble"
       ],
-      "Hash": "9126859107c32f745fc7919a3cc846f1"
+      "Hash": "c63040001c486a763285c2bd7313c7f5"
     },
     "harpVis": {
       "Package": "harpVis",

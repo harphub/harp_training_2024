@@ -8,22 +8,22 @@ For the most part, instruction will be "code-along" sessions with the instructor
 with an opportunity to go through some of your own work and / or problems in the 
 second half of the week. 
 
-## Day 1: 4 March 2024
+## Day 1: Monday 4 March 2024
 ### 13:30 - 17:00 
 #### [_Introduction and Getting started_](get-started.qmd)
 
 We will give a brief introduction to harp and R and
 
-#### [_Basic reading of data_](read-forecast.qmd)
+#### _Basic reading of data_
 
 Andrew will introduce the `read_forecast()` function and go through reading data 
 in _Grib_, _NetCDF_ and _vfld_ formats. We will look at how to deal with complex 
 lagged forecasting systems and how to transform gridded data to geographic 
 point locations
 
-## Day 2: 5 March 2024
+## Day 2: Tuesday 5 March 2024
 ### 09:00 - 12:30
-#### _Point Verifcation Workflow_
+#### _Point Verification Workflow_
 
 Andrew will go through the workflow for verifying point forecasts. From basic 
 preparation of the observations, through to reading the forecasts and computing
@@ -39,3 +39,64 @@ into a script that could be run in a production environment. We will cover how
 to loop over different forecast parameters, how to deal with harp's non-standard 
 evaluation by embracing variables with `{{ }}` and then discuss some real uses 
 of harp point verification in an operational environment. 
+
+## Day 3: Wednesday March 2024
+### 09:00 - 12:30
+#### _Spatial Verification Workflow_
+
+Alex will take you through the workflow required to to do spatial verification 
+for scores including the Fractions Skill Score (FSS) and SAL (Structure
+Amplitude and Location). The new HIRA score will also be introduced and sources 
+of spatial data will be discussed. 
+
+Andrew will briefly go through the workflow for __harp__'s new ensemble 
+fractions skill score implementation and its _distribution_ and _error_ 
+components. 
+
+### 13:30 - 17:00
+#### _Plotting and Manipulating Spatial Data_
+
+Andrew will take you through how __harp__ data can work with (probably R's most 
+popular package) _ggplot2_. We will have the opportunity to experiment with the 
+__harp__ ggplot _geoms_ `geom_georaster()`, `geom_geocontour()` and 
+`geom_geocontour_filled()` and different methods to map data to colours. In 
+addition, we will go through __harp__'s geographical transformation functions, 
+how to define your own georeferenced grids and how to deal with cross-sections. 
+
+## Day 4: Thursay 7 March 2024
+### 09:00 - 12:30
+#### _Building a Function to Read External Observations_
+
+This session will be a case study of how to use __harp__'s function recognition
+system to use `read_obs()` to read observations from an external source. We will 
+use MET Norway's _Frost_ database, which can be queried using a REST API.  
+
+In addition, there will be time to discuss any issues that you are having with 
+__harp__
+
+### 13:30 - 17:00
+#### _Contributing to __harp___
+
+This session will be a case study of how to contribute to harp. We will fork a 
+harp repository, create a feature branch, modify a function, test it, merge 
+with the develop branch and make a pull request. The plan is to modify 
+_harpPoint_'s functionality for computing probabilities by adding a comparator 
+argument, such that categorical scores can be computed for cases of less than, 
+greater than, equal to or between thresholds. 
+
+In addition, there will be time to discuss any issues that you are having with 
+__harp__
+
+## Day 5: 8 March 2024
+### 09:00 - 12:30
+#### _Interoperability of __harp__ with Python_
+
+Juanje will introduce some work done with Python to do Langrangian spatial 
+verification of Python. We will discuss the prospects for integrating Python 
+functionalities into __harp__ 
+
+In addition, Andrew will talk about some ideas for future directions for 
+__harp__, such as functions to return __harp__ verification functions. 
+
+This will also be a final opportunity to get help with specific issues with 
+__harp__ and _R_. 
