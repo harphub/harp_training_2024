@@ -12,6 +12,7 @@ website:
       - text: "Lessons"
         menu:
           - get-started.qmd
+          - read-forecast.qmd
 format:
   html:
     theme:
