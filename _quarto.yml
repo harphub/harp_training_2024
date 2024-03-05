@@ -13,6 +13,8 @@ website:
         menu:
           - get-started.qmd
           - read-forecast.qmd
+          - point-verif-workflow.qmd
+          - build-verif-script.qmd
 format:
   html:
     theme:

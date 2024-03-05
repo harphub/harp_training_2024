@@ -1,3 +1,540 @@
 ---
 title: Build a Point Verification Script
 ---
+
+In this tutorial we are going to build a basic script that could be used to run verification tasks in a production environment. 
+
+## Basic Skeleton
+
+We will start our script from a skeleton of comments that describe the basic point verification workflow, and then populate it with the variable assignments and functions. First this is the basic workflow.
+
+```{r comments-only}
+# Attach libraries
+
+# Read Forecasts
+
+# Scale
+
+# Select Common cases
+
+# Read observations
+
+# Join
+
+# Observation errors
+
+# Verify 
+
+# Save
+```
+
+We can now add the function calls for each section
+
+```{r function-calls, eval=FALSE}
+# Attach libraries
+library(harp)
+library(here)
+
+# Read Forecasts
+fcst <- read_point_forecast(
+  dttm        = seq_dttm(...),
+  fcst_model  = c("..."),
+  fcst_type   = "det", 
+  parameter   = "...",
+  lead_time   = seq(...),
+  file_path   = "..."
+)
+
+# Scale
+fcst <- scale_param(fcst, ..., "...")
+
+# Select Common cases
+fcst <- common_cases(fcst)
+
+# Read observations
+obs <- read_point_obs(
+  dttm        = unique_valid_dttm(fcst),
+  parameter   = "...",
+  stations    = unique_stations(fcst),
+  obs_path    = "...",
+  min_allowed = ...,
+  max_allowed = ...
+)
+
+# Scale
+obs <- scale_param(obs, ..., "...", col = ...)
+
+# Join
+fcst <- join_to_fcst(fcst, obs)
+
+# Observation errors
+fcst <- check_obs_against_fcst(fcst, ..., num_sd_allowed = ...)
+
+# Verify
+verif <- det_verify(fcst, ..., thresholds = ..., groupings = c("..."))
+
+# Save
+save_point_verif(verif, "...")
+```
+
+Everything we have marked with `...` is essentially a variable that we can set at the beginning of the script. So we can assign those variables and test the first iteration of the script. 
+
+```{r first-iteration, message=FALSE, warning=FALSE, error=TRUE}
+# Attach libraries
+library(harp)
+library(here)
+
+# Paths
+fcst_dir    <- here("data", "FCTABLE")
+obs_dir     <- here("data", "OBSTABLE")
+verif_dir   <- here("data", "verification")
+
+# Parameters
+prm         <- "T2m"
+
+# Forecast variables
+date_times  <- seq_dttm(2023080100, 2023083118, "6h")
+fcst_models <- "arome_arctic"
+lt          <- seq(0, 24, 3)
+fc_scaling  <- -273.15
+fc_units    <- "degC"
+
+# Obs variables
+obs_scaling <- -273.15
+obs_units   <- "degC"
+min_obs     <- 223
+max_obs     <- 333
+error_sd    <- 4
+
+# Verif variables
+thresh      <- seq(-5, 25, 5)
+grps        <- list(
+  "lead_time", 
+  c("lead_time", "fcst_cycle")
+)
+
+# Read Forecasts
+fcst <- read_point_forecast(
+  dttm        = date_times,
+  fcst_model  = fcst_models,
+  fcst_type   = "det", 
+  parameter   = prm,
+  lead_time   = lt,
+  file_path   = fcst_dir
+)
+
+# Scale
+fcst <- scale_param(fcst, fc_scaling, fc_units)
+
+# Select Common cases
+fcst <- common_cases(fcst)
+
+# Read observations
+obs <- read_point_obs(
+  dttm        = unique_valid_dttm(fcst),
+  parameter   = prm,
+  stations    = unique_stations(fcst),
+  obs_path    = obs_dir,
+  min_allowed = min_obs,
+  max_allowed = max_obs
+)
+
+# Scale
+obs <- scale_param(obs, obs_scaling, obs_units, col = prm)
+
+# Join
+fcst <- join_to_fcst(fcst, obs)
+
+# Observation errors
+fcst <- check_obs_against_fcst(fcst, prm, num_sd_allowed = error_sd)
+
+# Verify
+verif <- det_verify(fcst, prm, thresholds = thresh, groupings = grps)
+
+# Save
+save_point_verif(verif, verif_dir)
+```
+
+We have now run into our first problem as an error has occurred with `scale_param()` for the observations data. The error message isn't that instructive (unfortunately). It is caused because many __harp__ functions use Non Standard Evaluation (NSE).
+
+## Non Standard Evaluation
+__harp__ takes a lot of inspiration from the [tidyverse](https://www.tidyverse.org/) - a collection of R packages designed to provide a consistent way of working with data in _R_. Some of the functions that we have already seen, such as `mutate()`, are part of the tidyverse. These functions are designed to make working interactively smooth, and one aspect of this is passing arguments that are unquoted. This applies to the names of columns in data frames and harp follows suit. While working interactively is easier and more intuitive with NSE, it comes at the expense of making programming a little bit trickier. 
+
+However, the solution is straightforward. When passing the name of a column to a function as a variable rather than the name itself it needs to be _embraced_. That is to say wrapped in double curly braces `{{ }}`. In the case of __harp__ functions, this is often where the parameter name is passed to a function to identify the column that contains observations. We can now modify our basic script to embrace arguments where appropriate. 
+
+```{r first-iteration-embraced, message=FALSE, warning=FALSE, error=TRUE}
+# Attach libraries
+library(harp)
+library(here)
+
+# Paths
+fcst_dir    <- here("data", "FCTABLE")
+obs_dir     <- here("data", "OBSTABLE")
+verif_dir   <- here("data", "verification")
+
+# Parameters
+prm         <- "T2m"
+
+# Forecast variables
+date_times  <- seq_dttm(2023080100, 2023083118, "6h")
+fcst_models <- "arome_arctic"
+lt          <- seq(0, 24, 3)
+fc_scaling  <- -273.15
+fc_units    <- "degC"
+
+# Obs variables
+obs_scaling <- -273.15
+obs_units   <- "degC"
+min_obs     <- 223
+max_obs     <- 333
+error_sd    <- 4
+
+# Verif variables
+thresh      <- seq(-5, 25, 2.5)
+grps        <- list(
+  "lead_time", 
+  c("lead_time", "fcst_cycle")
+)
+
+# Read Forecasts
+fcst <- read_point_forecast(
+  dttm        = date_times,
+  fcst_model  = fcst_models,
+  fcst_type   = "det", 
+  parameter   = prm,
+  lead_time   = lt,
+  file_path   = fcst_dir
+)
+
+# Scale
+fcst <- scale_param(fcst, fc_scaling, fc_units)
+
+# Select Common cases
+fcst <- common_cases(fcst)
+
+# Read observations
+obs <- read_point_obs(
+  dttm        = unique_valid_dttm(fcst),
+  parameter   = prm,
+  stations    = unique_stations(fcst),
+  obs_path    = obs_dir,
+  min_allowed = min_obs,
+  max_allowed = max_obs
+)
+
+# Scale
+obs <- scale_param(obs, obs_scaling, obs_units, col = {{prm}})
+
+# Join
+fcst <- join_to_fcst(fcst, obs)
+
+# Observation errors
+fcst <- check_obs_against_fcst(fcst, {{prm}}, num_sd_allowed = error_sd)
+
+# Verify
+verif <- det_verify(fcst, {{prm}}, thresholds = thresh, groupings = grps)
+
+# Save
+save_point_verif(verif, verif_dir)
+```
+
+We now have the beginnings of a verification script. But what if we want to do verification for different parameters. One approach would be for the user to simply change the variable assignments at the top of the script for each use. However, this still requires a lot of manual work. A more efficient approach would be to set up the script to handle multiple parameters. 
+
+## Script for multiple parameters
+
+When dealing with multiple parameters, each parameter may require different scalings, different thresholds, different error settings, different parameter names for forecasts and observations, or possibly different groupings. This will require a little more setting up. One approach may be to set some defaults and then some specific settings for different parameters. Lists in _R_ provide an excellent mechanism for doing this. 
+
+Let's now make the parameter part of our script more descriptive for multiple parameters. 
+
+```{r param-loop, message=FALSE, warning=FALSE}
+# Attach libraries
+library(harp)
+library(here)
+
+# Date times
+start_dttm  <- 2023080100
+end_dttm    <- 2023083118
+dttm_step   <- "6h"
+
+# Forecast variables
+date_times  <- seq_dttm(start_dttm, end_dttm, dttm_step)
+fcst_models <- "arome_arctic"
+lt          <- seq(0, 24, 3)
+
+# Paths
+fcst_dir    <- here("data", "FCTABLE")
+obs_dir     <- here("data", "OBSTABLE")
+verif_dir   <- here("data", "verification")
+
+defaults <- list(
+  grps = list(
+    "lead_time",
+    c("lead_time", "fcst_cycle")
+  ),
+  error_sd = 6
+)
+
+# Parameters
+params <- list(
+  
+  T2m = list(
+    fc_scaling  = list(
+      scaling   = -273.15,
+      new_units = "degC"
+    ), 
+    obs_scaling = list(
+      scaling   = -273.15,
+      new_units = "degC"
+    ),
+    min_obs     = 223,
+    max_obs     = 333,
+    error_sd    = 4,
+    thresh      = seq(-5, 25, 5)
+  ),
+  
+  S10m = list(
+    fc_param    = "ws10m",
+    min_obs     = 0,
+    max_obs     = 100,
+    thresh      = c(1, 2, 3, 5, 7.5, 10, 15, 20, 25)
+  )
+)
+
+# Loop over parameters
+for (prm in names(params)) {
+  
+  fc_prm <- params[[prm]]$fc_param
+  if (is.null(fc_prm)) {
+    fc_prm <- prm
+  }
+  
+  # Read Forecasts
+  fcst <- read_point_forecast(
+    dttm        = date_times,
+    fcst_model  = fcst_models,
+    fcst_type   = "det", 
+    parameter   = fc_prm,
+    lead_time   = lt,
+    file_path   = fcst_dir
+  )
+  
+  # Scale
+  if (!is.null(params[[prm]]$fc_scaling)) {
+    fcst <- do.call(
+      scale_param, 
+      c(list(x = fcst), params[[prm]]$fc_scaling)
+    )
+  }
+  
+  # Select Common cases
+  fcst <- common_cases(fcst)
+  
+  # Read observations
+  obs_prm <- params[[prm]]$obs_param
+  if (is.null(obs_prm)) {
+    obs_prm <- prm
+  }
+    
+  obs <- read_point_obs(
+    dttm        = unique_valid_dttm(fcst),
+    parameter   = obs_prm,
+    stations    = unique_stations(fcst),
+    obs_path    = obs_dir,
+    min_allowed = params[[prm]]$min_obs,
+    max_allowed = params[[prm]]$max_obs
+  )
+  
+  # Scale
+  if (!is.null(params[[prm]]$obs_scaling)) { 
+    obs <- do.call(
+      scale_param, 
+      c(
+        list(x = obs), 
+        params[[prm]]$obs_scaling, 
+        list(col = {{obs_prm}})
+      )
+    )
+  }
+  
+  # Join
+  fcst <- join_to_fcst(fcst, obs)
+  
+  # Observation errors
+  error_sd <- params[[prm]]$error_sd
+  if (is.null(error_sd)) {
+    error_sd <- defaults$error_sd
+  }
+  
+  fcst <- check_obs_against_fcst(
+    fcst, 
+    {{obs_prm}}, 
+    num_sd_allowed = error_sd
+  )
+  
+  # Verify
+  grps <- params[[prm]]$grps
+  if (is.null(grps)) {
+    grps <- defaults$grps
+  }
+  
+  thresh <- params[[prm]]$thresh
+  
+  verif <- det_verify(
+    fcst, 
+    {{obs_prm}}, 
+    thresholds = thresh, 
+    groupings  = grps
+  )
+  
+  # Save
+  save_point_verif(verif, verif_dir)
+  
+}
+```
+
+## Function instead of loop
+
+_R_ is designed to be a _functional programming_ language. One of the advantages of this is that a function can be called repeatedly with different arguments making for (hopefully!) more structured and repeatable programs. If a function fails, it is also much easier to move onto the next iteration. 
+
+Let's rewrite the contents of our loop as a function that takes some arguments. 
+
+```{r verif-function}
+run_verif <- function(
+  param_list,
+  param_name,
+  fc_models,
+  dttm,
+  ld_times,
+  fc_data_dir,
+  obs_data_dir,
+  dflts,
+  vrf_data_dir
+) {
+  
+  fc_prm <- param_list$fc_param
+  if (is.null(fc_prm)) {
+    fc_prm <- param_name
+  }
+  
+  # Read Forecasts
+  fcst <- read_point_forecast(
+    dttm        = dttm,
+    fcst_model  = fc_models,
+    fcst_type   = "det", 
+    parameter   = fc_prm,
+    lead_time   = ld_times,
+    file_path   = fc_data_dir
+  )
+  
+  # Scale
+  if (!is.null(param_list$fc_scaling)) {
+    fcst <- do.call(
+      scale_param, 
+      c(list(x = fcst), param_list$fc_scaling)
+    )
+  }
+  
+  # Select Common cases
+  fcst <- common_cases(fcst)
+  
+  # Read observations
+  obs_prm <- param_list$obs_param
+  if (is.null(obs_prm)) {
+    obs_prm <- param_name
+  }
+    
+  obs <- read_point_obs(
+    dttm        = unique_valid_dttm(fcst),
+    parameter   = obs_prm,
+    stations    = unique_stations(fcst),
+    obs_path    = obs_dir,
+    min_allowed = param_list$min_obs,
+    max_allowed = param_list$max_obs
+  )
+  
+  # Scale
+  if (!is.null(param_list$obs_scaling)) { 
+    obs <- do.call(
+      scale_param, 
+      c(
+        list(x = obs), 
+        param_list$obs_scaling, 
+        list(col = {{obs_prm}})
+      )
+    )
+  }
+  
+  # Join
+  fcst <- join_to_fcst(fcst, obs)
+  
+  # Observation errors
+  error_sd <- param_list$error_sd
+  if (is.null(error_sd)) {
+    error_sd <- dflts$error_sd
+  }
+  
+  fcst <- check_obs_against_fcst(
+    fcst, 
+    {{obs_prm}}, 
+    num_sd_allowed = error_sd
+  )
+  
+  # Verify
+  grps <- param_list$grps
+  if (is.null(grps)) {
+    grps <- dflts$grps
+  }
+  
+  thresh <- param_list$thresh
+  
+  verif <- det_verify(
+    fcst, 
+    {{obs_prm}}, 
+    thresholds = thresh, 
+    groupings  = grps
+  )
+  
+  # Save
+  save_point_verif(verif, vrf_data_dir)
+  
+}
+  
+```
+
+
+Now instead of using a for loop we can use `iwalk()` from the _purrr_ package. `iwalk()` calls a function for each element in the list that it is given. The first argument to that function is the list element and the second argument is the element name. `iwalk()` only calls the function for its side effects (e.g. writing a file) and returns the input untouched. Here we will call an anonymous function that calls `run_verif()`. 
+
+```{r walk-run-verif, message=FALSE, warning=FALSE}
+library(purrr)
+iwalk(
+  params,
+  \(x, y) run_verif(
+    param_list   = x, 
+    param_name   = y, 
+    fc_models    = fcst_models,
+    dttm         = date_times,
+    ld_times     = lt,
+    fc_data_dir  = fcst_dir,
+    obs_data_dir = obs_dir,
+    dflts        = defaults,
+    vrf_data_dir = verif_dir
+  )
+)
+```
+
+Using this approach, the `run_verif()` function can be modified to do any manipulations of the data that the user can think of, or using lists in combination with defaults can allow the user to provide specific information without having to edit the `run_verif()` function. 
+
+In the next tutorial we will go through the workflow to verify data on regular grids. 
+
+::: grid
+::: g-col-1
+<a href=point-verif-workflow.html><i class="bi bi-arrow-left-circle-fill"></i></a>
+:::
+
+::: g-col-10
+:::
+
+::: g-col-1
+<a href=#><i class="bi bi-arrow-right-circle-fill"></i></a>
+:::
+:::

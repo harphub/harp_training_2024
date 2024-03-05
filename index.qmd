@@ -40,10 +40,10 @@ From basic reading of files to complex lagged systems
 :::
 
 ::: card-text
-From basic verificatio to multiple verification groups and conditions
+From basic verification to multiple verification groups and conditions
 :::
 
-<a href="#" class="stretched-link"></a>
+<a href="point-verif-workflow.html" class="stretched-link"></a>
 :::
 :::
 :::
@@ -59,7 +59,7 @@ From basic verificatio to multiple verification groups and conditions
 Writing scripts for verification tasks
 :::
 
-<a href="#" class="stretched-link"></a>
+<a href="build-verif-script.html" class="stretched-link"></a>
 :::
 :::
 :::
@@ -132,7 +132,7 @@ Git, Github, harphub, Pull Requests
 ::: {.card .h-100}
 ::: card-body
 ::: card-title
-# harps' Future
+# harp's Future
 :::
 
 ::: card-text
