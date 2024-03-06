@@ -122,6 +122,8 @@ The data we are going to use can be downloaded from [here](https://drive.google.
 system("tar -zxvf harpTrainnigData2024.tar.gz")
 ```
 
+There are also extra datasets for Wednesday's sessions. These can be downloaded from [here](https://drive.google.com/file/d/1yIc1fuyimIJJ_V1sUEHD2bMvyCBaFwJe/view?usp=sharing) and should be unpacked in your data directory.
+
 ::: {.grid}
 
 :::: {.g-col-11}
