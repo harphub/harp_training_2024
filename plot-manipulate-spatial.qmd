@@ -168,6 +168,8 @@ map <- get_map(
 
 :::
 
+### Colour scales
+
 We could also change the colour scale. Since this we can use the `scale_fill_gradient()` functions, `scale_fill_viridis_c()`, `scale_fill_distiller()`, or `scale_fill_scico()`. Here we will demonstrate some of these functions.
 
 ```{r scale-fill-gradient, fig.align='center'}
@@ -467,6 +469,109 @@ ggplot() +
   coord_equal(expand = FALSE) +
   theme_harp_map()
 
+```
+
+### High spatial resolution data
+
+High resolution plots can be quite slow - let's read some high resolution data from MET Norway's thredds server (here we have to tell `read_forecast()` that the file format is NetCDF)
+
+```{r read-thredds, message=FALSE, warning=FALSE}
+hires_pcp <- read_analysis(
+  seq_dttm(2024030406, 2024030414, "1h"),
+  "met_analysis",
+  "precipitation_amount",
+  file_path        = "https://thredds.met.no/thredds/dodsC/metpparchive",
+  file_template    = "{YYYY}/{MM}/{DD}/{fcst_model}_1_0km_nordic_{YYYY}{MM}{DD}T{HH}Z.nc",
+  file_format      = "netcdf",
+  file_format_opts = netcdf_opts(proj4_var = "projection_lcc")
+)
+
+map <- get_map(hires_pcp, col = anl)
+```
+
+Just plotting a single geofield with `ggplot()` is slow.
+
+```{r slow-plt, warning=FALSE, fig.align='center'}
+brks <- seq_double(0.125, 10)
+
+censor_low_squish_high <- function(x, range = c(0, 1), only.finite = TRUE) {
+  force(range)
+  finite <- if (only.finite) 
+      is.finite(x)
+  else TRUE
+  x[finite & x < range[1]] <- NA_real_
+  x[finite & x > range[2]] <- range[2]
+  x
+}
+
+ggplot() +
+  geom_polygon(aes(x, y, group = group), map, fill = "seagreen3") +
+  geom_georaster(aes(geofield = anl), hires_pcp[1, ]) +
+  geom_polygon(
+    aes(x, y, group = group), map, colour = "grey30", fill = "transparent"
+  ) +
+  scale_fill_stepsn(
+    "mm",
+    colours  = scico(256, palette = "oslo", direction = -1, begin = 0.2),
+    trans    = "log", 
+    na.value = "transparent", 
+    breaks   = brks, 
+    limits   = c(0.125, max(brks)),
+    oob      = censor_low_squish_high
+  ) +
+  coord_equal(expand = FALSE) + 
+  theme_harp_map()
+```
+
+So we have ways of speeding this up - the simplest is downsampling. This basically skips pixels when plotting - and given the resolution these are likely pixels you cannot see anyway. We do this by applying an upscale factor and using `"downsample"` as the upscale method. 
+
+```{r fast-plt, warning=FALSE, fig.align='center'}
+ggplot() +
+  geom_polygon(aes(x, y, group = group), map, fill = "seagreen3") +
+  geom_georaster(
+    aes(geofield = anl), hires_pcp[1, ], 
+    upscale_factor = 4, upscale_method = "downsample"
+  ) +
+  geom_polygon(
+    aes(x, y, group = group), map, colour = "grey30", fill = "transparent"
+  ) +
+  scale_fill_stepsn(
+    "mm",
+    colours  = scico(256, palette = "oslo", direction = -1, begin = 0.2),
+    trans    = "log", 
+    na.value = "transparent", 
+    breaks   = brks, 
+    limits   = c(0.125, max(brks)),
+    oob      = censor_low_squish_high
+  ) +
+  coord_equal(expand = FALSE) + 
+  theme_harp_map()
+```
+
+And when we facet, the plots are even smaller so we can get away with a higher `upscale_factor`
+
+```{r fast-plt-facet, warning=FALSE, fig.align='center', fig.height=8.5}
+ggplot() +
+  geom_polygon(aes(x, y, group = group), map, fill = "seagreen3") +
+  geom_georaster(
+    aes(geofield = anl), hires_pcp, 
+    upscale_factor = 8, upscale_method = "downsample"
+  ) +
+  geom_polygon(
+    aes(x, y, group = group), map, colour = "grey30", fill = "transparent"
+  ) +
+  scale_fill_stepsn(
+    "mm",
+    colours  = scico(256, palette = "oslo", direction = -1, begin = 0.2),
+    trans    = "log", 
+    na.value = "transparent", 
+    breaks   = brks, 
+    limits   = c(0.125, max(brks)),
+    oob      = censor_low_squish_high
+  ) +
+  facet_wrap(~fct_reorder(format(valid_dttm, "%H:%M %a %d %b %Y"), valid_dttm)) +
+  coord_equal(expand = FALSE) + 
+  theme_harp_map()
 ```
 
 ```{r locale-reset, echo=FALSE, results='hide'}
