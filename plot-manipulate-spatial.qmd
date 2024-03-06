@@ -2,3 +2,473 @@
 title: Plotting and manipulating spatial data
 ---
 
+In this tutorial, we will go through some of __harp__'s plotting functions for gridded data with most of our focus on __harp__'s _ggplot_ geoms `geom_georaster()`, `geom_geocontour()` and `geom_geocontour_filled()`. We will also explore the `geo_*` family of functions for doing geographic transformations of georeferenced grids. 
+
+We are also going to make use of the _scico_ package for some nice colour palettes. If you don't have it, you can install it with
+
+```{r local, echo=FALSE, results='hide'}
+Sys.getlocale("LC_TIME") -> olcT
+Sys.setlocale("LC_TIME", "C")
+```
+
+```{r install-scico, eval=FALSE}
+install.packages("scico")
+```
+
+## Simple plotting of 2d fields
+
+For a quick look at a `geofield` the function `plot_field()` can be used. If you just want to see what domain the data are on, you can use `plot_domain()`. 
+
+```{r attach-libs, message=FALSE}
+library(harp)
+library(here)
+library(dplyr)
+library(forcats)
+library(scico)
+```
+
+We're going to be reading some data from MET Norway's archive of IFSENS data (for a cutout over Ireland). This file requires some special options for reading the NetCDF that we can saved to a variable.
+
+```{r read-geofield, message=FALSE, warning=FALSE}
+opts <- netcdf_opts("met_norway_ifsens")
+
+t2m <- read_grid(
+  here("data/netcdf/ifsens/ifsens_20240219T000000Z.nc"),
+  "t2m",
+  lead_time = 6, 
+  members = 1, 
+  file_format_opts = opts
+)
+```
+
+For `plot_field()` the title is derived from some attributes of the `geofield`, some of which aren't always there. 
+
+```{r plot-field}
+plot_field(t2m)
+```
+
+We can do some simple things like change the colour palette, change the breaks and chamnge the title. Here we could use one of the _scico_ colour palettes. You can check them out with 
+
+```{r scico-pal-show, fig.width=10, fig.align='center'}
+scico_palette_show()
+```
+
+It's not really the correct colour palette for these data, but when in Ireland... 
+
+```{r plot-field-cork, fig.align='center'}
+plot_field(
+  t2m, 
+  palette = scico(256, palette = "cork"), 
+  breaks  = seq(275, 290, 1.5), 
+  title = "2m temperature over Ireland"
+)
+```
+
+To just plot the domain without any data, you can use `plot_domain()`
+```{r plt-dom, fig.align='center'}
+plot_domain(t2m)
+```
+
+## Plotting 2d fields with _ggplot_
+
+It is also possible to plot 2d fields with _ggplot_. Here we will use __harp__ specific _geoms_ `geom_georaster()`, `geom_geocontour()` and `geom_geocontour_filled()`. For an explanation of what _geoms_ are and a comprehensive introduction to _ggplot_ as well as the terminology used in building plots with _ggplot_, you are referred to the [_Visualize_ chapter of R for Data Science](https://r4ds.hadley.nz/visualize). 
+
+_ggplot_ always requires the data to be in a data frame, and uses the `aes()` function to map data frame columns to aesthetics of the plot. That is to say, which columns affect how a particular _geom_ is drawn. Plot _geoms_ typically have some __required__ aesthetics and optional aesthetics. In the case of the `geom_geo` functions a `geolist` column is always required. This is probably best illustrated with an example. We will read all of the data for 2m temperature in as a data frame using `read_forecast()`. A quick way to do this if you know the file name is to set the `file_template` as the file name. 
+
+```{r rd-fc, message=FALSE, warning=FALSE}
+t2m <- read_forecast(
+  20240219,
+  "ifsens",
+  "t2m",
+  file_path        = here("data", "netcdf", "ifsens"),
+  file_template    = "ifsens_20240219T000000Z.nc",
+  file_format_opts = opts,
+  return_data      = TRUE 
+) |> 
+  scale_param(-273.15, "degC")
+```
+
+We can now try and plot the data for member 0 using `ggplot()` and `geom_georaster()`. 
+
+```{r ggplt-whole-df, error=TRUE}
+ggplot(t2m, aes(geofield = ifsens_mbr000)) + 
+  geom_georaster()
+```
+
+Here `ggplot()` doesn't know how to print multiple geofields unless you tell it how to do so. Let's make things a little easier by filtering the data to only be for lead_time = 6, and extracting member 0 as deterministic. 
+
+```{r one-row-as-det}
+tt <- filter(as_det(t2m, 0), lead_time == 6)
+```
+
+So since it is now deterministic, the column we want to plot is `fcst`. 
+
+```{r first-gg, fig.align='center'}
+ggplot(tt, aes(geofield = fcst)) + 
+  geom_georaster()
+```
+
+There are a few ways we can improve the plot. Firstly for these data we probably don't want the expansion zone around the data in the plot panel. We may also want (although this is lat-lon so might not be sensible) to set equal coordinate aspect ratio. We can do all of this with `coord_equal(expand = FALSE)`. 
+
+```{r first-gg-coord-equal, fig.align='center'}
+ggplot(tt, aes(geofield = fcst)) + 
+  geom_georaster() +
+  coord_equal(expand = FALSE)
+```
+
+In addition, the tick marks and axis labels aren't actually much use here, so we can get rid of those with `theme_harp_map()`
+
+```{r first-gg-theme-harp, fig.align='center'}
+ggplot(tt, aes(geofield = fcst)) + 
+  geom_georaster() +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+It might also be useful to have a map outline. We can get a map with `get_map()` telling it which column for which to get the domain for the map. We will also set `polygon = FALSE` so we only get paths.
+
+```{r get-map}
+map <- get_map(tt, col = fcst, polygon = FALSE)
+```
+
+We can now add the map to the plot with `geom_path()`. Since the geoms use different data and aesthetics we will set those locally for each geom rather than globally for the plot. 
+
+```{r first-gg-with-map, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tt) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+
+```
+
+::: {.callout-tip collapse=true}
+## Tip: Higher resolution maps
+We can get higher resolution maps with the _rnaturalearth_ packages, which can be installed with 
+
+```{r eval=FALSE}       
+install.packages("rnaturalearth")
+install.packages("rnaturalearthdata")
+remotes::install_github("ropensci/rnaturalearthhires")
+```
+
+To use these packages with `get_map()` we need a development version of the _maps_ package. 
+
+```{r eval=FALSE}
+remotes::install_github("adeckmyn/maps", "sf")
+```
+
+We can then get a high resolution map with (for example) 
+
+```{r get-hires-map}
+map <- get_map(
+  tt, col = fcst, map = rnaturalearthhires::countries10, polygon = FALSE
+)
+```
+
+:::
+
+We could also change the colour scale. Since this we can use the `scale_fill_gradient()` functions, `scale_fill_viridis_c()`, `scale_fill_distiller()`, or `scale_fill_scico()`. Here we will demonstrate some of these functions.
+
+```{r scale-fill-gradient, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tt) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_gradient(low = "yellow", high = "red") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+```{r scale-fill-gradient2, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tt) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white", midpoint = 6) +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+```{r scale-fill-gradientn, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tt) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_gradientn(colours = heat.colors(256)) +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+```{r scale-fill-viridisc, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tt) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_viridis_c(option = "B") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+```{r scale-fill-distiller, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tt) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_distiller(palette = "PuBuGn") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+```{r scale-fill-scico, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tt) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_scico(palette = "hawaii", direction = -1) +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+As you can see, there are many choices of colour schemes. You could also bin the colours. 
+
+```{r scale-fill-binned, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tt) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_steps(low = "white", high = "darkred", breaks = seq(4, 12)) +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+A final thing you might want to do is add a more meaningful title for the legend - it's always z due to how the _geom_ functions turn the geofield data into a data frame. 
+
+```{r leg-label, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tt) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_binned(
+    low    = "seagreen3", 
+    high   = "yellow", 
+    breaks = seq(4, 12)
+  ) +
+  labs(fill = bquote("["*degree*C*"]")) +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+
+```
+
+We can now bring all of our data back and make a faceted plot
+
+```{r temp-facet, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = ifsens_mbr000), t2m) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_binned(
+    low    = "seagreen3", 
+    high   = "yellow", 
+    breaks = seq(4, 12)
+  ) +
+  facet_wrap(~valid_dttm) +
+  labs(fill = bquote("["*degree*C*"]")) +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+
+```
+
+There are maybe some other techniques we would use for other parameters. We might want to show an anomaly, like for example the difference of a member from the control.
+
+```{r anom, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = ifsens_mbr001 - ifsens_mbr000), t2m) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_gradient2(midpoint = 0) +
+  facet_wrap(~fct_reorder(paste0("T + ", lead_time, "h"), lead_time)) +
+  labs(fill = bquote("["*degree*C*"]")) +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+You may also want to do something different with cloud cover... 
+
+```{r read-cloud, message=FALSE, warning=FALSE}
+tcc <- read_forecast(
+  20240219,
+  "ifsens",
+  "tcc",
+  members          = 0, 
+  file_path        = here("data", "netcdf", "ifsens"),
+  file_template    = "ifsens_20240219T000000Z.nc",
+  file_format_opts = opts,
+  return_data      = TRUE 
+) |> 
+  as_det()
+```
+
+First experiment with what's there for one lead time...
+
+```{r tcc-plot-exp, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = fcst), tcc[1, ]) +
+  geom_path(aes(x, y), map, colour = "yellow") +
+  scale_fill_gradient(low = "white", high = "grey40") +
+  labs(fill = "Cloud fraction") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+
+```
+
+Maybe it would be better in bins of oktas - 
+
+```{r tcc-plot-oktas, fig.align='center'}
+ggplot() + 
+  geom_georaster(
+    aes(geofield = fcst), 
+    mutate(tcc, fcst = round(fcst * 8))[1, ]
+  ) +
+  geom_path(aes(x, y), map, colour = "yellow") +
+  scale_fill_stepsn(
+    colours = c("transparent", rev(grey.colors(7))), 
+    breaks = seq(0, 8)
+  ) +
+  labs(fill = "Cloud Cover\n[Oktas]") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+
+```
+
+Again, once we've got things how we want them we can do the faceted plot
+
+```{r tcc-plot-facet, fig.align='center'}
+ggplot() + 
+  geom_georaster(
+    aes(geofield = fcst), 
+    mutate(tcc, fcst = round(fcst * 8))
+  ) +
+  geom_path(aes(x, y), map, colour = "yellow") +
+  facet_wrap(~format(valid_dttm, "%H:%M %a %d %b %Y")) +
+  scale_fill_stepsn(
+    colours = c("transparent", rev(grey.colors(7))), 
+    breaks = seq(0, 8)
+  ) +
+  labs(fill = "Cloud Cover\n[Oktas]") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+
+```
+
+You may also want to do something different with precipitation... 
+
+```{r read-precip, message=FALSE, warning=FALSE}
+pcp <- read_forecast(
+  20240219,
+  "ifsens",
+  "pcp",
+  file_path        = here("data", "netcdf", "ifsens"),
+  file_template    = "ifsens_20240219T000000Z.nc",
+  file_format_opts = opts,
+  return_data      = TRUE 
+) |> 
+  decum(6) |> 
+  filter(lead_time > 0) |> 
+  scale_param(1000, "kg/m^2", mult = TRUE)
+```
+
+First experiment with what's there for one lead time...
+
+```{r pcp-plot-exp, fig.align='center'}
+ggplot() + 
+  geom_georaster(aes(geofield = ifsens_mbr000), pcp[1, ]) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_gradientn(
+    colours = scico(256, palette = "oslo", direction = -1)
+  ) +
+  labs(fill = "6h Precip\n[mm]") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+
+```
+
+Maybe it would be better with a logarithmic colour scale 
+
+```{r pcp-plot-log, fig.align='center', message=FALSE, warning=FALSE}
+ggplot() + 
+  geom_georaster(aes(geofield = ifsens_mbr000), pcp[1, ]) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_gradientn(
+    colours  = scico(256, palette = "oslo", direction = -1, begin = 0.2),
+    trans    = "log", 
+    na.value = "transparent", 
+    breaks   = seq_double(0.125, 8), 
+    limits   = c(0.125, NA)
+  ) +
+  labs(fill = "6h Precip\n[mm]") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+
+```
+
+And perhaps better still with some colour bands
+
+```{r pcp-plot-log-steps, fig.align='center', message=FALSE, warning=FALSE}
+ggplot() + 
+  geom_georaster(aes(geofield = ifsens_mbr000), pcp[1, ]) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_stepsn(
+    colours  = scico(256, palette = "oslo", direction = -1, begin = 0.2),
+    trans    = "log", 
+    na.value = "transparent", 
+    breaks   = seq_double(0.125, 8), 
+    limits   = c(0.125, NA),
+    oob      = scales::censor
+  ) +
+  labs(fill = "6h Precip\n[mm]") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+
+Again, once we've got things how we want them we can do the faceted plot. However, this time let's plot each member for a specific lead time. To do this we need to get all members into a single column. We can achieve that with `pivot_members()`. 
+
+```{r pcp-plot-facet-mbr, fig.align='center', message=FALSE, warning=FALSE}
+ggplot() + 
+  geom_georaster(
+    aes(geofield = fcst), 
+    filter(pivot_members(pcp), lead_time == 24)
+  ) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_stepsn(
+    colours  = scico(256, palette = "oslo", direction = -1, begin = 0.2),
+    trans    = "log", 
+    na.value = "transparent", 
+    breaks   = seq_double(0.125, 8), 
+    limits   = c(0.125, NA),
+    oob      = scales::censor
+  ) +
+  facet_wrap(~member) +
+  labs(fill = "6h Precip\n[mm]") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+```
+
+Or, you could go really crazy(!) and plot each member for each lead time
+
+```{r pcp-plot-facet-mbr-lt, fig.align='center', message=FALSE, warning=FALSE}
+ggplot() + 
+  geom_georaster(
+    aes(geofield = fcst), 
+    pivot_members(pcp)
+  ) +
+  geom_path(aes(x, y), map, colour = "grey30") +
+  scale_fill_stepsn(
+    colours  = scico(256, palette = "oslo", direction = -1, begin = 0.2),
+    trans    = "log", 
+    na.value = "transparent", 
+    breaks   = seq_double(0.125, 8), 
+    limits   = c(0.125, NA),
+    oob      = scales::censor
+  ) +
+  facet_grid(rows = vars(lead_time), cols = vars(member)) +
+  labs(fill = "6h Precip\n[mm]") +
+  coord_equal(expand = FALSE) +
+  theme_harp_map()
+
+```
+
+```{r locale-reset, echo=FALSE, results='hide'}
+Sys.setlocale("LC_TIME", olcT)
+```

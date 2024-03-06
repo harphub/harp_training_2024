@@ -747,7 +747,7 @@
     },
     "harpVis": {
       "Package": "harpVis",
-      "Version": "0.2.2.9002",
+      "Version": "0.2.2.9005",
       "Source": "GitHub",
       "Remotes": "harphub/harpCore@develop, harphub/ggsonde, harphub/meteogrid",
       "RemoteType": "github",
@@ -755,7 +755,7 @@
       "RemoteRepo": "harpVis",
       "RemoteUsername": "harphub",
       "RemoteRef": "develop",
-      "RemoteSha": "90f60f370e8ca4b6bcd73af6f4b4115f7dbd07a4",
+      "RemoteSha": "6cfc9f8c343a40633a7b563ecd7c080f08929613",
       "Requirements": [
         "R",
         "RColorBrewer",
@@ -781,7 +781,7 @@
         "tidyr",
         "viridisLite"
       ],
-      "Hash": "23f6f66828e5877bba4f4a09613f3a56"
+      "Hash": "ced34b38acc82bda7777e423a66637e1"
     },
     "here": {
       "Package": "here",
