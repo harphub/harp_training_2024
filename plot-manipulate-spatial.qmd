@@ -477,7 +477,7 @@ High resolution plots can be quite slow - let's read some high resolution data f
 
 ```{r read-thredds, message=FALSE, warning=FALSE}
 hires_pcp <- read_analysis(
-  seq_dttm(2024030406, 2024030414, "1h"),
+  seq_dttm(2023090415, 2023090423, "1h"),
   "met_analysis",
   "precipitation_amount",
   file_path        = "https://thredds.met.no/thredds/dodsC/metpparchive",

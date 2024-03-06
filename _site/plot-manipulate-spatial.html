@@ -787,7 +787,7 @@ Tip: Higher resolution maps
 <p>High resolution plots can be quite slow - let’s read some high resolution data from MET Norway’s thredds server (here we have to tell <code>read_forecast()</code> that the file format is NetCDF)</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>hires_pcp <span class="ot">&lt;-</span> <span class="fu">read_analysis</span>(</span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">seq_dttm</span>(<span class="dv">2024030406</span>, <span class="dv">2024030414</span>, <span class="st">"1h"</span>),</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">seq_dttm</span>(<span class="dv">2023090415</span>, <span class="dv">2023090423</span>, <span class="st">"1h"</span>),</span>
 <span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"met_analysis"</span>,</span>
 <span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">"precipitation_amount"</span>,</span>
 <span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path        =</span> <span class="st">"https://thredds.met.no/thredds/dodsC/metpparchive"</span>,</span>
