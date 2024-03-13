@@ -145,6 +145,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="./build-verif-script.html" rel="" target="">
  <span class="dropdown-text">Build a Point Verification Script</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./spatial-verif.html" rel="" target="">
+ <span class="dropdown-text">Spatial Verification</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./plot-manipulate-spatial.html" rel="" target="">
+ <span class="dropdown-text">Plotting and manipulating spatial data</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -168,6 +176,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#non-standard-evaluation" id="toc-non-standard-evaluation" class="nav-link" data-scroll-target="#non-standard-evaluation">Non Standard Evaluation</a></li>
   <li><a href="#script-for-multiple-parameters" id="toc-script-for-multiple-parameters" class="nav-link" data-scroll-target="#script-for-multiple-parameters">Script for multiple parameters</a></li>
   <li><a href="#function-instead-of-loop" id="toc-function-instead-of-loop" class="nav-link" data-scroll-target="#function-instead-of-loop">Function instead of loop</a></li>
+  <li><a href="#use-of-harp-point-verification-in-production" id="toc-use-of-harp-point-verification-in-production" class="nav-link" data-scroll-target="#use-of-harp-point-verification-in-production">Use of harp Point Verification in Production</a>
+  <ul class="collapse">
+  <li><a href="#use-of-harp-in-accord" id="toc-use-of-harp-in-accord" class="nav-link" data-scroll-target="#use-of-harp-in-accord">Use of harp in ACCORD</a></li>
+  <li><a href="#use-of-harp-in-uwc-west" id="toc-use-of-harp-in-uwc-west" class="nav-link" data-scroll-target="#use-of-harp-in-uwc-west">Use of harp in UWC-West</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -715,6 +728,25 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 <span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Using this approach, the <code>run_verif()</code> function can be modified to do any manipulations of the data that the user can think of, or using lists in combination with defaults can allow the user to provide specific information without having to edit the <code>run_verif()</code> function.</p>
+</section>
+<section id="use-of-harp-point-verification-in-production" class="level2">
+<h2 class="anchored" data-anchor-id="use-of-harp-point-verification-in-production">Use of harp Point Verification in Production</h2>
+<p>The following presentations were made during this part of the course.</p>
+<section id="use-of-harp-in-accord" class="level3">
+<h3 class="anchored" data-anchor-id="use-of-harp-in-accord">Use of harp in ACCORD</h3>
+<iframe id="carlos" title="ACCORD Verification Scripts" height="400" width="100%" src="accord-scripts-carlos.html">
+</iframe>
+<div class="d-flex justify-content-end">
+<p><a class="btn btn-primary" href="accord-scripts-carlos.html" role="button" target="_blank">Full Screen</a></p>
+</div>
+</section>
+<section id="use-of-harp-in-uwc-west" class="level3">
+<h3 class="anchored" data-anchor-id="use-of-harp-in-uwc-west">Use of harp in UWC-West</h3>
+<iframe id="james" title="UWC-West Verification Scripts" height="400" width="100%" src="harpAtUWCW_harpWW24.html">
+</iframe>
+<div class="d-flex justify-content-end">
+<p><a class="btn btn-primary" href="harpAtUWCW_harpWW24.html" role="button" target="_blank">Full Screen</a></p>
+</div>
 <p>In the next tutorial we will go through the workflow to verify data on regular grids.</p>
 <div class="grid">
 <div class="g-col-1">
@@ -729,6 +761,7 @@ OR, units imcompatibility can be fixed with the set_units(), or scale_param() fu
 </div>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

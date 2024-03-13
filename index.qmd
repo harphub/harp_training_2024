@@ -75,7 +75,7 @@ Writing scripts for verification tasks
 How to run spatial verification
 :::
 
-<a href="#" class="stretched-link"></a>
+<a href="spatial-verif.html" class="stretched-link"></a>
 :::
 :::
 :::
@@ -91,7 +91,7 @@ How to run spatial verification
 Explore, plot and manipulate spatial data
 :::
 
-<a href="#" class="stretched-link"></a>
+<a href="plot-manipulate-spatial.html" class="stretched-link"></a>
 :::
 :::
 :::

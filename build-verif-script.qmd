@@ -524,6 +524,28 @@ iwalk(
 
 Using this approach, the `run_verif()` function can be modified to do any manipulations of the data that the user can think of, or using lists in combination with defaults can allow the user to provide specific information without having to edit the `run_verif()` function. 
 
+## Use of harp Point Verification in Production
+
+The following presentations were made during this part of the course. 
+
+### Use of harp in ACCORD
+
+<iframe id="carlos" title="ACCORD Verification Scripts" height="400" width="100%" src="accord-scripts-carlos.html">
+</iframe>
+
+::: {.d-flex .justify-content-end}
+<a class="btn btn-primary" href="accord-scripts-carlos.html" role="button" target="_blank">Full Screen</a>
+:::
+
+### Use of harp in UWC-West
+
+<iframe id="james" title="UWC-West Verification Scripts" height="400" width="100%" src="harpAtUWCW_harpWW24.html">
+</iframe>
+
+::: {.d-flex .justify-content-end}
+<a class="btn btn-primary" href="harpAtUWCW_harpWW24.html" role="button" target="_blank">Full Screen</a>
+:::
+
 In the next tutorial we will go through the workflow to verify data on regular grids. 
 
 ::: grid

@@ -759,7 +759,7 @@ plot_point_verif(
 
 One important aspect of forecast model performance is how it performs in different weather regimes. For example, it may be useful to know how the model performs for a particular parameter when the wind is coming from a certain direction. There are a couple of approaches to this, but it must be noted that it is important to include the possibility for false alarms in the verification. 
 
-Here we will compute the verification scores for an ensemble forecast for 2m temperature when the wind is coming from the west, so let's say a wind direction between 45&deg; and 135&deg;. We will first read in the wind direction observations for the cases we already have for 2m temperature. 
+Here we will compute the verification scores for an ensemble forecast for 2m temperature when the wind is coming from the east, so let's say a wind direction between 45&deg; and 135&deg;. We will first read in the wind direction observations for the cases we already have for 2m temperature. 
 
 ```{r cond-wind-read-wind-obs, message=FALSE, warning=FALSE}
 wind_dir <- read_point_obs(
@@ -776,7 +776,7 @@ We will now create a column to have the groups "westerly" and "other" based on t
 wind_dir <- mutate(
   wind_dir, 
   wind_direction = case_when(
-    between(D10m, 45, 135) ~ "westerly",
+    between(D10m, 45, 135) ~ "easterly",
     .default = "other"
   )
 )
@@ -790,7 +790,7 @@ fcst <- join_to_fcst(fcst, wind_dir, force = TRUE)
 
 We can now verify 2m temperature and group by the wind direction. 
 
-```{r cond-wind-verif, fig.align='center'}
+```{r cond-wind-verif, message=FALSE, warning=FALSE, fig.align='center'}
 verif <- ens_verify(
   fcst, 
   T2m, 
@@ -804,7 +804,7 @@ plot_point_verif(
 )
 ```
 
-A more thorough method might be to include whether westerly winds were forecast or not in the analysis, such that we have cases of westerly being observed only, forecasted only, both observed and forecasted, and neither observed nor forecasted. 
+A more thorough method might be to include whether easterly winds were forecast or not in the analysis, such that we have cases of westerly being observed only, forecasted only, both observed and forecasted, and neither observed nor forecasted. 
 
 So now we need read in the wind direction forecasts as well. In this case we need to set the units to "degrees" as they are incorrect in the file (due to a bug :/ ). 
 
@@ -838,15 +838,15 @@ fcst_wind_dir <- join_to_fcst(fcst_wind_dir, wind_dir)
 
 fcst_wind_dir <- mutate(
   fcst_wind_dir, 
-  westerly = case_when(
-    ens_mean  > 0 & wind_direction == "westerly" ~ "both",
+  easterly = case_when(
+    ens_mean  > 0 & wind_direction == "easterly" ~ "both",
     ens_mean  > 0 & wind_direction == "other" ~ "forecast only",
-    ens_mean == 0 & wind_direction == "westerly" ~ "observed only",
+    ens_mean == 0 & wind_direction == "easterly" ~ "observed only",
     ens_mean == 0 & wind_direction == "other" ~ "neither", 
     .default = NA
   )
 ) |> 
-  select(fcst_dttm, lead_time, SID, westerly)
+  select(fcst_dttm, lead_time, SID, easterly)
 ```
 
 We can now join our data frame with the verification groups to the 2m temperature forecasts to be verified. Since we have two models, we can merge them into a single data frame using `bind()`. 
@@ -859,19 +859,19 @@ fcst <- join_to_fcst(
 )
 ```
 
-Now we can verify and plot for our new groups. 
+Now we can verify and plot for our new groups. `fct_relevel()` is used to get the plot facets in the desired order. 
 
 ```{r cond-wind-fcst-grp-verif-plt, message=FALSE, warning=FALSE, fig.align='center'}
 verif <- ens_verify(
   fcst, 
   T2m,
-  groupings = c("lead_time", "westerly")
+  groupings = c("lead_time", "easterly")
 )
 
 plot_point_verif(
   verif, 
   mean_bias, 
-  facet_by       = vars(fct_relevel(westerly, ~.x[c(2, 4, 1, 3)])),
+  facet_by       = vars(fct_relevel(easterly, ~.x[c(2, 4, 1, 3)])),
   num_facet_cols = 2
 )
 ```

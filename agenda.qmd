@@ -42,7 +42,7 @@ of harp point verification in an operational environment.
 
 ## Day 3: Wednesday March 2024
 ### 09:00 - 12:30
-#### _Spatial Verification Workflow_
+#### [_Spatial Verification Workflow_](spatial-verif.qmd)
 
 Alex will take you through the workflow required to to do spatial verification 
 for scores including the Fractions Skill Score (FSS) and SAL (Structure
@@ -54,7 +54,7 @@ fractions skill score implementation and its _distribution_ and _error_
 components. 
 
 ### 13:30 - 17:00
-#### _Plotting and Manipulating Spatial Data_
+#### [_Plotting and Manipulating Spatial Data_](plot-manipulate-spatial.qmd)
 
 Andrew will take you through how __harp__ data can work with (probably R's most 
 popular package) _ggplot2_. We will have the opportunity to experiment with the 

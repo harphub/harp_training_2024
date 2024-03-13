@@ -145,6 +145,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="./build-verif-script.html" rel="" target="">
  <span class="dropdown-text">Build a Point Verification Script</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="./spatial-verif.html" rel="" target="">
+ <span class="dropdown-text">Spatial Verification</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./plot-manipulate-spatial.html" rel="" target="">
+ <span class="dropdown-text">Plotting and manipulating spatial data</span></a>
+  </li>  
     </ul>
   </li>
 </ul>
@@ -298,7 +306,7 @@ log-2.718282 transformation introduced infinite values.</code></pre>
 <section id="read-analysis" class="level3">
 <h3 class="anchored" data-anchor-id="read-analysis">Read Analysis</h3>
 <p>We are going to verify these against the MET Nordic analysis that has a 1 km resolution. For the purposes of this tutorial we have cut the domain to a similar area over northern Norway. We can read the data with <code>read_analysis()</code>, which works much in the same way as <code>read_forecast()</code>, except that the <code>dttm</code> argument is the valid date-time of the data.</p>
-<div class="cell" data-layout-align="center">
+<div class="cell">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>anl_tmplt  <span class="ot">&lt;-</span> <span class="fu">file.path</span>(</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"{fcst_model}"</span>,</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">"{fcst_model}_1_0km_nordic_{YYYY}{MM}{DD}T{HH}Z.nc"</span></span>
@@ -313,33 +321,34 @@ log-2.718282 transformation introduced infinite values.</code></pre>
 <span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_format_opts =</span> <span class="fu">netcdf_opts</span>(<span class="at">proj4_var =</span> <span class="st">"projection_lcc"</span>)</span>
 <span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>anl_map <span class="ot">&lt;-</span> <span class="fu">get_map</span>(<span class="fu">get_domain</span>(anl<span class="sc">$</span>anl), <span class="at">polygon =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_georaster</span>(<span class="fu">aes</span>(<span class="at">geofield =</span> anl), anl) <span class="sc">+</span></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="fu">aes</span>(x, y), anl_map) <span class="sc">+</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">colours =</span> <span class="fu">scico</span>(<span class="dv">256</span>, <span class="at">palette =</span> <span class="st">"davos"</span>, <span class="at">direction =</span> <span class="sc">-</span><span class="dv">1</span>),</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">trans =</span> <span class="st">"log"</span>, </span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.125</span>, <span class="cn">NA</span>),</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq_double</span>(<span class="fl">0.125</span>, <span class="dv">12</span>),</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.value =</span> <span class="st">"transparent"</span></span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>valid_dttm) <span class="sc">+</span></span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span> </span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_harp_map</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>anl_map <span class="ot">&lt;-</span> <span class="fu">get_map</span>(<span class="fu">get_domain</span>(anl<span class="sc">$</span>anl), <span class="at">polygon =</span> <span class="cn">FALSE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" data-layout-align="center">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_georaster</span>(<span class="fu">aes</span>(<span class="at">geofield =</span> anl), anl) <span class="sc">+</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="fu">aes</span>(x, y), anl_map) <span class="sc">+</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradientn</span>(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">colours =</span> <span class="fu">scico</span>(<span class="dv">256</span>, <span class="at">palette =</span> <span class="st">"davos"</span>, <span class="at">direction =</span> <span class="sc">-</span><span class="dv">1</span>),</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">trans =</span> <span class="st">"log"</span>, </span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">limits =</span> <span class="fu">c</span>(<span class="fl">0.125</span>, <span class="cn">NA</span>),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> <span class="fu">seq_double</span>(<span class="fl">0.125</span>, <span class="dv">12</span>),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">na.value =</span> <span class="st">"transparent"</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>valid_dttm) <span class="sc">+</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_equal</span>(<span class="at">expand =</span> <span class="cn">FALSE</span>) <span class="sc">+</span> </span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_harp_map</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="spatial-verif_files/figure-html/read-anl-and-plt-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="spatial-verif_files/figure-html/plot-anl-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>However, we can’t verify the forecasts agains the the analyses since they are on different domains. We have two options here. Firstly we could use <code>geo_regrid()</code> to regrid the analyses to the forecast grid. Notice how the dimensions in the <code>anl</code> column change to match those of <code>fcst</code>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># before</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>anl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># before</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>anl</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>::gridded analysis:: # A tibble: 12 × 7
    anl_model    parameter valid_dttm          level_type level units         anl
@@ -357,8 +366,8 @@ log-2.718282 transformation introduced infinite values.</code></pre>
 11 met_analysis precipit… 2024-02-19 23:00:00 unknown       NA kg/m… [901 × 601]
 12 met_analysis precipit… 2024-02-20 00:00:00 unknown       NA kg/m… [901 × 601]</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#after</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">geo_regrid</span>(anl, fcst<span class="sc">$</span>meps_mbr000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#after</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">geo_regrid</span>(anl, fcst<span class="sc">$</span>meps_mbr000)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>::gridded analysis:: # A tibble: 12 × 7
    anl_model    parameter valid_dttm          level_type level units         anl
@@ -378,20 +387,19 @@ log-2.718282 transformation introduced infinite values.</code></pre>
 </div>
 </div>
 <p>The alternative is to do the regridding at read time. This would generally be the more sensible approach since it saves on reading unnecessary data into memory.</p>
-<div class="cell" data-layout-align="center">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>anl <span class="ot">&lt;-</span> <span class="fu">read_analysis</span>(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">analysis_model      =</span> <span class="st">"met_analysis"</span>,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"precipitation_amount"</span>,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path           =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"netcdf"</span>),</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template       =</span> anl_tmplt, </span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_format_opts    =</span> <span class="fu">netcdf_opts</span>(<span class="at">proj4_var =</span> <span class="st">"projection_lcc"</span>),</span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation      =</span> <span class="st">"regrid"</span>,</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation_opts =</span> <span class="fu">regrid_opts</span>(<span class="fu">get_domain</span>(fcst<span class="sc">$</span>meps_mbr000))</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Error : None of the requested parameters found in file: /home/andrewts/R-projects/harp_training_2024/data/netcdf/met_analysis/met_analysis_1_0km_nordic_20240219T13Z.nc</code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>anl <span class="ot">&lt;-</span> <span class="fu">read_analysis</span>(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">dttm =</span> <span class="fu">unique_valid_dttm</span>(fcst),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">analysis_model      =</span> <span class="st">"met_analysis"</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">parameter           =</span> <span class="st">"precipitation_amount"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_path           =</span> <span class="fu">here</span>(<span class="st">"data"</span>, <span class="st">"netcdf"</span>),</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_template       =</span> anl_tmplt, </span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">file_format_opts    =</span> <span class="fu">netcdf_opts</span>(<span class="at">proj4_var =</span> <span class="st">"projection_lcc"</span>),</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation      =</span> <span class="st">"regrid"</span>,</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">transformation_opts =</span> <span class="fu">regrid_opts</span>(<span class="fu">get_domain</span>(fcst<span class="sc">$</span>meps_mbr000))</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<div class="cell" data-layout-align="center">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_georaster</span>(<span class="fu">aes</span>(<span class="at">geofield =</span> anl), anl) <span class="sc">+</span></span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_path</span>(<span class="fu">aes</span>(x, y), fc_map) <span class="sc">+</span></span>
@@ -408,7 +416,7 @@ log-2.718282 transformation introduced infinite values.</code></pre>
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="spatial-verif_files/figure-html/read-anl-regrid-and-plt-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="spatial-verif_files/figure-html/plt-anl-regrid-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>

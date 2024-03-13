@@ -88,7 +88,7 @@ ggplot() +
 
 We are going to verify these against the MET Nordic analysis that has a 1 km resolution. For the purposes of this tutorial we have cut the domain to a similar area over northern Norway. We can read the data with `read_analysis()`, which works much in the same way as `read_forecast()`, except that the `dttm` argument is the valid date-time of the data. 
 
-```{r read-anl-and-plt, message=FALSE, warning=FALSE, fig.align='center'}
+```{r read-anl, message=FALSE, warning=FALSE}
 anl_tmplt  <- file.path(
   "{fcst_model}",
   "{fcst_model}_1_0km_nordic_{YYYY}{MM}{DD}T{HH}Z.nc"
@@ -104,7 +104,9 @@ anl <- read_analysis(
 )
 
 anl_map <- get_map(get_domain(anl$anl), polygon = FALSE)
+```
 
+```{r plot-anl, message=FALSE, warning=FALSE, fig.align='center'}
 ggplot() +
   geom_georaster(aes(geofield = anl), anl) +
   geom_path(aes(x, y), anl_map) +
@@ -132,7 +134,7 @@ geo_regrid(anl, fcst$meps_mbr000)
 
 The alternative is to do the regridding at read time. This would generally be the more sensible approach since it saves on reading unnecessary data into memory.
 
-```{r read-anl-regrid-and-plt, message=FALSE, warning=FALSE, fig.align='center'}
+```{r read-anl-regrid, message=FALSE, warning=FALSE, results='hide'}
 anl <- read_analysis(
   dttm = unique_valid_dttm(fcst),
   analysis_model      = "met_analysis",
@@ -143,7 +145,9 @@ anl <- read_analysis(
   transformation      = "regrid",
   transformation_opts = regrid_opts(get_domain(fcst$meps_mbr000))
 )
+```
 
+```{r plt-anl-regrid, message=FALSE, warning=FALSE, fig.align='center'}
 ggplot() +
   geom_georaster(aes(geofield = anl), anl) +
   geom_path(aes(x, y), fc_map) +
