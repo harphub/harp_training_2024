@@ -22,6 +22,7 @@ library(here)
 library(scico)
 library(dplyr)
 library(forcats)
+library(purrr)
 
 fcst_tmplt <- file.path(
   "{fcst_model}",
@@ -294,6 +295,7 @@ ggplot(
     y      = "FSS", 
     colour = "Neighbourd\nLength [km]"
   ) +
+  scale_x_continuous(breaks = seq(0, 12)) +
   theme_bw()
 
 ```
@@ -320,12 +322,13 @@ ggplot(
     y      = "FSS", 
     colour = "Threshold [mm]"
   ) +
+  scale_x_continuous(breaks = seq(0, 12)) +
   theme_bw()
 ```
 
 For the eFSS and dFSS, the important piece of information is for what neighbourhood length the FSS becomes skilful. A rule of thumb is that a "skilful" FSS is a value >= 0.5. We can plot the FSS = 0.5 contour for both eFSS and dFSS. In order to do this, we need to bind the two data frames and make sure each has a column saying what it is.
 
-```{r fss-spread-skill, fig.align='center'}
+```{r fss-spread-skill, message=FALSE, warning=FALSE, fig.align='center'}
 pcp_fss_ed <- bind_rows(
   mutate(pcp_dfss, score = "dFSS"),
   mutate(pcp_efss, score = "eFSS")
@@ -346,8 +349,214 @@ ggplot(
     y      = "Neighbourhood Length (km)",
     colour = NULL
   ) +
+  scale_x_continuous(breaks = seq(0, 12)) +
   theme_bw()
 
+```
+
+### Quantiles for Thresholds
+
+As well as computing the ensemble fractions skill score for absolute thresholds, it is also possible to use quantiles to set the threshold. This is done for each analysis field and it is simply a case of providing the thresholds argument with values between 0 and 1 preceded by a "q".
+
+```{r quantile-ens-fss, message=FALSE, warning=FALSE}
+thresh <- paste0("q", c(0.8, 0.9, 0.95, 0.99, 0.999))
+rad    <- c(0, seq_double(1, 6))
+
+pcp_fss  <- ens_fss(fcst, anl, thresh ,rad)
+pcp_efss <- ens_efss(fcst, anl, thresh ,rad)
+pcp_dfss <- ens_dfss(fcst, thresh ,rad)
+```
+
+And then we can make similar plots using `quantile` instead of `threshold`. 
+
+```{r plt-fss-qntl, fig.align='center', fig.width=10, fig.height=8.5}
+ggplot(
+  pcp_fss, 
+  aes(
+    fct_inseq(as.character(nbhd_length / 1000)), 
+    fct_inseq(as.character(quantile * 100)), 
+    fill = fss
+  )
+) +
+  geom_raster() +
+  facet_wrap(~lead_time) +
+  scale_fill_gradient2(
+    midpoint = 0.5, 
+    low      = scales::muted("blue"),
+    high     = scales::muted("green")
+  ) +
+  labs(
+    x    = "Neighbourhood Length [km]",
+    y    = "Percentile [%]",
+    fill = "FSS"
+  ) + 
+    coord_equal(expand = FALSE) 
+```
+
+```{r plt-fss-qntl-fct, fig.align='center', fig.height=8.5}
+ggplot(
+  pcp_fss, 
+  aes(
+    lead_time, 
+    fss, 
+    colour = fct_inseq(as.character(nbhd_length / 1000))
+  )
+) +
+  geom_line() +
+  facet_wrap(
+    ~fct_reorder(paste0("Precip >= ", quantile * 100, "th percentile"), quantile),
+    ncol = 1
+  ) + 
+  labs(
+    x      = "Lead Time [h]",
+    y      = "FSS", 
+    colour = "Neighbourd\nLength [km]"
+  ) +
+  scale_x_continuous(breaks = seq(0, 12)) +
+  theme_bw()
+
+```
+
+```{r plt-fss-nbhd-fct-qntl, fig.align='center', fig.height=8.5}
+ggplot(
+  pcp_fss, 
+  aes(
+    lead_time, 
+    fss, 
+    colour = fct_reorder(paste0(quantile, "th"), quantile)
+  )
+) +
+  geom_line() +
+  facet_wrap(
+    ~fct_reorder(
+      paste0("Neighbouhood Length: ", nbhd_length / 1000, "km"), 
+      nbhd_length
+    ),
+    ncol = 1
+  ) + 
+  labs(
+    x      = "Lead Time [h]",
+    y      = "FSS", 
+    colour = "Percentile"
+  ) +
+  scale_x_continuous(breaks = seq(0, 12)) +
+  theme_bw()
+```
+
+For the eFSS and dFSS, the important piece of information is for what neighbourhood length the FSS becomes skilful. A rule of thumb is that a "skilful" FSS is a value >= 0.5. We can plot the FSS = 0.5 contour for both eFSS and dFSS. In order to do this, we need to bind the two data frames and make sure each has a column saying what it is.
+
+```{r fss-spread-skill-qntl, message=FALSE, warning=FALSE, fig.align='center'}
+pcp_fss_ed <- bind_rows(
+  mutate(pcp_dfss, score = "dFSS"),
+  mutate(pcp_efss, score = "eFSS")
+)
+
+ggplot(
+  pcp_fss_ed, 
+  aes(lead_time, nbhd_length / 1000, z = fss, colour = score)
+) + 
+  geom_contour(breaks = 0.5) +
+  facet_wrap(
+    ~fct_reorder(paste0("Precip >= ", quantile * 100, "th percentile"), quantile * 100),
+    ncol = 1
+  ) +
+  scale_y_log10() +
+  labs(
+    x      = "Lead Time [h]",
+    y      = "Neighbourhood Length (km)",
+    colour = NULL
+  ) +
+  scale_x_continuous(breaks = seq(0, 12)) +
+  theme_bw()
+
+```
+
+## Neighbourhood Probabilities
+
+The ensemble dFSS can be used to inform the spatial scale to use for upscaling precipitation probabilities. Since the ensemble dFSS gives an indication of the spatial uncertainty of a forecast, you could use that same neighbourhood size to upscale forecasts of precipitation probabilities. If, as above, we assume that the neighbourhood size for which the dFSS goes above 0.5 is the spatial uncertainty we can keep increasing the neighbourhood size untile that value is reached. This is best done in a `while` loop nested in a `for` loop over each lead time. 
+
+```{r prob-upscale, message=FALSE}
+
+prob_upscale <- function(lt, thresh) {
+  rad <- -1
+  dfss <- 0
+  while (dfss < 0.5) {
+    rad <- rad + 1
+    dfss <- ens_dfss(filter(fcst, lead_time == lt), thresh, rad)$fss[[1]]
+  }
+  message(lt, "h: ", rad)
+  tibble(
+    lead_time = lt, 
+    radius    = rad
+  )
+}
+
+nbhd_radii <- lapply(seq(1, 12), prob_upscale, thresh = 2) |> 
+  bind()
+
+nbhd_radii
+```
+
+We can now use this information to upscale the probabilities. First let's make a plot of the grid sqaure probabilities against which to compare. We can use `ens_prob()` to compute the grid sqaure probabilities, 
+
+```{r gridsquare-probs, message=FALSE, warning=FALSE, fig.align='center', fig.width=8}
+ggplot() +
+  geom_georaster(aes(geofield = prob_ge_2 * 100), ens_prob(fcst, 2)) +
+  geom_path(aes(x, y), fc_map, colour = "grey45", linewidth = 0.3) + 
+  facet_wrap(~fct_reorder(paste0("T + ", lead_time, "h"), lead_time)) +
+  scale_fill_scico(
+    "[%]",
+    palette   = "hawaii", 
+    direction = -1,
+    limits    = c(10, 100), 
+    na.value  = "transparent"
+  ) +
+  coord_equal(expand = FALSE) +
+  labs(title = "Gridsquare Probability 1h Precipitation > 2mm") +
+  theme_harp_map()
+```
+
+To do the neighbourhood upscaling, we first need to join our new `nbhd_radii` data frame to the forecast
+
+```{r join-nbhd, message=FALSE, warning=FALSE}
+fcst <- join_to_fcst(fcst, nbhd_radii, force = TRUE)
+```
+
+The next bit is a little bit complicated as we have to treat each row separately. We will use the base _R_ function `map2()` from purrr to map over each row in the member columns and the radius column. 
+
+```{r nbhd-probs-calc}
+nbhd_prob <- mutate(
+  fcst, 
+  across(
+    contains("_mbr"), 
+    ~geolist(map2(.x, radius, ~nbhd_smooth(.x, .y, threshold = 2)))
+  )
+) |> 
+  ens_stats(sd = FALSE)
+```
+
+The neighbourhood probabilities are now in the `ens_mean` column. 
+
+```{r nbhd-probs-plt, message=FALSE, warning=FALSE, fig.align='center', fig.width=8}
+ggplot() +
+  geom_georaster(aes(geofield = ens_mean * 100), nbhd_prob) +
+  geom_path(aes(x, y), fc_map, colour = "grey45", linewidth = 0.3) + 
+  facet_wrap(
+    ~fct_reorder(
+      paste0("T + ", lead_time, "h : ", (radius * 2 + 1) * 2.5, "km"), 
+      lead_time
+    )
+  ) +
+  scale_fill_scico(
+    "[%]",
+    palette   = "hawaii", 
+    direction = -1,
+    limits    = c(10, 100), 
+    na.value  = "transparent"
+  ) +
+  coord_equal(expand = FALSE) +
+  labs(title = "Neighbourhood Probability 1h Precipitation > 2mm") +
+  theme_harp_map()
 ```
 
 In this tutorial, as well as going through the workflow to compute the ensemble fractions skill score, we have seen some methods for plotting data in __harp__ that do not use the built in specialised functions. In the next tutorial we will look more closely at plotting __harp__ data with `ggplot()`.
