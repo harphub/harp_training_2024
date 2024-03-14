@@ -423,7 +423,7 @@ ggplot(
   aes(
     lead_time, 
     fss, 
-    colour = fct_reorder(paste0(quantile, "th"), quantile)
+    colour = fct_reorder(paste0(quantile * 100, "th"), quantile)
   )
 ) +
   geom_line() +
